@@ -31,6 +31,7 @@
 require_once('../../config.php');
 require_once($CFG->dirroot."/lib/filelib.php");
 require_once($CFG->dirroot."/mod/mgm/locallib.php");
+require_once($CFG->dirroot."/mod/mgm/mgm_forms.php");
 
 require_login();
 require_capability('mod/mgm:aprobe', get_context_instance(CONTEXT_SYSTEM));
@@ -43,27 +44,45 @@ $tempdir = $CFG->dataroot."/temp/";
 $filename = optional_param('filename');
 $generated = optional_param('generated');
 
+$mform = new edicion_form("$CFG->wwwroot".'/mod/mgm/export.php');
+
 if ($filename && file_exists($tempdir.$filename)) {
   $lifetime = 0;
   send_file($tempdir.$filename, "export.zip", $lifetime, 0, false, true);
 }
 else if ($generated) {
-	admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
-  admin_externalpage_print_header();
-  print_heading($strtitle);
-  print_simple_box_start('center');
-  $emision = new EmisionDatos();
-  $validacion = $emision->Validar();
-  $afichero = $emision->aFichero( $tempdir );
+	$ed = optional_param('edicion', 0);
+	if (! $edicion=get_record('edicion', 'id', $ed)){
+		error('Edicion no valida',"$CFG->wwwroot".'/mod/mgm/import.php');
+	}else{
+		admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
+  	admin_externalpage_print_header();
+  	print_heading($strtitle);
+  	print_simple_box_start('center');
+  	$emision = new EmisionDatos($edicion);
+  	$validacion = $emision->Validar();
+  	$afichero = $emision->aFichero( $tempdir );
 
-  foreach (array_merge($validacion->incidencias, $afichero->incidencias) as $incidencia)
-    echo $incidencia;
+  	foreach (array_merge($validacion->incidencias, $afichero->incidencias) as $incidencia)
+    	echo $incidencia;
 
-  echo get_string('file_export_link', 'mgm', $afichero);
-  print_simple_box_end();
-  admin_externalpage_print_footer();
+	  echo get_string('file_export_link', 'mgm', $afichero);
+  	print_simple_box_end();
+  	admin_externalpage_print_footer();
+	}
 }
-else {
+else if ($data = $mform->get_data(false)){
+		if 	(!empty($data->cancel)){
+    	unset($_POST);
+    	redirect("$CFG->wwwroot".'/index.php');
+    }
+    else if (!empty($data->next)) {
+    	$edicion=$data->edition;
+    	if (! isset($edicion) or $edicion == 0){
+    		error('Edicion no valida',"$CFG->wwwroot".'/mod/mgm/export.php');
+    	}
+    }
+	//Do output
   admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
   admin_externalpage_print_header();
   print_heading($strtitle);
@@ -71,6 +90,18 @@ else {
   print get_string('exportpleasewait', 'mgm');
   print_simple_box_end();
 	admin_externalpage_print_footer();
-	redirect("$CFG->wwwroot".'/mod/mgm/export.php?generated=1');
+	redirect("$CFG->wwwroot".'/mod/mgm/export.php?generated=1&edicion='.$edicion);
 }
+else {
+  admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
+  admin_externalpage_print_header();
+  print_heading($strtitle);
+  print_simple_box_start('center');
+  $mform->display();
+  print_simple_box_end();
+	admin_externalpage_print_footer();
+
+}
+
+
 ?>

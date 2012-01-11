@@ -3596,6 +3596,30 @@ class Usuario {
     	  }
     	  return $str;
     }
+
+    function set_dbdata($userid){
+    	$data = get_record('edicion_user', 'userid', $userid);
+    	if (!$data){
+    		$data=new stdClass();
+    		$data->dni=null;
+    	}
+    	if (!$data->dni){
+    		$puser=profile_user_record($userid);
+    		$user = get_record('user', 'id', $userid);
+      	if ($puser->nifniepasaporte){
+      		$data->dni=$puser->nifniepasaporte;
+      	}else if ($user->idnumber){
+      		$data->dni=$user->idnumber;
+      	}
+      	if (mgm_validate_cif($data->dni)){
+      		$data->tipoid='N';
+      	}else{
+      		$data->tipoid='P';
+      	}
+    	}
+    	$this -> dbdata=$data;
+    }
+
     function Usuario($data, $curso) {
         $this -> data = $data;
         $this -> curso = $curso;
@@ -3603,8 +3627,8 @@ class Usuario {
         $this -> info -> id = $data -> userid;
         $this -> info -> curso = $this -> curso -> data -> fullname;
         $this -> info -> sesskey = $_SESSION['USER'] -> sesskey;
-        $this -> dbdata = get_record('edicion_user', 'userid', $data -> userid);
-
+        //$this -> dbdata = get_record('edicion_user', 'userid', $data -> userid);
+				$this->set_dbdata($data -> userid);
         //Datos para participantes.csv
         $this -> edata['anoacademico'] = $this->format_text($this -> curso -> edicion -> getAnoAcademico());
         #Obligatorio
@@ -3770,10 +3794,7 @@ class EmisionDatos {
     var $prefix = 'mgm_export';
 
     function EmisionDatos($edicion = null) {
-        if($edicion)
-            $this -> edicion = $edicion;
-        else
-            $this -> edicion = new Edicion();
+        $this -> edicion = new Edicion($edicion);
     }
 
     function Validar($fechaactual = null) {
