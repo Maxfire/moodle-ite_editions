@@ -219,3 +219,4 @@ $string['unknowreport'] = 'Unknow Report type';
 $string['exportpleasewait'] ='Exporting data, please wait ...';
 $string['certifications'] = 'Certifications';
 $string['joinusers'] = 'Join users';
+

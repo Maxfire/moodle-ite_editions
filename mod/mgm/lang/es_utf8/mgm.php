@@ -229,4 +229,4 @@ $string['selectsourceuser'] = 'Usuario Origen';
 $string['selectdestinationuser'] = 'Usuario Destino';
 $string['joinusercheck'] = '¿Realizar la fusión de usuarios?';
 $string['importdata'] = 'Importar Datos';
-
+$string['centro'] = 'Centro';

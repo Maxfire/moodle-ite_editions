@@ -82,7 +82,7 @@ $mform->set_data($userdata);
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot.'/index.php');
 } else if ($data = $mform->get_data()) {
-    $sdata = mgm_set_userdata($USER->id, $data);
+    $sdata = mgm_set_userdata($USER->id, $data, false);
 
     if ($sdata == MGM_DATA_CC_ERROR) {
         error(get_string('cc_no_error', 'mgm'), $CFG->wwwroot.'/mod/mgm/user.php');
@@ -95,7 +95,10 @@ if ($mform->is_cancelled()) {
     if ($sdata == MGM_DATA_DNI_INVALID) {
         error(get_string('dninotvalid', 'mgm'), $CFG->wwwroot.'/mod/mgm/user.php');
     }
-    
+		if ($sdata == MGM_DATA_NO_ERROR) {
+      mgm_set_userdata($USER->id, $data, true);
+    }
+
     notice(get_string('codemessage', 'mgm'), $CFG->wwwroot.'/index.php');
 }
 

@@ -74,13 +74,15 @@ define('MGM_PRIVATE_CENTER', 2);
 
 define('MGM_ECUADOR_DEFAULT', 0);
 
+global $NIVELES_EDUCATIVOS, $CUERPOS_DOCENTES, $PAISES, $PROVINCIAS;
+
 $CODIGOS_AGRUPACION = array("0" => "0 Agrupación General", "1" => "1 Agrupación de Cursos", "2" => "2 Investigación Nacional", "3" => "3 Proyectos de Formación", "4" => "4 Comenius", "5" => "5 Lingua", "6" => "6 Arion", "7" => "7 Petra I y II", "8" => "8 Leonardo Da Vinci", "9" => "9 Música y Danza", "10" => "10 Enseñanza de Idiomas", "11" => "11 Titulaciones de Primer Ciclo", "12" => "12 Titulaciones de Segundo Ciclo", "13" => "13 Titulaciones de Tercer Ciclo", "14" => "14 Investigación Provincial", "15" => "15 Investigación Carácter Distinto", "16" => "16 Proyecto Innovación", "17" => "17 Minerva", "18" => "18 Medidas de acompañamiento", "19" => "19 Grundtvig", "20" => "20 Acciones conjuntas");
 
 $MODALIDADES = array("10" => "10 Curso", "20" => "20 Grupos de Trabajo", "30" => "30 Seminarios", "A0" => "A0 Curso a distancia");
 
 $PROVINCIAS = array(10 => "10 ALAVA", 20 => "20 ALBACETE", 30 => "30 ALICANTE", 40 => "40 ALMERIA", 50 => "50 AVILA", 60 => "60 BADAJOZ", 70 => "70 ILLES BALEARS", 80 => "80 BARCELONA", 90 => "90 BURGOS", 100 => "100 CACERES", 110 => "110 CADIZ", 120 => "120 CASTELLON", 130 => "130 CIUDAD REAL", 140 => "140 CORDOBA", 150 => "150 A CORUÑA", 160 => "160 CUENCA", 170 => "170 GIRONA", 180 => "180 GRANADA", 190 => "190 GUADALAJARA", 200 => "200 GUIPUZCOA", 210 => "210 HUELVA", 220 => "220 HUESCA", 230 => "230 JAEN", 240 => "240 LEON", 250 => "250 LLEIDA", 260 => "260 LA RIOJA", 270 => "270 LUGO", 280 => "280 MADRID", 281 => "281 MADRID-NORTE", 282 => "282 MADRID-SUR", 283 => "283 MADRID-ESTE", 284 => "284 MADRID-OESTE", 285 => "285 MADRID-CENTRO", 290 => "290 MALAGA", 300 => "300 MURCIA", 310 => "310 NAVARRA", 320 => "320 OURENSE", 330 => "330 ASTURIAS", 340 => "340 PALENCIA", 350 => "350 LAS PALMAS DE GRAN CANARIA", 360 => "360 PONTEVEDRA", 370 => "370 SALAMANCA", 380 => "380 SANTA CRUZ DE TENERIFE", 390 => "390 CANTABRIA", 400 => "400 SEGOVIA", 410 => "410 SEVILLA", 420 => "420 SORIA", 430 => "430 TARRAGONA", 440 => "440 TERUEL", 450 => "450 TOLEDO", 460 => "460 VALENCIA", 470 => "470 VALLADOLID", 480 => "480 VIZCAYA", 490 => "490 ZAMORA", 500 => "500 ZARAGOZA", 510 => "510 CEUTA", 520 => "520 MELILLA", 600 => "600 EXTRANJERO");
 
-$PAISES = array("004" => "004 AFGANISTAN", "008" => "008 ALBANIA", "010" => "010 ANTARTIDA", "012" => "012 ARGELIA", "016" => "016 SAMOA NORTEAMERICANA", "020" => "020 ANDORRA", "024" => "024 ANGOLA", "028" => "028 ANTIGUA Y BARBUDA", "031" => "031 AZERBAIYAN", "032" => "032 ARGENTINA", "036" => "036 AUSTRALIA", "040" => "040 AUSTRIA", "044" => "044 BAHAMAS", "048" => "048 BAHREIN", "050" => "050 BANGLADESH", "051" => "051 ARMENIA", "052" => "052 BARBADOS", "056" => "056 BELGICA", "060" => "060 BERMUDAS", "064" => "064 BHUTAN", "068" => "068 BOLIVIA", "070" => "070 BOSNIA HERZEGOVINA", "072" => "072 BOTSWANA", "074" => "074 BOUVET", "076" => "076 BRASIL", "084" => "084 BELICE", "086" => "086 INDICO", "090" => "090 ISLAS SALOMON", "092" => "092 VIRGENES", "096" => "096 BRUNEI DARUSSALAM", "100" => "100 BULGARIA", "104" => "104 MYANMAR", "108" => "108 BURUNDI", "112" => "112 BIELORRUSIA", "116" => "116 CAMBOYA", "120" => "120 CAMERUN", "124" => "124 CANADA", "132" => "132 CABO VERDE", "136" => "136 CAIMAN", "140" => "140 REPUBLICA CENTROAFRICANA", "144" => "144 SRI LANKA", "148" => "148 CHAD", "152" => "152 CHILE", "156" => "156 CHINA", "158" => "158 TAIWAN", "162" => "162 CHRISTMAS", "166" => "166 COCOS", "170" => "170 COLOMBIA", "174" => "174 COMORES", "175" => "175 MAYOTTE", "178" => "178 CONGO", "180" => "180 REPUBLICA DEMOCRATICA DEL CONGO", "184" => "184 COOK", "188" => "188 COSTA RICA", "191" => "191 CROACIA", "192" => "192 CUBA", "196" => "196 CHIPRE", "202" => "202 REPUBLICA CHECA (RPT)", "203" => "203 REPUBLICA CHECA", "204" => "204 BENIN", "208" => "208 DINAMARCA", "212" => "212 DOMINICA", "214" => "214 REPUBLICA DOMINICANA", "218" => "218 ECUADOR", "222" => "222 EL SALVADOR", "226" => "226 GUINEA ECUATORIAL", "228" => "228 ESLOVAQUIA (RPT)", "231" => "231 ETIOPIA", "232" => "232 ERITREA", "233" => "233 ESTONIA", "234" => "234 FEROE", "238" => "238 MALVINAS", "242" => "242 FIJI", "246" => "246 FINLANDIA", "249" => "249 FRANCIA METROPOLITANA", "250" => "250 FRANCIA", "254" => "254 GUAYANA FRANCESA", "258" => "258 POLINESIA FRANCESA", "260" => "260 FRANCIA", "262" => "262 DJIBOUTI", "266" => "266 GABON", "268" => "268 GEORGIA", "270" => "270 GAMBIA", "276" => "276 ALEMANIA", "280" => "280 ALEMANIA (RPT)", "288" => "288 GHANA", "292" => "292 GIBRALTAR", "296" => "296 KIRIBATI", "300" => "300 GRECIA", "304" => "304 GROENLANDIA", "308" => "308 GRANADA", "312" => "312 GUADALUPE", "316" => "316 GUAM", "320" => "320 GUATEMALA", "324" => "324 GUINEA", "328" => "328 GUYANA", "332" => "332 HAITI", "334" => "334 HEARD AND MCDONALD", "336" => "336 VATICANO", "340" => "340 HONDURAS", "344" => "344 HONG KONG", "348" => "348 HUNGRIA", "352" => "352 ISLANDIA", "356" => "356 INDIA", "360" => "360 INDONESIA", "364" => "364 IRAN", "368" => "368 IRAk", "372" => "372 IRLANDA", "376" => "376 ISRAEL", "380" => "380 ITALIA", "384" => "384 COSTA DE MARFIL", "388" => "388 JAMAICA", "392" => "392 JAPON", "398" => "398 KAZAJSTAN", "400" => "400 JORDANIA", "404" => "404 KENIA", "408" => "408 REPUBLICA POPULAR DEMOCRATICA DE COREA", "410" => "410 REPUBLICA DE COREA", "414" => "414 KUWAIT", "417" => "417 KIRGUISTAN", "418" => "418 LAOS", "422" => "422 LIBANO", "426" => "426 LESOTHO", "428" => "428 LETONIA", "430" => "430 LIBERIA", "434" => "434 LIBIA", "438" => "438 LIECHTENSTEIN", "440" => "440 LITUANIA", "442" => "442 LUXEMBURGO", "446" => "446 MACAO", "450" => "450 MADAGASCAR", "454" => "454 MALAWI", "458" => "458 MALASIA", "462" => "462 MALDIVAS", "466" => "466 MALI", "470" => "470 MALTA", "474" => "474 MARTINICA", "478" => "478 MAURITANIA", "480" => "480 MAURICIO", "484" => "484 MEXICO", "492" => "492 MONACO", "496" => "496 MONGOLIA", "498" => "498 MOLDAVIA", "500" => "500 MONTSERRAT", "504" => "504 MARRUECOS", "508" => "508 MOZAMBIQUE", "512" => "512 OMAN", "516" => "516 NAMIBIA", "520" => "520 NAURU", "524" => "524 NEPAL", "528" => "528 HOLANDA", "530" => "530 ANTILLAS HOLANDESAS", "533" => "533 ARUBA", "540" => "540 NUEVA CALEDONIA", "548" => "548 VANUATU", "554" => "554 NUEVA ZELANDA", "558" => "558 NICARAGUA", "562" => "562 NIGER", "566" => "566 NIGERIA", "570" => "570 NIUE", "574" => "574 NORFOLK", "578" => "578 NORUEGA", "580" => "580 ISLAS MARIANA", "583" => "583 MICRONESIA", "584" => "584 ISLAS MARSHALL", "585" => "585 PALAU", "586" => "586 PAKISTAN", "591" => "591 PANAMA", "598" => "598 PAPUA NUEVA GUINEA", "600" => "600 PARAGUAY", "604" => "604 PERU", "608" => "608 FILIPINAS", "612" => "612 PITCAIRN", "616" => "616 POLONIA", "620" => "620 PORTUGAL", "624" => "624 GUINEA-BISSAU", "626" => "626 TIMOR", "630" => "630 PUERTO RICO", "634" => "634 QATAR", "638" => "638 REUNION", "642" => "642 RUMANIA", "643" => "643 RUSIA", "646" => "646 RUANDA", "654" => "654 SANTA ELENA", "659" => "659 SAN CRISTOBAL Y NIEVES", "660" => "660 ANGUILLA", "662" => "662 SANTA LUCIA", "666" => "666 SAN PEDRO Y MIQUELON", "670" => "670 SAN VICENTE Y LAS GRANADINAS", "674" => "674 SAN MARINO", "678" => "678 SANTO TOME Y PRINCIPE", "682" => "682 ARABIA SAUDITA", "686" => "686 SENEGAL", "690" => "690 SEYCHELLES", "694" => "694 SIERRA LEONA", "702" => "702 SINGAPUR", "703" => "703 ESLOVAQUIA", "704" => "704 VIETNAN", "705" => "705 ESLOVENIA", "706" => "706 SOMALIA", "710" => "710 REPUBLICA SUDAFRICANA", "716" => "716 ZIMBABWE", "724" => "724 ESPAÑA", "732" => "732 SAHARA OCCIDENTAL", "736" => "736 SUDAN", "740" => "740 SURINAM", "744" => "744 SVALBARD Y JAN MAYEN", "748" => "748 SWAZILANDIA", "752" => "752 SUECIA", "756" => "756 SUIZA", "760" => "760 SIRIA", "762" => "762 TAYIKISTAN", "764" => "764 TAILANDIA", "768" => "768 TOGO", "772" => "772 TOKELAU", "776" => "776 TONGA", "780" => "780 TRINIDAD Y TOBAGO", "784" => "784 EMIRATOS ARABES UNIDOS", "788" => "788 TUNEZ", "792" => "792 TURQUIA", "795" => "795 TURKMENISTAN", "796" => "796 TURKS AND CAICOS", "798" => "798 TUVALU", "800" => "800 UGANDA", "804" => "804 UCRANIA", "807" => "807 MACEDONIA", "818" => "818 EGIPTO", "826" => "826 REINO UNIDO", "834" => "834 TANZANIA", "840" => "840 ESTADOS UNIDOS DE AMERICA", "850" => "850 VIRGENES", "854" => "854 BURKINA FASSO", "858" => "858 URUGUAY", "860" => "860 UZBEKISTAN", "862" => "862 VENEZUELA", "876" => "876 WALLIS AND FUTUNA", "882" => "882 SAMOA OCCIDENTAL", "887" => "887 YEMEN", "891" => "891 YUGOSLAVIA", "894" => "894 ZAMBIA", "900" => "900 CHECOSLOVAQUIA", "901" => "901 REPUBLICA DEMOCRATICA ALEMANA", "902" => "902 REPUBLICA FEDERAL ALEMANA", "903" => "903 U.R.S.S.", "904" => "904 VIETNAN DEL NORTE", "905" => "905 VIETNAN DEL SUR", "906" => "906 YEMEN DEL SUR", "907" => "907 YEMEN DEMOCRATICO", "908" => "908 ZAIRE", "909" => "909 ZONA NEUTRAL", "992" => "992 PALESTINA", "993" => "993 JERUSALEN", "994" => "994 FRANJA DE GAZA", "995" => "995 CISJORDANIA", "996" => "996 ALTOS DEL GOLAN", "997" => "997 VARIOS", "998" => "998 APATRIDA", "999" => "999 DESCONOCIDO");
+$PAISES = array("004" => "AFGANISTAN",  "008" => "ALBANIA",  "276" => "ALEMANIA",  "020" => "ANDORRA",  "024" => "ANGOLA",  "660" => "ANGUILLA",  "028" => "ANTIGUA Y BARBUDA",  "530" => "ANTILLAS HOLANDESAS",  "682" => "ARABIA SAUDITA",  "012" => "ARGELIA",  "032" => "ARGENTINA",  "051" => "ARMENIA",  "533" => "ARUBA",  "036" => "AUSTRALIA",  "040" => "AUSTRIA",  "031" => "AZERBAIYAN",  "044" => "BAHAMAS",  "048" => "BAHREIN",  "050" => "BANGLADESH",  "052" => "BARBADOS",  "056" => "BÉLGICA",  "084" => "BELICE",  "204" => "BENIN",  "060" => "BERMUDAS",  "064" => "BHUTAN",  "112" => "BIELORRUSIA",  "068" => "BOLIVIA",  "070" => "BOSNIA HERZEGOVINA",  "072" => "BOTSWANA",  "074" => "BOUVET,   ISLA",  "076" => "BRASIL",  "096" => "BRUNEI DARUSSALAM",  "100" => "BULGARIA",  "854" => "BURKINA FASSO",  "108" => "BURUNDI",  "132" => "CABO VERDE",  "136" => "CAIMAN,   ISLAS",  "116" => "CAMBOYA",  "120" => "CAMERUN",  "124" => "CANADA",  "148" => "CHAD",  "900" => "CHECOSLOVAQUIA",  "152" => "CHILE",  "156" => "CHINA",  "196" => "CHIPRE",  "170" => "COLOMBIA",  "174" => "COMORES",  "178" => "CONGO",  "184" => "COOK,   ISLAS",  "384" => "COSTA DE MARFIL",  "188" => "COSTA RICA",  "191" => "CROACIA",  "192" => "CUBA",  "208" => "DINAMARCA",  "262" => "DJIBOUTI",  "212" => "DOMINICA",  "218" => "ECUADOR",  "818" => "EGIPTO",  "222" => "EL SALVADOR",  "784" => "EMIRATOS ARABES UNIDOS",  "232" => "ERITREA",  "703" => "ESLOVAQUIA",  "705" => "ESLOVENIA",  "724" => "ESPAÑA",  "840" => "ESTADOS UNIDOS DE AMERICA",  "233" => "ESTONIA",  "231" => "ETIOPIA",  "234" => "FEROE,   ISLAS",  "242" => "FIJI",  "608" => "FILIPINAS",  "246" => "FINLANDIA",  "250" => "FRANCIA",  "266" => "GABON",  "270" => "GAMBIA",  "268" => "GEORGIA",  "288" => "GHANA",  "292" => "GIBRALTAR",  "308" => "GRANADA",  "300" => "GRECIA",  "304" => "GROENLANDIA",  "312" => "GUADALUPE",  "316" => "GUAM",  "320" => "GUATEMALA",  "254" => "GUAYANA FRANCESA",  "324" => "GUINEA",  "226" => "GUINEA ECUATORIAL",  "624" => "GUINEA-BISSAU",  "328" => "GUYANA",  "332" => "HAITI",  "334" => "HEARD AND MCDONALD,   ISLAS",  "528" => "HOLANDA",  "340" => "HONDURAS",  "348" => "HUNGRIA",  "356" => "INDIA",  "360" => "INDONESIA",  "364" => "IRAN",  "368" => "IRAQ",  "372" => "IRLANDA",  "352" => "ISLANDIA",  "580" => "ISLAS MARIANA",  "584" => "ISLAS MARSHALL",  "090" => "ISLAS SALOMON",  "376" => "ISRAEL",  "380" => "ITALIA",  "388" => "JAMAICA",  "392" => "JAPON",  "400" => "JORDANIA",  "398" => "KAZAJSTAN",  "404" => "KENIA",  "417" => "KIRGUISTAN",  "296" => "KIRIBATI",  "414" => "KUWAIT",  "418" => "LAOS",  "426" => "LESOTHO",  "428" => "LETONIA",  "422" => "LIBANO",  "430" => "LIBERIA",  "434" => "LIBIA",  "438" => "LIECHTENSTEIN",  "440" => "LITUANIA",  "442" => "LUXEMBURGO",  "807" => "MACEDONIA",  "450" => "MADAGASCAR",  "458" => "MALASIA",  "454" => "MALAWI",  "462" => "MALDIVAS",  "466" => "MALI",  "470" => "MALTA",  "238" => "MALVINAS,   ISLAS",  "504" => "MARRUECOS",  "480" => "MAURICIO",  "478" => "MAURITANIA",  "175" => "MAYOTTE",  "484" => "MEXICO",  "583" => "MICRONESIA",  "498" => "MOLDAVIA",  "492" => "MONACO",  "496" => "MONGOLIA",  "499" => "MONTENEGRO",  "508" => "MOZAMBIQUE",  "104" => "MYANMAR",  "516" => "NAMIBIA",  "520" => "NAURU",  "524" => "NEPAL",  "558" => "NICARAGUA",  "562" => "NIGER",  "566" => "NIGERIA",  "570" => "NIUE",  "574" => "NORFOLK,   ISLA",  "578" => "NORUEGA",  "540" => "NUEVA CALEDONIA",  "554" => "NUEVA ZELANDA",  "512" => "OMAN",  "586" => "PAKISTAN",  "585" => "PALAU",  "591" => "PANAMA",  "598" => "PAPUA NUEVA GUINEA",  "600" => "PARAGUAY",  "604" => "PERU",  "612" => "PITCAIRN,  ISLA",  "616" => "POLONIA",  "620" => "PORTUGAL",  "630" => "PUERTO RICO",  "634" => "QATAR",  "826" => "REINO UNIDO",  "140" => "REPUBLICA CENTROAFRICANA",  "203" => "REPUBLICA CHECA",  "410" => "REPUBLICA DE COREA",  "180" => "REPUBLICA DEMOCRATICA DEL CONGO",  "214" => "REPUBLICA DOMINICANA",  "408" => "REPUBLICA POPULAR DEMOCRATICA DE COREA",  "710" => "REPUBLICA SUDAFRICANA",  "638" => "REUNION",  "646" => "RUANDA",  "642" => "RUMANIA",  "643" => "RUSIA",  "882" => "SAMOA",  "016" => "SAMOA NORTEAMERICANA",  "659" => "SAN CRISTOBAL Y NIEVES",  "674" => "SAN MARINO",  "666" => "SAN PEDRO Y MIQUELON",  "670" => "SAN VICENTE Y LAS GRANADINAS",  "654" => "SANTA ELENA",  "662" => "SANTA LUCIA",  "678" => "SANTO TOME Y PRINCIPE",  "686" => "SENEGAL",  "688" => "SERBIA",  "690" => "SEYCHELLES",  "694" => "SIERRA LEONA",  "702" => "SINGAPUR",  "760" => "SIRIA",  "706" => "SOMALIA",  "144" => "SRI LANKA",  "736" => "SUDAN",  "752" => "SUECIA",  "756" => "SUIZA",  "740" => "SURINAM",  "748" => "SWAZILANDIA",  "764" => "TAILANDIA",  "158" => "TAIWAN",  "834" => "TANZANIA",  "762" => "TAYIKISTAN",  "626" => "TIMOR",  "768" => "TOGO",  "772" => "TOKELAU",  "776" => "TONGA",  "780" => "TRINIDAD Y TOBAGO",  "788" => "TUNEZ",  "795" => "TURKMENISTAN",  "792" => "TURQUIA",  "798" => "TUVALU",  "804" => "UCRANIA",  "800" => "UGANDA",  "858" => "URUGUAY",  "860" => "UZBEKISTAN",  "548" => "VANUATU",  "336" => "VATICANO",  "862" => "VENEZUELA",  "704" => "VIETNAM",  "887" => "YEMEN",  "894" => "ZAMBIA",  "716" => "ZIMBABWE");
 
 $MATERIAS = array("0001" => "0001 MATERIA DE MIGRACIÓN", "0101" => "0101 TEOR. Y ORG. CURRICULAR ASP. GENER.", "0102" => "0102 TEORIA DEL CURRICULO", "0103" => "0103 DISEÑO GRAL. DEL CURRICULO", "0104" => "0104 PROYECTO EDUCATIVO DE CENTRO/ZONA", "0105" => "0105 PROYECTO CURRICULAR", "0106" => "0106 PROGRAMACION DE AULA", "0201" => "0201 ID. Y AUT. PERSONAL. ASP. GENERALES", "0202" => "0202 EL CUERPO Y LA PROPIA IMAGEN", "0203" => "0203 JUEGO", "0204" => "0204 LA ACTIVIDAD Y LA VIDA COTIDIANA", "0205" => "0205 EL CUIDADO DE UNO MISMO", "0301" => "0301 MEDIO FISICO Y SOCIAL. ASP. GENER.", "0302" => "0302 LOS PRIMEROS GRUPOS SOCIALES", "0303" => "0303 LOS ANIMALES Y LAS PLANTAS", "0401" => "0401 COMUN. Y REPRES. ASPECTOS GENERALES", "0402" => "0402 LENGUAJE ORAL", "0403" => "0403 APROXIMACION AL LENGUAJE ESCRITO", "0404" => "0404 EXPRESION PLASTICA", "0405" => "0405 EXPRESION MUSICAL", "0406" => "0406 RELACIONES MEDIDA Y REPRESENTACION", "0501" => "0501 CONOCIM DEL MEDIO. ASPECTOS GENER.", "0502" => "0502 CONOCIMIENTO DEL CUERPO Y SALUD", "0503" => "0503 MEDIO SOCIAL", "0504" => "0504 EL PASO DEL TIEMPO", "0505" => "0505 CULTURA Y TECNOLOGIA", "0601" => "0601 ED. ARTISTICA. ASPECTOS GENERALES", "0602" => "0602 EXPRESION PLASTICA Y VISUAL", "0603" => "0603 MUSICA", "0604" => "0604 DRAMATIZACION", "0605" => "0605 ARTES APLICADAS", "0701" => "0701 ED. FISICA. ASPECTOS GENERALES", "0702" => "0702 CONDICION FISICA", "0703" => "0703 JUEGOS", "0704" => "0704 DEPORTES", "0801" => "0801 LENG. Y LIT. ASPECTOS GENERALES", "0802" => "0802 LENGUA ESPAÑOLA", "0803" => "0803 LITERATURA ESPAÑOLA", "0804" => "0804 OTRAS LENGUAS DEL ESTADO", "0805" => "0805 LITERATURA UNIVERSAL", "0901" => "0901 LENG. Y CULT. CLASICAS. ASP. GENER.", "0902" => "0902 LATIN", "0903" => "0903 GRIEGO", "1001" => "1001 LENGUAS EXTR. ASPECTOS GENERALES", "1002" => "1002 INGLES", "1003" => "1003 FRANCES", "1004" => "1004 ALEMAN", "1005" => "1005 ITALIANO", "1006" => "1006 OTROS IDIOMAS", "1101" => "1101 MATEMATICAS. ASPECTOS GENERALES", "1102" => "1102 NUMEROS", "1103" => "1103 ALGEBRA", "1104" => "1104 GEOMETRIA", "1105" => "1105 ANALISIS", "1106" => "1106 ESTADISTICA Y PROBABILIDAD", "1107" => "1107 ASTRONOMIA", "1201" => "1201 CIENC. DE LA NAT. ASPECTOS GENER.", "1202" => "1202 FISICA", "1203" => "1203 QUIMICA", "1204" => "1204 BIOLOGIA", "1205" => "1205 GEOLOGIA", "1206" => "1206 CIENCIAS MEDIOAMBIENTALES", "1301" => "1301 CIENC. SOCIALES. ASPECTOS GENERALES", "1302" => "1302 GEOGRAFIA", "1303" => "1303 HISTORIA", "1304" => "1304 HISTORIA DEL ARTE", "1305" => "1305 FILOSOFIA", "1306" => "1306 ECONOMIA", "1307" => "1307 PSICOLOGIA", "1308" => "1308 SOCIOLOGIA", "1401" => "1401 ED. RELIGIOSA. ASPECTOS GENERALES", "1501" => "1501 TECNOLOGIA. ASPECTOS GENERALES", "1502" => "1502 PROCESOS CREACION Y DESARR. PRODUC.", "1503" => "1503 REPR. Y COMUNICACION PROCESOS TECN.", "1504" => "1504 MATERIALES Y TECNICAS CONSTRUCTIVAS", "1505" => "1505 CONOCIMIENTOS TECNOLOGICOS ESPECIA.", "1506" => "1506 TECNOLOGIA", "1601" => "1601 FORM. PROFESIONAL. ASPECTOS GENER.", "1602" => "1602 ORIENTACION PROFESIONAL", "1603" => "1603 TRANSICION A LA VIDA ACTIVA", "1604" => "1604 FORMACION EN CENTROS DE TRABAJO", "1605" => "1605 GARANTIA SOCIAL", "1606" => "1606 DESARROLLO LOCAL Y REGIONAL", "1607" => "1607 FORMACION CONCERTADA", "1701" => "1701 ACTIVIDADES SOCIOCULTURALES", "1702" => "1702 ADMINISTRACION DE EMPRESAS", "1703" => "1703 ASESORIA DE CONSUMO", "1704" => "1704 AUXILIAR ADMINISTRACION Y GESTION", "1705" => "1705 AUXILIAR DE COMERCIO INTERIOR", "1706" => "1706 BIBLIOTECONOMIA", "1707" => "1707 COMERCIO EXTERIOR", "1708" => "1708 PROGRAMADOR DE GESTION", "1709" => "1709 SECRETARIO EJECUTIVO MULTILINGUE", "1801" => "1801 A. FORESTALES Y CONSERV. NATURALEZA", "1802" => "1802 EXPLOTACIONES AGROPECUARIAS", "1803" => "1803 FITOPATOLOGIA", "1804" => "1804 FRUTICULTURA", "1805" => "1805 HORTICULTURA", "1806" => "1806 HORTOFRUTICULTURA", "1807" => "1807 INSTALACION Y MTO. DE JARDINES", "1808" => "1808 JARDINERO PRODUCTOR DE PLANTAS", "1901" => "1901 FOTOCOMPOSICION", "1902" => "1902 REPRODUCCION FOTOMECANICA", "2001" => "2001 AUTOMOCION", "2002" => "2002 CARROCERIA", "2101" => "2101 ACABADOS DE CONSTRUCCION", "2102" => "2102 ALBAÑILERIA", "2103" => "2103 CUBRICION DE EDIFICIOS", "2104" => "2104 HORMIGON", "2201" => "2201 DELINEACION INDUSTRIAL", "2301" => "2301 INST. Y MTO. EQUIPOS FRIO Y CALOR", "2302" => "2302 INST./MANTENEDOR ELECTRICO", "2303" => "2303 INST. TERMICAS AUX. DE PROCESO", "2304" => "2304 MTO. DE INST. SERVICIO AUXILIARES", "2305" => "2305 SISTEMAS AUTOMATICOS Y PROGRAMABLES", "2401" => "2401 COCINA", "2402" => "2402 RECEPCION", "2501" => "2501 MTO. Y OPER. TEC. EQUIPOS DE R.T.V.", "2502" => "2502 OPERACIONES DE IMAGEN Y SONIDO", "2503" => "2503 REALI.", "2601" => "2601 CARPINTERIA Y MUEBLE", "2602" => "2602 MECANIZADO DE LA MADERA", "2701" => "2701 CULTIVOS MARINOS", "2801" => "2801 FABRICACION MECANICA", "2802" => "2802 FABRICACION SOLDADA", "2803" => "2803 MTO. DE MAQUINAS Y SIST. AUTOMATIC.", "2804" => "2804 MANTENIMIENTO EN LINEA", "2805" => "2805 OPERADOR DE MAQUINAS HERRAMIENTAS", "2901" => "2901 CONFECCION INDUSTRIAL", "3001" => "3001 ESTETICA FACIAL", "3002" => "3002 PELUQUERIA", "3101" => "3101 AUXILIAR DE LABORATORIO", "3102" => "3102 INDUSTRIAS ALIMENTARIAS", "3201" => "3201 ACT. FISICAS Y ANIMACION DEPORTIVA", "3202" => "3202 ANATOMIA PATOLOGIA-CITOLOGIA", "3203" => "3203 AUXILIAR DE ENFERMERIA", "3204" => "3204 SALUD AMBIENTAL", "3301" => "3301 EDUCADOR INFANTIL", "3401" => "3401 HILATURA Y TEJEDURIA", "3402" => "3402 PROCESOS QUIMICOS TEXTILES", "3501" => "3501 ALFARERIA Y CERAMICA", "3601" => "3601 ACT. INTERAREAS. ASPECTOS GENERALES", "3701" => "3701 TEMAS TRANSVERSALES. ASP. GENERALES", "3702" => "3702 EDUCACION AMBIENTAL", "3703" => "3703 EDUCACION DEL CONSUMIDOR", "3704" => "3704 EDUCACION MORAL Y CIVICA", "3705" => "3705 EDUCACION PARA LA IGUALDAD OPORTUN.", "3706" => "3706 EDUCACION PARA LA PAZ", "3707" => "3707 EDUCACION PARA LA SALUD", "3708" => "3708 EDUCACION VIAL", "3709" => "3709 PRENSA-ESCUELA", "3710" => "3710 OTROS TEMAS TRANSVERSALES", "3801" => "3801 NUEVAS TECNOLOGIAS. ASP. GENERALES", "3802" => "3802 MEDIOS INFORMATICOS", "3803" => "3803 MEDIOS AUDIOVISUALES", "3901" => "3901 ATENCION A LA DIVERSIDAD. ASP. GEN.", "3902" => "3902 OPTATIVIDAD", "3903" => "3903 DIVERSIFICACION Y ADAPT. CURRICULAR", "3904" => "3904 NECESIDADES EDUCATIVAS ESPECIALES", "3905" => "3905 ATENCION A MINORIAS ETNICAS", "4001" => "4001 ASPECTOS GENERALES", "4002" => "4002 INTERVENCION INSTITUCIONAL", "4003" => "4003 APOYO PSICOPEDAGOGICO", "4004" => "4004 ORIENTACION", "4005" => "4005 TUTORIA", "4101" => "4101 DIREC. Y GESTION. ASP. GENERALES", "4102" => "4102 PLANIF. Y EJECUCION PROY. Y PROGR.", "4103" => "4103 ESTRUC. ORGANIZ. TRABAJO Y GESTION", "4104" => "4104 LAS RELACIONES Y LA PARTICIPACION", "4105" => "4105 RECOGIDA", "4201" => "4201 ADMINIST. EDUCATIVA. ASP. GENERALES", "4202" => "4202 PLANIFICACION EDUCATIVA", "4203" => "4203 FUNCIONAMIENTO Y GESTION ADM. EDUC.", "4204" => "4204 HABILIDADES SOCIALES PARA INTERVEN.", "4301" => "4301 FORMACION PERMANENTE. ASP. GENER.", "4302" => "4302 MODELOS DE FORMACION", "4303" => "4303 MODALIDADES Y ESTRATEGIAS DE FORM.", "4304" => "4304 RECOGIDA", "4305" => "4305 HABILIDADES SOCIALES PARA INTERVEN.", "9901" => "9901 MATERIA DE MIGRACION");
 
@@ -2053,6 +2055,16 @@ function mgm_get_user_available_especialidades($userid) {
 
     return $filterespecialidades;
 }
+function mgm_get_all_especialidades() {
+	  global $CFG;
+	  $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
+    		WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
+    $especialidades = explode("\n",  get_record_sql($sql) -> value);
+    return $especialidades;
+
+
+}
+
 
 /**
  * Check if the user cc is a valid cc
@@ -2094,7 +2106,7 @@ function mgm_check_user_dni($userid, $dni, &$ret) {
     return $dni;
 }
 
-function mgm_set_userdata($userid, $data) {
+function mgm_set_userdata($userid, $data, $create=true) {
     $ret = MGM_DATA_NO_ERROR;
     $newdata = $data;
     $newdata -> cc = mgm_check_user_cc($data -> cc, $ret);
@@ -2104,39 +2116,65 @@ function mgm_set_userdata($userid, $data) {
         $newdata -> dni = $data -> dni;
     }
     $newdata -> userid = $userid;
-    if(!record_exists('edicion_user', 'userid', $userid)) {
-        if(isset($data -> addsel)) {
-            $newdata -> especialidades = implode("\n", $data -> aespecs);
-        } else {
-            $newdata -> espcialidades = "";
-        }
-        insert_record('edicion_user', $newdata);
-    } else {
-        $olddata = get_record('edicion_user', 'userid', $userid);
-        $newdata -> id = $olddata -> id;
-        if(isset($data -> addsel)) {
-            $oldespec = explode("\n", $olddata -> especialidades);
-            $newespec = array_merge($oldespec, $data -> aespecs);
-            $newdata -> especialidades = implode("\n", $newespec);
-        } else if(isset($data -> removesel)) {
-            $oldespec = explode("\n", $olddata -> especialidades);
-            foreach($data->sespecs as $k => $v) {
-                if(in_array($v, $oldespec)) {
-                    $idx = array_search($v, $oldespec);
-                    unset($oldespec[array_search($v, $oldespec)]);
-                }
-            }
-            $newespec = implode("\n", $oldespec);
-            $newdata -> especialidades = $newespec;
-        } else {
-            $newdata -> especialidades = $olddata -> especialidades;
-        }
+    if ($create){
+	    if(!record_exists('edicion_user', 'userid', $userid)) {
+	        if(isset($data -> addsel)) {
+	            $newdata -> especialidades = implode("\n", $data -> aespecs);
+	        } else {
+	            $newdata -> espcialidades = "";
+	        }
+	        insert_record('edicion_user', $newdata);
+	    } else {
+	        $olddata = get_record('edicion_user', 'userid', $userid);
+	        $newdata -> id = $olddata -> id;
+	        if(isset($data -> addsel)) {
+	            $oldespec = explode("\n", $olddata -> especialidades);
+	            $newespec = array_merge($oldespec, $data -> aespecs);
+	            $newdata -> especialidades = implode("\n", $newespec);
+	        } else if(isset($data -> removesel)) {
+	            $oldespec = explode("\n", $olddata -> especialidades);
+	            foreach($data->sespecs as $k => $v) {
+	                if(in_array($v, $oldespec)) {
+	                    $idx = array_search($v, $oldespec);
+	                    unset($oldespec[array_search($v, $oldespec)]);
+	                }
+	            }
+	            $newespec = implode("\n", $oldespec);
+	            $newdata -> especialidades = $newespec;
+	        } else {
+	            $newdata -> especialidades = $olddata -> especialidades;
+	        }
 
-        update_record('edicion_user', $newdata);
+	        update_record('edicion_user', $newdata);
+	    }
     }
 
     return $ret;
 }
+
+function mgm_set_userdata2($userid, $data, $create=true) {
+    $ret = MGM_DATA_NO_ERROR;
+    $newdata = $data;
+    $newdata -> cc = mgm_check_user_cc($data -> cc, $ret);
+    if($data -> tipoid == 'N') {
+        $newdata -> dni = mgm_check_user_dni($userid, $data -> dni, $ret);
+    } else {
+        $newdata -> dni = $data -> dni;
+    }
+    $newdata -> userid = $userid;
+    if ($create){
+	    if(!$rec=get_record('edicion_user', 'userid', $userid)) {
+	        insert_record('edicion_user', $newdata);
+	    } else {
+	    	  $newdata->id=$rec->id;
+	        update_record('edicion_user', $newdata);
+	    }
+    }
+
+    return $ret;
+}
+
+
 
 /**
  * Return if a given cc is on cc CSV file
@@ -3287,7 +3325,37 @@ function mgm_get_user_dni($userid) {
 
     return ($user->dni != '') ? $user->dni : 'NOT SET';
 }
+function mgm_get_userid_from_dni($numdocumento) {
+	  if ($field=get_record('user_info_field','shortname', 'nifniepasaporte')){
+	  	$sql='SELECT u.id, u.idnumber, eu.dni, uid.data  FROM mdl_edicion_user eu, mdl_user u, mdl_user_info_data uid where eu.userid=u.id  and uid.userid=u.id and uid.fieldid='.$field->id;
+	  	$sql=$sql . ' and ( UPPER(eu.dni) = '.strtoupper($numdocumento);
+	  	$sql=$sql . ' or UPPER(uid.data) = '.strtoupper($numdocumento);
+	  	$sql=$sql . ' or UPPER(u.idnumber) = '.strtoupper($numdocumento) . ' )';
+	  }else{
+	    $sql='SELECT u.id, u.idnumber, eu.dni FROM mdl_edicion_user eu, mdl_user u where eu.userid=u.id';
+	    $sql=$sql . ' and ( UPPER(eu.dni) = '.strtoupper($numdocumento);
+	  	$sql=$sql . ' or UPPER(u.idnumber) = '.strtoupper($numdocumento) . ' )';
+	  }
+	  if ($obj=get_record_sql($sql)){
+	  	return (int)$obj->id;
+	  }else{
+	  	return false;
+	  }
+}
 
+function mgm_set_cert_history($reg){
+	$hr=get_record('edicion_cert_history', 'numdocumento', $reg->numdocumento, 'courseid', $reg->courseid);
+	if ($hr && $hr->confirm==1){
+		return array(false, 'Documento: '.$reg->numdocumento.', Curso '. $reg->courseid.' NO ACTION <br/>');
+	}else if ($hr && $hr->confirm==0){
+		$reg->id=$hr->id;
+		$dev=update_record('edicion_cert_history',$reg);
+		return array(true, 'Documento: '.$reg->numdocumento.', Curso '. $reg->courseid.' U <br/>');
+	}else{
+		$dev=insert_record('edicion_cert_history',$reg);
+		return array(true, 'Documento: '.$reg->numdocumento.', Curso '. $reg->courseid.' C <br/>');;
+	}
+}
 
 function mgm_get_string($str){
 	$dev=get_string($str);

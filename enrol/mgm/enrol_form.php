@@ -27,20 +27,106 @@
  * @copyright  2010 Oscar Campos <oscar.campos@open-phoenix.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once($CFG->libdir.'/formslib.php');
+
 
 class enrol_mgm_form extends moodleform {
 
     // Form definition
     function definition() {
-        global $USER;
-
+    		global $CFG, $USER, $NIVELES_EDUCATIVOS, $CUERPOS_DOCENTES, $PAISES, $PROVINCIAS;
         $mform =& $this->_form;
-        $course = $this->_customdata['course'];
-        $edition = $this->_customdata['edition'];
+        $course = $this->_customdata->course;
+        $edition = $this->_customdata->edition;
+				$strrequired=get_string('required');
+        ###Informacion de usuario a rellenar/Validar
+        $mform->addElement('header', 'usuario', get_string('user'));
 
-        $mform->addElement('header', 'general', get_string('edicioncursos', 'mgm'));
+        $tiposid = array(
+          'N' => 'N NIF',
+          'P' => 'P PASAPORTE',
+          'T'  => 'T TARJETA DE RESIDENCIA'
+        );
+        $mform->addElement('select', 'tipoid', get_string('tipoid','mgm'), $tiposid);
+        $mform->addRule('tipoid', $strrequired, 'required', null);
+
+        $mform->addElement('text', 'dni', get_string('dni', 'mgm'), array('size' => '9'));
+        $mform->addRule('dni', $strrequired, 'required', null);
+
+        $mform->addElement('text', 'firstname', get_string('firstname'), 'maxlength="100" size="30"');
+        $mform->addRule('firstname', $strrequired, 'required', null, 'client');
+    		$mform->setType('firstname', PARAM_NOTAGS);
+
+    		$mform->addElement('static', 'apellidoswarn', 'Importante!','Introduzaca sus 2 apellidos');
+        $mform->addElement('text', 'lastname',  'Apellidos',  'maxlength="100" size="30"');
+        $mform->addRule('lastname', $strrequired, 'required', null, 'client');
+    		$mform->setType('lastname', PARAM_NOTAGS);
+
+				$mform->addElement('text', 'email', get_string('email'), 'maxlength="100" size="30"');
+        $mform->addRule('email', $strrequired, 'required', null, 'client');
+
+        $mform->addElement('text', 'phone1', get_string('phone'), 'maxlength="20" size="25"');
+        $mform->addRule('phone1', $strrequired, 'required', null, 'client');
+    		$mform->setType('phone1', PARAM_CLEAN);
+
+		    $mform->addElement('text', 'address', get_string('address'), 'maxlength="70" size="25"');
+		    $mform->addRule('address', $strrequired, 'required', null, 'client');
+    		$mform->setType('address', PARAM_MULTILANG);
+
+        $mform->addElement('select', 'codcuerpodocente', get_string('codcuerpodocente','mgm'), $CUERPOS_DOCENTES);
+        $mform->addRule('codcuerpodocente', $strrequired, 'required', null);
+
+        $mform->addElement('select', 'codniveleducativo', get_string('codniveleducativo','mgm'), $NIVELES_EDUCATIVOS);
+        $mform->addRule('codniveleducativo', $strrequired, 'required', null);
+
+        $sexos = array(
+          'H' => 'H Hombre',
+          'M' => 'M Mujer'
+        );
+        $mform->addElement('select', 'sexo', get_string('sexo','mgm'), $sexos);
+        $mform->addRule('sexo', $strrequired, 'required', null);
+
+        $achoices = $schoices = array();
+        $aespecs = & $this->_customdata->aespecs;
+
+        if (is_array($aespecs)) {
+            $achoices += $aespecs;
+        }
+
+        if (is_array($sespecs)) {
+            $schoices += $sespecs;
+        }
+
+				$mform->addElement('static', 'especialidadeswarn', 'Nota:','Puede usar la tecla CTRL para seleccionar varias especialidades.');
+        $especs[0] = & $mform->addElement('select', 'especialidades', get_string('especialidades', 'mgm'), $achoices);
+        $especs[0]->setMultiple(true);
+
+
+        ###Informacion de Centro a validar /rellenar
+        $mform->addElement('header', 'centro', get_string('centro', 'mgm'));
+
+        $mform->addElement('text', 'cc', get_string('cc', 'mgm'), array('size'=>'30'));
+        $mform->setHelpButton('cc', array('cc', get_string('cc', 'mgm'), 'mgm'));
+        $mform->addRule('cc', $strrequired, 'required', null);
+
+        $mform->addElement('text', 'codpostal', get_string('codpostal','mgm'), array('size' => '5'));
+        $mform->addRule('codpostal', $strrequired, 'required', null);
+
+        $mform->addElement('select', 'codprovincia', get_string('codprovincia','mgm'), $PROVINCIAS);
+        $mform->addRule('codprovincia', $strrequired, 'required', null);
+
+        $mform->addElement('select', 'codpais', get_string('codpais','mgm'),$PAISES);
+        $mform->addRule('codpais', $strrequired, 'required', null);
+        $mform->addElement('static', 'notafin', 'Nota:','Si su Código de centro no figura en nuestra base de datos puede ponerse en contacto con Formación del Profesorado en Red (91 377 83 00) o bien enviar un correo-e a formacion@ite.educacion.es');
+
+
+        $renderer = & $mform->defaultRenderer();
+        $tpl = '<label class="qflabel" style="vertical-align:top;">{label}</label> {element}';
+        $renderer->setGroupElementTemplate($tpl, 'coursesgrp');
+
+
+        ####Informacion de matriculacion
+        $mform->addElement('header', 'matriculacion', get_string('edicioncursos', 'mgm'));
 
         $mform->addElement('hidden', 'id', $course->id);
         $mform->setType('id', PARAM_INT);
@@ -48,17 +134,50 @@ class enrol_mgm_form extends moodleform {
         $mform->addElement('hidden', 'edition', $edition->id);
         $mform->setType('edition', PARAM_INT);
 
-        $mform->addElement('hidden', 'options', count($this->_customdata['choices']));
+        $mform->addElement('hidden', 'options', count($this->_customdata->choices));
         $mform->setType('options', PARAM_INT);
 
-        foreach ($this->_customdata['choices'] as $k=>$v) {
+        foreach ($this->_customdata->choices as $k=>$v) {
             $tmpnum = $k+1;
             $mform->addElement('select', 'option['.$k.']', get_string('opcion', 'mgm').' '.$tmpnum, $v);
         }
 
         $this->add_action_buttons(false, get_string('savechanges'));
+
+
+
+    }
+
+		function validation($data, $files) {
+        global $CFG, $USER;
+        require_once($CFG->dirroot."/mod/mgm/locallib.php");
+        $errors = parent::validation($data, $files);
+        $data = (object)$data;
+        //$user    = get_record('user', 'id', $usernew->id);
+        // validate cc
+        $ret = MGM_DATA_NO_ERROR;
+        $newdata = $data;
+    		$newdata -> cc = mgm_check_user_cc($data -> cc, $ret);
+    		if ($ret==MGM_DATA_CC_ERROR){
+    		  $errors['cc']=get_string('cc_no_error', 'mgm');
+    		}
+    		//validate dni
+    		if($data -> tipoid == 'N') {
+        	$newdata -> dni = mgm_check_user_dni($USER->id, $data -> dni, $ret);
+        	if ($ret==MGM_DATA_DNI_ERROR){
+    		 		 $errors['dni']=get_string('dnimulti', 'mgm');
+        	}
+    		 	else if ($ret == MGM_DATA_DNI_INVALID){
+    		 			$errors['dni']=get_string('dninotvalid', 'mgm');
+    		 	}
+    		}
+        return $errors;
+    }
+    function definition_after_data() {
     }
 }
+
+
 
 class enrol_mgm_ro_form extends moodleform {
 
@@ -85,3 +204,10 @@ class enrol_mgm_ro_form extends moodleform {
         }
     }
 }
+
+
+
+
+
+
+

@@ -24,9 +24,9 @@
  * @copyright  2010 Oscar Campos <oscar.campos@open-phoenix.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once($CFG->dirroot."/enrol/enrol.class.php");
-require_once($CFG->dirroot."/mod/mgm/locallib.php");
+//require_once("../enrol/enrol.class.php");
+
 
 /**
  *
@@ -70,12 +70,13 @@ class enrolment_plugin_mgm {
      * @return void
      */
     public function print_entry($course) {
-        global $CFG, $USER, $form;
+        global $CFG, $USER, $form, $SESSION, $_POST;
+        require_once($CFG->dirroot."/mod/mgm/locallib.php");
 
         if (!$edition = mgm_get_course_edition($course->id)) {
             error(get_string('noeditioncourse', 'mgm'));
         }
-        
+
         if (!$edition->active) {
             error(get_string('noactiveedition', 'mgm'));
         }
@@ -92,6 +93,7 @@ class enrolment_plugin_mgm {
 
         $ret = null;
         $euser = mgm_get_user_extend($USER->id);
+
 
         if ($ret == MGM_DATA_CC_ERROR) {
             error(get_string('cc_no_error', 'mgm'), '/mod/mgm/user.php');
@@ -136,10 +138,28 @@ class enrolment_plugin_mgm {
                 }
             }
         }
+				$allespecs = mgm_get_all_especialidades();
+
+				if (!empty($allespecs)) {
+    			$aespecs = $allespecs;
+				}
+				  $user=get_record('user', 'id', $USER->id);
+					$data2 = mgm_get_user_extend($USER->id);
+					$data2 ->firstname=$user->firstname;
+					$data2 ->lastname=$user->lastname;
+					$data2 ->email=$user->email;
+					$data2 ->phone1=$user->phone1;
+					$data2 ->address=$user->address;
+					$data2->aespecs = $aespecs;
+					$data2->choices=$choices;
+					$data2->course=$course;
+					$data2->edition=$edition;
+					$data2->id=$course->id;
 
         // Print form
         require_once($CFG->dirroot.'/enrol/mgm/enrol_form.php');
-        $eform = new enrol_mgm_form('enrol.php', compact('course', 'edition', 'choices'));
+        $eform = new enrol_mgm_form('enrol.php', $data2);
+        $eform->set_data($data2);
         if ($options) {
             $data = new stdClass();
             foreach ($options as $k=>$v) {
@@ -148,28 +168,58 @@ class enrolment_plugin_mgm {
             }
             $eform->set_data($data);
         }
-        if ($eform->get_data()) {
-            $courses = array();
-            foreach ($form->option as $k=>$option) {
-                if (in_array($option, $courses) && $option > 0) {
-                    error(get_string('opcionesduplicadas', 'mgm'), '?id='.$course->id);
 
-                    print_simple_box_end();
-                    print_footer();
-                    die();
-                }
-
+        $courses = array();
+        foreach ($form->option as $k=>$option) {
+          if (in_array($option, $courses) && $option > 0) {
+             error(get_string('opcionesduplicadas', 'mgm'), '?id='.$course->id);
+             print_simple_box_end();
+             print_footer();
+              die();
+          }
                 $courses[$k] = $option;
-            }
+        }
 
-            mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses, $ret);
-            notice_yesno(get_string('preinscrito', 'mgm'), '?id='.$course->id,
-                         $CFG->wwwroot.'/mod/mgm/user.php');
+        if ($data=$eform->get_data() ) {
+				//Si data devuelve algun valor (not null) entonces los datos del formulario de entrada son correctos.
+				   //guardar datos de usuario
+				   $user=new stdClass();
+				   $user->id=$USER->id;
+				   $user->firstname=$data->firstname;
+				   $user->lastname=$data->lastname;
+				   $user->email=$data->email;
+				   $user->phone1=$data->phone1;
+				   $user->address=$data->address;
+				   update_record('user', $user);
+
+				   //guardar datos de usuario  y centro mgm
+					 $mgmuser=new stdClass();
+					 $mgmuser->tipoid=$data->tipoid;
+					 $mgmuser->dni=$data->dni;
+					 $mgmuser->codcuerpodocente=$data->codcuerpodocente;
+					 $mgmuser->codniveleducativo=$data->codniveleducativo;
+					 $mgmuser->sexo=$data->sexo;
+					 //especialidades //
+					 if (isset($data->especialidades)){
+					 	$mgmuser->especialidades=implode("\n", $data -> especialidades);
+					 }
+					 $mgmuser->cc=$data->cc;
+					 $mgmuser->codpostal=$data->codpostal;
+					 $mgmuser->codprovincia=$data->codprovincia;
+					 $mgmuser->codpais=$data->codpais;
+
+					 mgm_set_userdata2($USER->id, $mgmuser, true);
+
+           mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses, $ret);
+           notice_yesno(get_string('preinscrito', 'mgm'), '?id='.$course->id,
+                         $CFG->wwwroot.'/index.php');
             die();
         }
 
         $eform->display();
-
+        if ($eform->is_validated()){
+					print "Guardar datos formulario correcto";
+				}
         if ($options) {
             echo "<br />";
             echo get_string('edicionwarning', 'mgm');
@@ -190,6 +240,7 @@ class enrolment_plugin_mgm {
      * @return void
      */
     public function check_entry($form, $course) {
+    	  print 'Dentro de Check entry';
         // some logic
         // some role_assign();
     }

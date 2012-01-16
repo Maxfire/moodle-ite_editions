@@ -485,6 +485,19 @@ function xmldb_mgm_upgrade($oldversion=0) {
    			}
 
  }
+ if ($result && $oldversion < 2012011200) {    /// Define field tipodocumento to be added to edicion_cert_history
+        $table = new XMLDBTable('edicion_cert_history');
+
+        $field = new XMLDBField('tipodocumento');
+        $field->setAttributes(XMLDB_TYPE_CHAR, '1', null, XMLDB_NOTNULL, null, XMLDB_ENUM, array('N', 'P', 'T'), 'N', 'confirm');
+        $result = $result && add_field($table, $field);
+
+        $field = new XMLDBField('numdocumento');
+        $field->setAttributes(XMLDB_TYPE_CHAR, '40', null, XMLDB_NOTNULL, null, null, null, null, 'tipodocumento');
+        $result = $result && add_field($table, $field);
+
+ }
+
 /// And that's all. Please, examine and understand the 3 example blocks above. Also
 /// it's interesting to look how other modules are using this script. Remember that
 /// the basic idea is to have "blocks" of code (each one being executed only once,
