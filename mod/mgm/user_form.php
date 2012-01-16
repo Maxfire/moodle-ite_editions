@@ -45,7 +45,7 @@ class mod_mgm_user_form extends moodleform {
         $strsubmit = get_string('savechanges');
 
         $mform->addElement('header', 'general', get_string('general'));
-        
+
         $tiposid = array(
           'N' => 'N NIF',
           'P' => 'P PASAPORTE',
@@ -53,20 +53,20 @@ class mod_mgm_user_form extends moodleform {
         );
         $mform->addElement('select', 'tipoid', get_string('tipoid','mgm'), $tiposid);
         $mform->addRule('tipoid', get_string('required'), 'required', null);
-        
+
         $mform->addElement('text', 'dni', get_string('dni', 'mgm'), array('size' => '9'));
         $mform->addRule('dni', get_string('required'), 'required', null);
-        
+
         $mform->addElement('text', 'cc', get_string('cc', 'mgm'), array('size'=>'30'));
         $mform->setHelpButton('cc', array('cc', get_string('cc', 'mgm'), 'mgm'));
         $mform->addRule('cc', get_string('required'), 'required', null);
-        
+
         $mform->addElement('select', 'codniveleducativo', get_string('codniveleducativo','mgm'), $NIVELES_EDUCATIVOS);
         $mform->addRule('codniveleducativo', get_string('required'), 'required', null);
-        
+
         $mform->addElement('select', 'codcuerpodocente', get_string('codcuerpodocente','mgm'), $CUERPOS_DOCENTES);
         $mform->addRule('codcuerpodocente', get_string('required'), 'required', null);
-        
+
         $mform->addElement('text', 'codpostal', get_string('codpostal','mgm'), array('size' => '5'));
         $mform->addRule('codpostal', get_string('required'), 'required', null);
 
@@ -75,7 +75,7 @@ class mod_mgm_user_form extends moodleform {
 
         $mform->addElement('select', 'codpais', get_string('codpais','mgm'),$PAISES);
         $mform->addRule('codpais', get_string('required'), 'required', null);
-        
+
         $sexos = array(
           'H' => 'H Hombre',
           'M' => 'M Mujer'
@@ -123,4 +123,38 @@ class mod_mgm_user_form extends moodleform {
 
         $this->add_action_buttons(true, $strsubmit);
     }
+
+		function validation($data, $files) {
+        global $CFG, $USER;
+        require_once($CFG->dirroot."/mod/mgm/locallib.php");
+        $errors = parent::validation($data, $files);
+        $data = (object)$data;
+        //$user    = get_record('user', 'id', $usernew->id);
+        // validate cc
+        $ret = MGM_DATA_NO_ERROR;
+        $newdata = $data;
+    		$newdata -> cc = mgm_check_user_cc($data -> cc, $ret);
+    		if ($ret==MGM_DATA_CC_ERROR){
+    		  $errors['cc']=get_string('cc_no_error', 'mgm');
+    		}
+    		//validate dni
+    		if($data -> tipoid == 'N') {
+        	$newdata -> dni = mgm_check_user_dni($USER->id, $data -> dni, $ret);
+        	if ($ret==MGM_DATA_DNI_ERROR){
+    		 		 $errors['dni']=get_string('dnimulti', 'mgm');
+        	}
+    		 	else if ($ret == MGM_DATA_DNI_INVALID){
+    		 			$errors['dni']=get_string('dninotvalid', 'mgm');
+    		 	}
+    		}
+    		//Can not change DNI if it Exist!
+    		if ($userdb = mgm_get_user_extend($USER->id)){
+    			if (isset($userdb->dni) && $userdb->dni != '' && $userdb->dni != $data->dni){
+    				$errors['dni']=get_string('nochangedni', 'mgm');
+    			}
+    		}
+
+        return $errors;
+    }
+
 }

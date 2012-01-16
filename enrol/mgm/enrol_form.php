@@ -171,6 +171,13 @@ class enrol_mgm_form extends moodleform {
     		 			$errors['dni']=get_string('dninotvalid', 'mgm');
     		 	}
     		}
+    		if ($userdb = mgm_get_user_extend($USER->id)){
+    			if (isset($userdb->dni) && $userdb->dni != '' && $userdb->dni != $data->dni){
+    				$errors['dni']=get_string('nochangedni', 'mgm');
+    			}
+
+    		}
+
         return $errors;
     }
     function definition_after_data() {

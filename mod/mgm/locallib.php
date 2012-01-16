@@ -2490,6 +2490,34 @@ function mgm_get_courses($course) {
     return $data;
 }
 
+function mgm_check_cert_history($userid, $courses){
+	global $CFG;
+	$ret=array(True, '');
+	$rcourses = array();
+  foreach($courses as $course) {
+  	if($course) {
+    	$rcourses[] = $course;
+    }
+  }
+  if(!count($rcourses)) {
+        return  $ret;
+  }
+  $strcourses = implode(',', $rcourses);
+	if ($euser = mgm_get_user_extend($userid)){
+		  $consulta='SELECT id, idnumber, fullname FROM  '. $CFG -> prefix .'course where  id in ('.$strcourses.')';
+		  $course_objs=get_records_sql($consulta);
+			foreach($course_objs as $course){
+				if (isset($course->idnumber) && isset($euser->dni)){
+				  if (record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course->idnumber, 'confirm', 1)){
+				  	$ret[1]=$ret[1]. get_string('coursecertfied', 'mgm', $course->fullname). '<br/>';
+				  	$ret[0]=false;
+				  }
+				}
+			}
+	}
+	return $ret;
+}
+
 /**
  * Returns true if the user has the required course dependencies
  *

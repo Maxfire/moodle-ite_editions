@@ -230,3 +230,5 @@ $string['selectdestinationuser'] = 'Usuario Destino';
 $string['joinusercheck'] = '¿Realizar la fusión de usuarios?';
 $string['importdata'] = 'Importar Datos';
 $string['centro'] = 'Centro';
+$string['coursecertfied']='<p>Curso \"$a\" ya certificado!</p>';
+$string['nochangedni']="No puede modificar su DNI una vez establecido!";

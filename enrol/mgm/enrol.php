@@ -91,14 +91,6 @@ class enrolment_plugin_mgm {
             error(get_string('nodependencias', 'mgm'));
         }
 
-        $ret = null;
-        $euser = mgm_get_user_extend($USER->id);
-
-
-        if ($ret == MGM_DATA_CC_ERROR) {
-            error(get_string('cc_no_error', 'mgm'), '/mod/mgm/user.php');
-        }
-
         $strloginto = get_string('loginto', '', $edition->name);
         $strcourses = get_string('courses');
 
@@ -209,11 +201,15 @@ class enrolment_plugin_mgm {
 					 $mgmuser->codpais=$data->codpais;
 
 					 mgm_set_userdata2($USER->id, $mgmuser, true);
-
-           mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses, $ret);
-           notice_yesno(get_string('preinscrito', 'mgm'), '?id='.$course->id,
+					 $ch=mgm_check_cert_history($USER->id, $courses);
+					 if ($ch[0]){//Ningun curso ya certificado
+           		mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses, $ret);
+           		notice_yesno(get_string('preinscrito', 'mgm'), '?id='.$course->id,
                          $CFG->wwwroot.'/index.php');
             die();
+					 }else{//alguno de los cursos esta certificado para el dni del usuario
+					   error($ch[1], '?id='.$course->id);
+					 }
         }
 
         $eform->display();
