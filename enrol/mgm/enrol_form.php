@@ -117,7 +117,7 @@ class enrol_mgm_form extends moodleform {
 
         $mform->addElement('select', 'codpais', get_string('codpais','mgm'),$PAISES);
         $mform->addRule('codpais', $strrequired, 'required', null);
-        $mform->addElement('static', 'notafin', get_string('note', 'mgm'). ':',get_string('ccnote', 'mgm'));
+        $mform->addElement('static', 'notafin', get_string('note', 'mgm'). ':', get_string('ccnote', 'mgm'));
 
 
         $renderer = & $mform->defaultRenderer();

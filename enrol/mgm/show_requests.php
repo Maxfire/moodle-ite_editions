@@ -49,7 +49,7 @@ $navigation = build_navigation($navlinks);
 print_header('', ucfirst($USER->username), $navigation);
 echo '<br />';
 
-foreach(get_records('edicion') as $edition) {
+foreach(get_records('edicion', '', '','inicio desc') as $edition) {
     $choices = array();
     if (!$options = mgm_get_edition_user_options($edition->id, $USER->id)) {
         continue;
