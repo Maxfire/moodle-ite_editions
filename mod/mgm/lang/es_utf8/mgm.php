@@ -230,5 +230,14 @@ $string['selectdestinationuser'] = 'Usuario Destino';
 $string['joinusercheck'] = '¿Realizar la fusión de usuarios?';
 $string['importdata'] = 'Importar Datos';
 $string['centro'] = 'Centro';
-$string['coursecertfied']='<p>Curso \"$a\" ya certificado!</p>';
+$string['coursecertfied']='<p>¡Curso \"$a\" ya certificado!</p>';
 $string['nochangedni']="No puede modificar su DNI una vez establecido!";
+$string['important']='¡Importante!';
+$string['2surname']='Introduzca sus 2 apellidos';
+$string['note']='Nota';
+$string['ccnote']='Si su Código de centro no figura en nuestra base de datos puede ponerse en contacto con Formación del Profesorado en Red (91 377 83 00) o bien enviar un correo-e a formacion@ite.educacion.es';
+$string['multiselectespec']='Puede usar la tecla CTRL para seleccionar varias especialidades';
+
+
+
+

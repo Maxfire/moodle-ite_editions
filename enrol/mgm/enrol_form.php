@@ -57,7 +57,7 @@ class enrol_mgm_form extends moodleform {
         $mform->addRule('firstname', $strrequired, 'required', null, 'client');
     		$mform->setType('firstname', PARAM_NOTAGS);
 
-    		$mform->addElement('static', 'apellidoswarn', 'Importante!','Introduzaca sus 2 apellidos');
+    		$mform->addElement('static', 'apellidoswarn', get_string('important', 'mgm'),get_string('2surname', 'mgm'));
         $mform->addElement('text', 'lastname',  'Apellidos',  'maxlength="100" size="30"');
         $mform->addRule('lastname', $strrequired, 'required', null, 'client');
     		$mform->setType('lastname', PARAM_NOTAGS);
@@ -97,7 +97,7 @@ class enrol_mgm_form extends moodleform {
             $schoices += $sespecs;
         }
 
-				$mform->addElement('static', 'especialidadeswarn', 'Nota:','Puede usar la tecla CTRL para seleccionar varias especialidades.');
+				$mform->addElement('static', 'especialidadeswarn', get_string('note', 'mgm'). ':', get_string('multiselectespec', 'mgm'));
         $especs[0] = & $mform->addElement('select', 'especialidades', get_string('especialidades', 'mgm'), $achoices);
         $especs[0]->setMultiple(true);
 
@@ -117,7 +117,7 @@ class enrol_mgm_form extends moodleform {
 
         $mform->addElement('select', 'codpais', get_string('codpais','mgm'),$PAISES);
         $mform->addRule('codpais', $strrequired, 'required', null);
-        $mform->addElement('static', 'notafin', 'Nota:','Si su Código de centro no figura en nuestra base de datos puede ponerse en contacto con Formación del Profesorado en Red (91 377 83 00) o bien enviar un correo-e a formacion@ite.educacion.es');
+        $mform->addElement('static', 'notafin', get_string('note', 'mgm'). ':',get_string('ccnote', 'mgm'));
 
 
         $renderer = & $mform->defaultRenderer();
