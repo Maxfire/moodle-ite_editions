@@ -3216,35 +3216,48 @@ function mgm_get_course_tasks($courseid) {
 }
 
 function mgm_get_course_ecuador($courseid) {
+		global $CFG;
+		$dev=null;
     $edition = mgm_get_course_edition($courseid);
     $criteria = mgm_get_edition_course_criteria($edition->id, $courseid);
     if ($criteria->ecuadortask != MGM_ECUADOR_DEFAULT) {
-        return $criteria->ecuadortask;
+        $dev=$criteria->ecuadortask;
+    }else{
+    	$sql = "SELECT * FROM ".$CFG->prefix."grade_items
+            WHERE courseid=".$courseid."
+            AND itemtype !='course' and itemname like 'ec-%' ORDER by sortorder";
+    	$dev= array_pop(get_records_sql($sql));
+			if (! $dev){
+	    	$tasks = mgm_get_course_tasks($courseid);
+	    	$x = 1;
+	    	foreach ($tasks as $task) {
+	       	 if ($x == round(count($tasks) / 2)) {
+	            return $task;
+	        	}
+	        	$x++;
+	    	}
+	    }
     }
-
-    $tasks = mgm_get_course_tasks($courseid);
-
-    $x = 1;
-    foreach ($tasks as $task) {
-        if ($x == round(count($tasks) / 2)) {
-            return $task;
-        }
-
-        $x++;
-    }
-
-    return null;
+    return $dev;
 }
 
 function mgm_get_course_first_task($courseid) {
     global $CFG;
-
+		$dev=false;
     $sql = "SELECT * FROM ".$CFG->prefix."grade_items
             WHERE courseid=".$courseid."
+            AND itemtype !='course' and itemname like 'presentac%' ORDER BY sortorder LIMIT 1";
+    if ($reg=get_records_sql($sql)){
+    	$dev=array_pop($reg);
+    }else{
+    	$sql = "SELECT * FROM ".$CFG->prefix."grade_items
+            WHERE courseid=".$courseid."
             AND itemtype !='course' ORDER BY sortorder LIMIT 1";
+			if ($reg=get_records_sql($sql))
+    		$dev=array_pop($reg);
+    }
 
-
-    return array_pop(get_records_sql($sql));
+    return $dev;
 }
 
 function mgm_get_course_tutor_payment_count($course) {
