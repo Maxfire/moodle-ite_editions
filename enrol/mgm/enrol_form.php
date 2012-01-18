@@ -160,20 +160,24 @@ class enrol_mgm_form extends moodleform {
     		$newdata -> cc = mgm_check_user_cc($data -> cc, $ret);
     		if ($ret==MGM_DATA_CC_ERROR){
     		  $errors['cc']=get_string('cc_no_error', 'mgm');
+    		  return $errors;
     		}
     		//validate dni
     		if($data -> tipoid == 'N') {
         	$newdata -> dni = mgm_check_user_dni($USER->id, $data -> dni, $ret);
         	if ($ret==MGM_DATA_DNI_ERROR){
     		 		 $errors['dni']=get_string('dnimulti', 'mgm');
+    		 		 return $errors;
         	}
     		 	else if ($ret == MGM_DATA_DNI_INVALID){
     		 			$errors['dni']=get_string('dninotvalid', 'mgm');
+    		 			return $errors;
     		 	}
     		}
     		if ($userdb = mgm_get_user_extend($USER->id)){
     			if (isset($userdb->dni) && $userdb->dni != '' && $userdb->dni != $data->dni){
     				$errors['dni']=get_string('nochangedni', 'mgm');
+    				return $errors;
     			}
 
     		}

@@ -2170,7 +2170,6 @@ function mgm_set_userdata2($userid, $data, $create=true) {
 	        update_record('edicion_user', $newdata);
 	    }
     }
-
     return $ret;
 }
 
@@ -4133,9 +4132,14 @@ class JoinUsers{
 						//eliminar usurio origen
 						if ($user=get_record('user', 'id', $this->user_orig->id)){
 							$ret=delete_user($user);
-							//borrar edicion_user
 							//borrar user
 						}
+					  //borrar edicion_user
+						if (record_exists('edicion_user', 'userid', $this->user_orig->id)){
+							$ret=delete_records('edicion_user', 'userid', $this->user_orig->id);
+						}
+						//borrar user
+
 						return true;
 				}
 			  return false;
