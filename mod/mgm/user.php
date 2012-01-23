@@ -71,6 +71,9 @@ if (!empty($selectedespecs)) {
 if (!empty($allespecs)) {
     $aespecs = $allespecs;
 }
+if ($aedition=mgm_get_active_edition() and $aedition->state=='matriculacion'){
+	 error(get_string('nomodifydata', 'mgm'));
+}
 
 $userdata = mgm_get_user_extend($USER->id);
 $userdata->sespecs = $sespecs;

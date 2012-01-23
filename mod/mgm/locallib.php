@@ -74,6 +74,22 @@ define('MGM_PRIVATE_CENTER', 2);
 
 define('MGM_ECUADOR_DEFAULT', 0);
 
+define('MGM_STATE_NO_ERROR', 0);// SIN ERROR
+define('MGM_STATE_PA_ERROR', 1);//edicion no activa
+define('MGM_STATE_PM_ERROR', 2);//preinscripcion multiple
+define('MGM_STATE_BN_ERROR', 3);//una nueva edicion solo puede estar  en estado borrador
+define('MGM_STATE_MN_ERROR', 4);//una edición solo puede estar en estado matriculacion cuando ha terminado el plazo de inscripcion.
+define('MGM_STATE_BI_ERROR', 5);//no se puede modificar una edicion finalizada.
+define('MGM_STATE_FI_ERROR', 6);//una edición que no esta en estado gestion no puede pasar a estado finalizada.
+define('MGM_STATE_FC_ERROR', 7);//una edición tiene que estar certificada para pasar a estado finalizada.
+define('MGM_STATE_FP_ERROR', 8);//una edición tienen que estar pagada para pasar a estado finalizada.
+define('MGM_STATE_MA_ERROR', 9);//solo una edicion activa puede estar en matriculacion
+define('MGM_STATE_MM_ERROR', 10);//solo puede existir una edcion en estado matriculacion.
+define('MGM_STATE_CF_ERROR', 11);//Una edicion en curso tiene que estar entre las fechas de inicio y fin de sus cursos.
+define('MGM_STATE_GE_ERROR', 12);//Todos los cursos tienen que haber finalizado en el estado gestión.
+
+
+
 global $NIVELES_EDUCATIVOS, $CUERPOS_DOCENTES, $PAISES, $PROVINCIAS;
 
 $CODIGOS_AGRUPACION = array("0" => "0 Agrupación General", "1" => "1 Agrupación de Cursos", "2" => "2 Investigación Nacional", "3" => "3 Proyectos de Formación", "4" => "4 Comenius", "5" => "5 Lingua", "6" => "6 Arion", "7" => "7 Petra I y II", "8" => "8 Leonardo Da Vinci", "9" => "9 Música y Danza", "10" => "10 Enseñanza de Idiomas", "11" => "11 Titulaciones de Primer Ciclo", "12" => "12 Titulaciones de Segundo Ciclo", "13" => "13 Titulaciones de Tercer Ciclo", "14" => "14 Investigación Provincial", "15" => "15 Investigación Carácter Distinto", "16" => "16 Proyecto Innovación", "17" => "17 Minerva", "18" => "18 Medidas de acompañamiento", "19" => "19 Grundtvig", "20" => "20 Acciones conjuntas");
@@ -2274,6 +2290,100 @@ function mgm_deactive_edition($edition) {
     $edition -> active = 0;
     update_record('edicion', $edition);
 }
+
+/**
+ * Check if exist another edtition in preinscripcion state
+ * @param int $editionid
+ * @return bool true if not exits another
+ *
+ */
+function mgm_edition_check_uni_state($editionid, $state){
+  global $CFG;
+	$sql = "SELECT * FROM " . $CFG -> prefix . "edicion WHERE state='".$state."' AND id!=" . $editionid;
+  if($reg = get_record_sql($sql)) {
+  	return false;
+  }
+  return true;
+}
+
+function mgm_edition_get_cursos_fin($editionid){
+  global $CFG;
+	$sql = "select fechafin from ".$CFG->prefix."edicion_course where edicionid=".$editionid." and fechafin is not null order by fechafin desc";
+  if($reg = get_record_sql($sql)) {
+  	return $reg->fechafin;
+  }
+  return false;
+}
+
+function mgm_edition_get_cursos_inicio($editionid){
+  global $CFG;
+	$sql = "select fechainicio from ".$CFG->prefix."edicion_course where edicionid=".$editionid." and fechainicio is not null order by fechainicio asc";
+  if($reg = get_record_sql($sql)) {
+  	return $reg->fechainicio;
+  }
+  return false;
+}
+
+function mgm_edition_check_state($editionid, $newstate) {
+	global $CFG;
+	if ($edition=get_record('edicion','id', $editionid)){
+		$oldstate=$edition->state;
+		switch ($newstate){
+			case 'borrador':
+				if ($oldstate=='finalizada')
+					return MGM_STATE_BI_ERROR;
+				break;
+			case 'preinscripcion':
+				if (! $edition->active )
+					return MGM_STATE_PA_ERROR;
+				if (! mgm_edition_check_uni_state($editionid, 'preinscripcion'))
+					return MGM_STATE_PM_ERROR;
+				break;
+			case 'matriculacion':
+		     if (time() < $edition->fin) {
+		     	  return MGM_STATE_MN_ERROR;
+        }
+        if (! $edition->active )
+					return MGM_STATE_MA_ERROR;
+				if (! mgm_edition_check_uni_state($editionid,'matriculacion'))
+					return MGM_STATE_MM_ERROR;
+
+				break;
+			case 'en curso':
+				//Comprobar periodo (entre menor inicio de todos los cursos y mayor fin todos los cursos)
+				$fechainicio=mgm_edition_get_cursos_inicio($edition->id);
+				$fechafin=mgm_edition_get_cursos_fin($edition->id);
+				$actual=time();
+				if ( (! $fechainicio) || $actual < $fechainicio || (! $fechafin) || $actual>$fechafin)
+					return MGM_STATE_CF_ERROR;
+				break;
+			case 'gestion':
+				//comprobar que han finalizado todos los cursos
+				$fecha=mgm_edition_get_cursos_fin($edition->id);
+				if ($fecha && time() < $fecha)
+					return MGM_STATE_GE_ERROR;
+				break;
+			case 'finalizada':
+				if ($oldstate != 'gestion'){
+					return MGM_STATE_FI_ERROR;
+				}
+				if (!$edition->certified ){
+					return MGM_STATE_FC_ERROR;
+				}
+				if (!$edition->paid ){
+					return MGM_STATE_FP_ERROR;
+				}
+				break;
+			default:
+				print 'estado incorrecto!';
+				break;
+		}
+	}else{
+		if ($newstate!='borrador')
+  		return MGM_STATE_BN_ERROR;
+	}
+}
+
 
 /**
  * Get preinscription uer timemodified data

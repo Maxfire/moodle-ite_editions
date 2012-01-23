@@ -63,10 +63,6 @@ if (!empty($allcourses)) {
     }
 }
 
-if (isset($edition) && mgm_edition_is_active($edition)) {
-    redirect('index.php', get_string('edicionactiva', 'mgm'), 5);
-}
-
 $edition->scourses = $scourses;
 $edition->acourses = $acourses;
 
@@ -75,9 +71,11 @@ $mform->set_data($edition);
 
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot.'/mod/mgm/index.php?editionedit=on');
+
 } else if ($data = $mform->get_data()) {
     $newedition = new stdClass();
     $newedition->name = $data->name;
+    $newedition->state = $data->state;
     $newedition->description = $data->description;
     $newedition->plazas = $data->plazas;
     $newedition->inicio = $data->inicio;
@@ -104,8 +102,11 @@ if ($mform->is_cancelled()) {
                 mgm_remove_course($edition, $courseid);
             }
         }
-
-        mgm_update_edition($newedition);
+        if ($reg=get_record('edicion', 'id', $data->id) && $reg>state=='finalizada'){
+        	error(get_string('state_ed_error5', 'mgm'));//no se puede modificar una edicion finalizada
+        }else{
+        	mgm_update_edition($newedition);
+        }
     } else {
         // Create a new Edition
         mgm_create_edition($newedition);

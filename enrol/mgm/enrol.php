@@ -80,6 +80,12 @@ class enrolment_plugin_mgm {
         if (!$edition->active) {
             error(get_string('noactiveedition', 'mgm'));
         }
+        if ($edition->state != 'preinscripcion'){
+        	 error(get_string('nopreinscriptionstate', 'mgm'));
+        }
+    		if ($edition->state == 'matriculacion') {
+            error(get_string('nomodifydata', 'mgm'));
+        }
 
         $sql = "SELECT * FROM ".$CFG->prefix."edicion_inscripcion
             	WHERE edicionid='".$edition->id."' AND value='".$course->id."'";

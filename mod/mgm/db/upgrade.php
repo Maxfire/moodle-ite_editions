@@ -498,6 +498,17 @@ function xmldb_mgm_upgrade($oldversion=0) {
 
  }
 
+    if ($result && $oldversion < 2012011800) {
+        $table = new XMLDBTable('edicion');
+        $field = new XMLDBField('state');
+        $field->setAttributes(XMLDB_TYPE_CHAR, '16', null, XMLDB_NOTNULL, null, XMLDB_ENUM, array('borrador', 'preinscripcion', 'matriculacion', 'en curso', 'gestion', 'finalizada'), 'borrador', 'fechaemision');
+        $result = $result && add_field($table, $field);
+
+        $field = new XMLDBField('paid');
+        $field->setAttributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '0', 'state');
+    		$result = $result && add_field($table, $field);
+    }
+
 /// And that's all. Please, examine and understand the 3 example blocks above. Also
 /// it's interesting to look how other modules are using this script. Remember that
 /// the basic idea is to have "blocks" of code (each one being executed only once,

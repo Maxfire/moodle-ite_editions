@@ -107,9 +107,16 @@ print_header($site->shortname.": ".($edition->active) ? $stractivingedition : $s
 print_heading((!$edition->active) ? $stractivingedition : $strdeactivingedition);
 
 if ($edition->active) {
-    mgm_deactive_edition($edition);
-    print_heading( get_string("deactivededicion", "mgm", format_string($edition->name)) );
+	  if ($edition->state=='preinscripcion' || $editon->state='matriculacion'){
+	  	error('No se puede desactivar una edición que está en estado de Preinscripción o Matriculación', $CFG->wwwroot.'/mod/mgm/index.php?editionedit=on');
+	  }else{
+    	mgm_deactive_edition($edition);
+    	print_heading( get_string("deactivededicion", "mgm", format_string($edition->name)) );
+	  }
 } else {
+		if ($aedition=mgm_get_active_edition() and ($aedition->state=='matriculacion' || $aedition->state=='preinscripcion')){
+		 	error('La edicion activa está en estado de Preinscripción o Matriculación', $CFG->wwwroot.'/mod/mgm/index.php?editionedit=on');
+		}
     mgm_active_edition($edition);
     print_heading( get_string("activededicion", "mgm", format_string($edition->name)) );
 }

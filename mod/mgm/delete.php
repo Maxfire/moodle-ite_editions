@@ -47,6 +47,10 @@ $streditions = get_string('ediciones', 'mgm');
 
 if (!$edition = get_record('edicion', 'id', $id)) {
     error('Edition ID was incorrect (can\'t find it)');
+}else{
+	if ($edition->active==1){
+		error('No se puede eliminar una edición activa');
+	}
 }
 
 $edition->shortname = $edition->name;

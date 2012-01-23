@@ -184,6 +184,7 @@ class enrol_mgm_form extends moodleform {
 
         return $errors;
     }
+
     function definition_after_data() {
     }
 }

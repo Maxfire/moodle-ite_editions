@@ -56,6 +56,7 @@ $strcourses        = get_string('courses');
 $stredit           = get_string('edit');
 $stryes            = get_string('yes');
 $strno             = get_string('no');
+$strstate          = get_string('state', 'mgm');
 
 
 // Editions
@@ -92,9 +93,9 @@ if (isset($editions) && is_array($editions)) {
         if (!mgm_can_do_view()) {
             continue;
         }
-
         $editiontable->data[] = array(
             mgm_get_edition_link($edition),
+            get_string($edition->state, 'mgm'),
             date('d/m/Y', $edition->inicio),
             date('d/m/Y', $edition->fin),
             mgm_count_courses($edition),
@@ -111,8 +112,8 @@ $navlinks[] = array('name' => $strediciones, 'link' => 'index.php', 'type' => 'm
 $navlinks[] = array('name' => $stredicionesmgm, 'link' => '', 'type' => 'activity');
 
 // Table header
-$editiontable->head  = array($stredicion, $strfechainicio, $strfechafin, $strcourses, $strplazas, $stredit);
-$editiontable->align = array('left', 'left', 'left', 'center', 'center', 'center');
+$editiontable->head  = array($stredicion, $strstate, $strfechainicio, $strfechafin, $strcourses, $strplazas, $stredit);
+$editiontable->align = array('left', 'left', 'left', 'left', 'center', 'center', 'center');
 
 print_edition_edit_header();
 // Output the page

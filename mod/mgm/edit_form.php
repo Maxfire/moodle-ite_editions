@@ -52,6 +52,19 @@ class mod_mgm_edit_form extends moodleform {
         $mform->addElement('header', 'general', get_string('general'));
         $mform->addElement('text', 'name', get_string('editionname', 'mgm'), array('size'=>'30'));
         $mform->addRule('name', get_string('required'), 'required', null);
+
+         $statelist=array(
+        'borrador'=>get_string('borrador', 'mgm'),
+        'preinscripcion'=>get_string('preinscripcion', 'mgm'),
+        'matriculacion'=>get_string('matriculacion', 'mgm'),
+        'en curso'=>get_string('en curso', 'mgm'),
+        'gestion'=>get_string('gestion', 'mgm'),
+        'finalizada'=>get_string('finalizada', 'mgm'));
+        $mform->addElement('select', 'state', get_string('state', 'mgm'), $statelist);
+        $mform->addRule('state', get_string('required'), 'required', null);
+        $mform->setDefault('state', 'borrador');
+
+
         $mform->addElement('htmleditor', 'description', get_string('description'));
         $mform->setType('description', PARAM_RAW);
         if (!empty($CFG->allowcategory)) {
@@ -61,6 +74,8 @@ class mod_mgm_edit_form extends moodleform {
             $mform->addElement('select', 'theme', get_string('forcetheme'), $themes);
         }
         $mform->setHelpButton('description', array('writing', 'richtext'), false, 'editorhelpbutton');
+
+
 
         $iniciogrp = array();
         $iniciogrp[] = &MoodleQuickForm::createElement('date_time_selector', 'inicio');
@@ -120,4 +135,28 @@ class mod_mgm_edit_form extends moodleform {
 
         $this->add_action_buttons(true, $strsubmit);
     }
+
+		function validation($data, $files) {
+        global $CFG, $USER;
+        require_once($CFG->dirroot."/mod/mgm/locallib.php");
+        $errors = parent::validation($data, $files);
+        $data = (object)$data;
+
+        // validate cc
+        if (isset($data->id)){
+        	$edition = get_record('edicion', 'id', $data->id);
+	        $code= mgm_edition_check_state($data->id, $data->state);
+	        if ($edition->state=='finalizada')
+	          print 'No se puede modificar una edicion finalizada';
+	        $a=MGM_STATE_NO_ERROR;
+	        if ($code != MGM_STATE_NO_ERROR){
+	        	$errors['state']=get_string('state_ed_error'. $code, 'mgm');
+	        }
+        }else{
+          if ($data->state!='borrador')
+          	$errors['state']=get_string('state_ed_error5', 'mgm');
+        }
+        return $errors;
+    }
+
 }
