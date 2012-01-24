@@ -76,6 +76,44 @@ if ($action == 'loadchistory') {
 			$dev=mgm_set_cert_history($cert_reg);
 			print $dev[1];
     }
+    printf('<br/>Todos los registros procesados<br>');
+    fclose($handle);
+  }else{
+  	print 'No se puede abrir el fichero:' . $file;
+  }
+
+} else if ($action=='loadcolegios') {
+	$dir = $CFG->dataroot."/1/mgm_data/";
+	$filename = optional_param('filename');
+	if (isset($filename)){
+		$file=$dir.$filename;
+	}else{
+		$file=$dir."import.csv";
+	}
+  $handle = fopen($file, "r");
+  if ($handle){
+  	$fields=fgetcsv($handle, 0, ",");
+		while (($reg = fgetcsv($handle, 0, ",")) !== FALSE) {
+			if (count($reg)>=13){
+    		$nreg=new stdClass();
+    		$nreg->pais=str_replace("'","\'",$reg[1]);;
+    		$nreg->localidad=str_replace("'","\'",$reg[2]);;
+    		$nreg->dgenerica=str_replace("'","\'",$reg[3]);
+    		$nreg->despecifica=str_replace("'","\'",$reg[4]);;
+    		$nreg->codigo=$reg[5];
+    		$nreg->naturaleza=str_replace("'","\'",$reg[6]);;
+    		$nreg->direccion=str_replace("'","\'",$reg[7]);;
+    		$nreg->cp=$reg[9];
+    		$nreg->provincia=str_replace("'","\'",$reg[10]);;
+    		$nreg->tipo=$reg[12];
+				$dev=mgm_set_centro($nreg);
+				print $dev[1];
+			}else{
+				print 'Registro incorrecto: ';
+				print_r($reg);
+			}
+    }
+    printf('<br/>Todos los registros procesados<br>');
     fclose($handle);
   }else{
   	print 'No se puede abrir el fichero:' . $file;

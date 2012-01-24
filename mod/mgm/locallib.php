@@ -1424,12 +1424,12 @@ function mgm_exists_criteria_for_course($edition, $course) {
  * @param object $line
  * @return array
  */
-function mgm_get_user_preinscription_data($line, $edition, $data, $criteria) {
+function mgm_get_user_preinscription_data($line, $edition, $data, $criteria, $courseenrolid=false) {
     global $CFG;
 
     $site = get_site();
     $user = $data -> user;
-    $especs = ($data -> user -> especialidades) ? $data -> user -> especialidades : array();
+    $especs = explode("\n",ltrim($data -> user -> especialidades,"\n"));
     $userespecs = '<select name="especialidades" readonly="">';
     foreach($especs as $espec) {
         $userespecs .= '<option name="' . $espec . '">' . mgm_translate_especialidad($espec) . '</option>';
@@ -1451,24 +1451,32 @@ function mgm_get_user_preinscription_data($line, $edition, $data, $criteria) {
     }
     $courses .= '</select>';
     $check = '<input type="checkbox" name="users[' . $line -> userid . ']" />';
+    $colors='';
     $cc_type = mgm_get_cc_type($data->user->cc, true);
+    //Comprobar centro privado (rojo)
     if($cc_type == MGM_PRIVATE_CENTER || $cc_type == -1) {
-        $name = '<span style="color: red;">(*) </span>' . '<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
+        $name = '<span style="color: red;">(*) </span>' .
+        $check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
     } else {
-        $name = '<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
+        $colorname = '<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
     }
-
+    //Comprobar si el usuario ha certificado el curso (Amarillo)
+    if ($courseenrolid){
+			$ch=mgm_check_cert_history($line->userid, array($courseenrolid));
+			if (! $ch[0]){//El usuario ya tiene el curso certificado
+				      $colors = $colors.'<span style="color: yellow;">(*)</span> ';
+				      $check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
+			}
+    }
+    //Comprobar comunidad autonoma (Naranja)
     if($criteria -> comunidad) {
-        if (strlen($provincia) < 8) {
-            $provincia = '0'.$provincia;
-        }
         $provincia = str_split($data->user->cc, 2);
-
         if(mgm_is_ca($provincia, $criteria->comunidad)) {
-            $name = '<span style="color: red;">(*)</span> <span style="color: orange;">(*)</span> ' . '<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
+            $colors = $colors. '<span style="color: orange;">(*)</span> ';
+            $check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
         }
     }
-
+		$name=$colors.'<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
     $tmpdata = array($check, $name, $user->lastname, date("d/m/Y H:i\"s", $line -> timemodified), ($data -> user -> cc) ? $data -> user -> cc : '', $userespecs, $courses);
 
     return $tmpdata;
@@ -1544,10 +1552,8 @@ function mgm_user_preinscription_tmpdata($userid) {
     if(!$user = get_record_sql($sql)) {
         return null;
     }
-
     $tmpuser = new stdClass();
-    $tmpuser -> user = $user;
-
+    $tmpuser -> user = mgm_prepare_user_extend($user);
     return $tmpuser;
 }
 
@@ -1563,7 +1569,7 @@ function mgm_parse_preinscription_data($edition, $course, $data) {
             $lineuser -> realcourses[0] = '';
         }
 
-        $lineuser -> tmpdata = mgm_get_user_preinscription_data($sqline, $edition, $lineuser, $criteria);
+        $lineuser -> tmpdata = mgm_get_user_preinscription_data($sqline, $edition, $lineuser, $criteria, $course->id);
         $lineuser -> sqline = $sqline;
         $lineuser -> data = array('opcion1' => array('especialidades' => array('found' => false, 'data' => array()), 'centros' => array('found' => false, 'data' => array('found' => array(), 'notfound' => array()))), 'opcion2' => array('especialidades' => array('found' => false, 'data' => array()), 'centros' => array('found' => false, 'data' => array('found' => array(), 'notfound' => array()))));
 
@@ -1953,8 +1959,11 @@ function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck 
         foreach($data as $k => $row) {
             $arr = explode('"', $row[0]);
             $userid = $arr[3];
+            if($arr[5]=="false"){
+            	$data[$k][0] = '<input type="checkbox" name="' . $userid . '" />';
+              continue;
+            }
             $check = '<input type="checkbox" name="' . $userid . '" checked="true"/>';
-
             if($criteria -> plazas > $asigned || $criteria -> plazas == 0) {
                 $data[$k][0] = $check;
                 $asigned++;
@@ -1973,6 +1982,18 @@ function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck 
     return $data;
 }
 
+function mgm_prepare_user_extend($euser){
+  if (isset($euser->especialidades)){
+    $euser->especialidades=ltrim($euser->especialidades, "\n");
+  }
+  if (isset($euser->cc) && strlen($euser->cc)<8){
+   	while( strlen($euser->cc)<8){
+   		$euser->cc='0'.$euser->cc;
+   	}
+  }
+  return $euser;
+}
+
 /**
  * Return the user's extended data
  * @param string $userid
@@ -1980,7 +2001,7 @@ function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck 
  */
 function mgm_get_user_extend($userid) {
     if($euser = get_record('edicion_user', 'userid', $userid)) {
-        return $euser;
+        return mgm_prepare_user_extend($euser);
     }
 
     $euser = new stdClass();
@@ -3506,6 +3527,16 @@ function mgm_set_cert_history($reg){
 		return array(true, 'Documento: '.$reg->numdocumento.', Curso '. $reg->courseid.' C <br/>');;
 	}
 }
+
+function mgm_set_centro($reg){
+	if (record_exists('edicion_centro', 'codigo', $reg->codigo)){
+		return array(false, 'Centro: '.$reg->codigo.' EXIST<br/>');
+	}else {
+		$dev=insert_record('edicion_centro',$reg);
+		return array(true, 'Centro: '.$reg->codigo.' ADD<br/>');
+	}
+}
+
 
 function mgm_get_string($str){
 	$dev=get_string($str);
