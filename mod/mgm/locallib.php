@@ -1455,10 +1455,8 @@ function mgm_get_user_preinscription_data($line, $edition, $data, $criteria, $co
     $cc_type = mgm_get_cc_type($data->user->cc, true);
     //Comprobar centro privado (rojo)
     if($cc_type == MGM_PRIVATE_CENTER || $cc_type == -1) {
-        $name = '<span style="color: red;">(*) </span>' .
+        $colors = '<span style="color: red;">(*) </span>';
         $check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
-    } else {
-        $colorname = '<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
     }
     //Comprobar si el usuario ha certificado el curso (Amarillo)
     if ($courseenrolid){
@@ -3529,8 +3527,10 @@ function mgm_set_cert_history($reg){
 }
 
 function mgm_set_centro($reg){
-	if (record_exists('edicion_centro', 'codigo', $reg->codigo)){
-		return array(false, 'Centro: '.$reg->codigo.' EXIST<br/>');
+	if ($oldreg=get_record('edicion_centro', 'codigo', $reg->codigo)){
+		$reg->id=$oldreg->id;
+		update_record('edicion_centro',$reg);
+		return array(false, 'Centro: '.$reg->codigo.' UPDATE<br/>');
 	}else {
 		$dev=insert_record('edicion_centro',$reg);
 		return array(true, 'Centro: '.$reg->codigo.' ADD<br/>');
