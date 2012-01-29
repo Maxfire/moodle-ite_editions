@@ -26,13 +26,15 @@
  */
 
 $ADMIN->add('root', new admin_category('ediciones', get_string('ediciones','mgm')));
+$ADMIN->add('ediciones', new admin_category('config', get_string('config', 'mgm')));
 $ADMIN->add('ediciones', new admin_category('mgmcertifications', get_string('certifications', 'mgm')));
 $ADMIN->add('ediciones', new admin_category('mgmreports', get_string('reports', 'mgm')));
+$ADMIN->add('mgmreports', new admin_category('editionanalitycs', get_string('edanalitycs', 'mgm')));
+$ADMIN->add('mgmreports', new admin_category('maintenance', get_string('maintenance', 'mgm')));
 $ADMIN->add(
 	'ediciones', new admin_externalpage('edicionesmgmt', get_string('edicionesmgmt', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/index.php?editionedit=on', 'mod/mgm:createedicion')
 );
-
 $ADMIN->add(
     'ediciones', new admin_externalpage('edicionescoursemgmt', get_string('edicionescoursemgmt', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/courses.php', array('moodle/course:update', 'mod/mgm:assigncriteria'))
@@ -78,16 +80,72 @@ $ADMIN->add(
 );
 
 $ADMIN->add(
-    'ediciones', new admin_externalpage('especdata', get_string('especdata', 'mgm'),
+    'config', new admin_externalpage('especdata', get_string('especdata', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/espec.php', 'mod/mgm:createedicion')
 );
-
-
-
 $ADMIN->add(
-    'mgmreports', new admin_externalpage('dinamicinfo', get_string('dinamicinfo', 'mgm'),
+    'config', new admin_externalpage('updatereports', get_string('updatereports', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/reports/creports.php', 'mod/mgm:createedicion')
+);
+//Informes
+$ADMIN->add(
+    'mgmreports', new admin_externalpage('dinamicinfo', get_string('Report001', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report001', 'mod/mgm:createedicion')
 );
+$ADMIN->add(
+    'editionanalitycs', new admin_externalpage('report002', get_string('Report002', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report002', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'editionanalitycs', new admin_externalpage('report003', get_string('Report003', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report003', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'editionanalitycs', new admin_externalpage('report004', get_string('Report004', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report004', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'editionanalitycs', new admin_externalpage('report005', get_string('Report005', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report005', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'editionanalitycs', new admin_externalpage('report006', get_string('Report006', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report006', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'editionanalitycs', new admin_externalpage('report007', get_string('Report007', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report007', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'editionanalitycs', new admin_externalpage('report008', get_string('Report008', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report008', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'editionanalitycs', new admin_externalpage('report009', get_string('Report009', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report009', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'editionanalitycs', new admin_externalpage('report010', get_string('Report010', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report010', 'mod/mgm:createedicion')
+);
+
+$ADMIN->add(
+    'maintenance', new admin_externalpage('report020', get_string('Report020', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report020', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'maintenance', new admin_externalpage('report021', get_string('Report021', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report021', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'mgmreports', new admin_externalpage('report030', get_string('Report030', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report030', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'mgmreports', new admin_externalpage('report031', get_string('Report031', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report031', 'mod/mgm:createedicion')
+);
+
 
 $ADMIN->add(
     'ediciones', new admin_externalpage('fees', get_string('fees', 'mgm'),
