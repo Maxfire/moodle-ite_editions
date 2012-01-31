@@ -69,7 +69,7 @@ function export_report($report, $filtercourseid=false, $reportname=false){
     	$cabecera2="Edicion: " .$edicionname ."\nCurso: ". $coursename ."\nTutor/a: " . $username ;
       $pdffile->opCabecera($cabecera1, $cabecera2);
       $pdffile->SetUsername($username);
-      $colwidth=array(20,80,50,20);
+      $colwidth=array(20,70,40,20,20);
     }else{
     	$pdffile = new OPPDF();
     	$pdffile->opCabecera($cabecera1);

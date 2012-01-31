@@ -145,6 +145,10 @@ $ADMIN->add(
     'mgmreports', new admin_externalpage('report031', get_string('Report031', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report031', 'mod/mgm:createedicion')
 );
+$ADMIN->add(
+    'mgmreports', new admin_externalpage('report032', get_string('Report032', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report032', 'mod/mgm:createedicion')
+);
 
 
 $ADMIN->add(

@@ -149,16 +149,19 @@ if ($inscribe) {
         print_footer();
         die();
     }
-    
-    foreach($users as $user) {             
+		$states=$_POST['state'];
+    foreach($users as $user) {
         mgm_inscribe_user_in_edition($id, $user, $courseid, $borrador);
+        unset($states[$user]);
     }
-
+    if (! mgm_set_edicion_descartes($id, $courseid, $states)){
+    	error('stateerror', 'mgm ');
+    }
     if ($borrador) {
-        mgm_enrol_edition_course($id, $courseid);        
+        mgm_enrol_edition_course($id, $courseid);
         if (mgm_create_enrolment_groups($id, $courseid)) {
-            redirect('configure_groups.php?id='.$id.'&courseid='.$courseid);   
-        }        
+            redirect('configure_groups.php?id='.$id.'&courseid='.$courseid);
+        }
         die();
     }
 
@@ -226,8 +229,8 @@ if ($courseid) {
             // Table header
             $editiontable->head = array($strposalumno,$strselect, $strname, $strlastname, $strinscripcion, $strcc, $strespecialidades, $strcourses);
             $editiontable->align = array('left','left', 'left', 'left', 'left', 'left', 'left', 'left');
-            
-            $editiontable->data = mgm_get_edition_course_preinscripcion_data($edition, $course);            
+
+            $editiontable->data = mgm_get_edition_course_preinscripcion_data($edition, $course);
             $strheading = $strheading.' - '.$course->fullname;
         }
     }

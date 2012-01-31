@@ -81,11 +81,23 @@ foreach(get_records('edicion', '', '','inicio desc') as $edition) {
 
     $eform->display();
 
-    if ($inscripcion = mgm_get_user_inscription_by_edition($USER, $edition, true)) {
+    if ($edition->state='matriculacion' && $edition->active==true){
+    	  	echo get_string('provisional', 'mgm');
+    }
+    if ($inscripcion = mgm_get_user_inscription_by_edition($USER, $edition)) {
         $ctemp = get_record('course', 'id', $inscripcion->value);
         echo get_string('cconcedido', 'mgm').$ctemp->fullname;
     } else {
-        echo get_string('cconcedidono', 'mgm');
+    		if ($adescs=mgm_get_edicion_descartes($edition->id, $USER->id)){
+    			foreach ($adescs as $i=>$d){
+    				$ctemp = get_record('course', 'id', $i);
+    				if (record_exists('edicion_inscripcion', 'edicionid', $edition->id, 'value', $i, 'released', 1)) {
+    					echo '<br />Curso: '. $ctemp->fullname.' - Motivo de descarte: '.get_string('serror_'.$d, 'mgm');
+    				}
+    			}
+    		}else{
+        	echo get_string('cconcedidono', 'mgm');
+    		}
     }
 
 

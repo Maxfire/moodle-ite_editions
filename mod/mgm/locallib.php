@@ -1452,11 +1452,13 @@ function mgm_get_user_preinscription_data($line, $edition, $data, $criteria, $co
     $courses .= '</select>';
     $check = '<input type="checkbox" name="users[' . $line -> userid . ']" />';
     $colors='';
+    $state='<input type="hidden" name="state[' . $line -> userid . ']" value="1" />';
     $cc_type = mgm_get_cc_type($data->user->cc, true);
     //Comprobar centro privado (rojo)
     if($cc_type == MGM_PRIVATE_CENTER || $cc_type == -1) {
         $colors = '<span style="color: red;">(*) </span>';
         $check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
+        $state='<input type="hidden" name="state[' . $line -> userid . ']" value="2" />';
     }
     //Comprobar si el usuario ha certificado el curso (Amarillo)
     if ($courseenrolid){
@@ -1464,6 +1466,7 @@ function mgm_get_user_preinscription_data($line, $edition, $data, $criteria, $co
 			if (! $ch[0]){//El usuario ya tiene el curso certificado
 				      $colors = $colors.'<span style="color: yellow;">(*)</span> ';
 				      $check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
+				      $state='<input type="hidden" name="state[' . $line -> userid . ']" value="3" />';
 			}
     }
     //Comprobar comunidad autonoma (Naranja)
@@ -1472,10 +1475,11 @@ function mgm_get_user_preinscription_data($line, $edition, $data, $criteria, $co
         if(mgm_is_ca($provincia, $criteria->comunidad)) {
             $colors = $colors. '<span style="color: orange;">(*)</span> ';
             $check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
+            $state='<input type="hidden" name="state[' . $line -> userid . ']" value="4" />';
         }
     }
 		$name=$colors.'<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
-    $tmpdata = array($check, $name, $user->lastname, date("d/m/Y H:i\"s", $line -> timemodified), ($data -> user -> cc) ? $data -> user -> cc : '', $userespecs, $courses);
+    $tmpdata = array($check, $name.$state, $user->lastname, date("d/m/Y H:i\"s", $line -> timemodified), ($data -> user -> cc) ? $data -> user -> cc : '', $userespecs, $courses);
 
     return $tmpdata;
 }
@@ -1942,15 +1946,35 @@ function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck 
     $sql = "SELECT * FROM ".$CFG->prefix."edicion_preinscripcion
     		WHERE edicionid = '".$edition->id."' AND
     		userid NOT IN (SELECT userid FROM ".$CFG->prefix."edicion_inscripcion
-    		WHERE edicionid='".$edition->id."' AND value='".$course->id."')
-    		AND value IN (".$course->id.") ORDER BY timemodified ASC";
+    		WHERE edicionid='".$edition->id."' )
+    		AND value REGEXP '^".$course->id."$|^".$course->id.",|,".$course->id.",|,".$course->id."$' ORDER BY timemodified ASC";
 
     if(!$preinscripcion = get_records_sql($sql)) {
         return ;
     }
+     $sql="select distinct value from ".$CFG->prefix."edicion_inscripcion where edicionid=".$edition->id;
+     	$course_with_inscription=get_records_sql($sql);
+    	if ($course_with_inscription){
+    		$course_with_inscription=array_keys($course_with_inscription);
+    	}else{
+    		$course_with_inscription=array();
+    	}
+	    foreach ($preinscripcion as $i=>$u){
+	    	  $cursos=explode(',', $u->value);
+					foreach ($cursos as $cid){//eliminamos usuarios con opciones prioritarias aun no asignadas
+						if ($cid != $course->id){
+							if(array_search($cid, $course_with_inscription) === FALSE){
+							  unset($preinscripcion[$i]);
+							  break;
+							}
+						}else{
+							break;
+						}
+					}
+	    }
+
 
     $data = mgm_parse_preinscription_data($edition, $course, $preinscripcion);
-
     if($docheck) {
         $criteria = mgm_get_edition_course_criteria($edition -> id, $course -> id);
         $asigned = 0;
@@ -2734,6 +2758,52 @@ function mgm_get_check_index($criteria) {
 
     return $x;
 }
+
+/**
+ * Set descartes in db for preinscription descartes
+ *
+ * @param string $editionid
+ * @param string $courseid
+ * @param string $states
+ * @return bool
+ */
+function mgm_set_edicion_descartes($editionid, $courseid, $states){
+	$ret=true;
+	delete_records('edicion_descartes', 'edicionid', $editionid, 'courseid', $courseid);
+	foreach($states as $userid=>$code){
+		$reg=new stdClass();
+		$reg->edicionid=$editionid;
+		$reg->courseid=$courseid;
+		$reg->userid=$userid;
+		$reg->code=$code;
+		$d=insert_record('edicion_descartes', $reg);
+		if (!$d){
+			$ret=false;
+		}
+	}
+	return $ret;
+}
+
+/**
+ * Get descartes array
+ *
+ * @param string $editionid
+ * @param string $userid
+ * @return array which key=course and value=code
+ */
+function mgm_get_edicion_descartes($editionid, $userid){
+	global $CFG;
+	$sql="select * from ".$CFG->prefix."edicion_descartes where edicionid=".$editionid." and userid=" .$userid;
+	if ($regs=get_records_sql($sql)){
+		$dev=array();
+		foreach ($regs as $reg){
+			$dev[$reg->courseid]=$reg->code;
+		}
+	  return $dev;
+	}
+	return false;
+}
+
 
 /**
  * Return the user certification history

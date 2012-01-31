@@ -508,6 +508,25 @@ function xmldb_mgm_upgrade($oldversion=0) {
         $field->setAttributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '0', 'state');
     		$result = $result && add_field($table, $field);
     }
+    if ($result && $oldversion < 2012013100) {
+        /// Define table edicion_descartes to be created
+        $table = new XMLDBTable('edicion_descartes');
+
+		    /// Adding fields to table edicion_descartes
+        $table->addFieldInfo('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null, null);
+        $table->addFieldInfo('edicionid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, null);
+        $table->addFieldInfo('courseid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, null);
+        $table->addFieldInfo('userid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, null);
+        $table->addFieldInfo('code', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, null, null, null, null, null);
+
+		    /// Adding keys to table edicion_descartes
+        $table->addKeyInfo('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+  		  /// Launch create table for edicion_descartes
+        $result = $result && create_table($table);
+    }
+
+
 
 /// And that's all. Please, examine and understand the 3 example blocks above. Also
 /// it's interesting to look how other modules are using this script. Remember that

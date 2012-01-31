@@ -59,6 +59,7 @@ class plugin_groups extends plugin_base{
 		global $CFG;
 
 		$filter_groups = optional_param('filter_groups');
+		$filter_courses = optional_param('filter_courses',0,PARAM_INT);
 
 		$reportclassname = 'report_'.$this->report->type;
 		$reportclass = new $reportclassname($this->report);
@@ -70,7 +71,11 @@ class plugin_groups extends plugin_base{
 			$grouplist = $reportclass->elements_by_conditions($conditions);
 		}
 		else{
-			$grouplist = array_keys(get_records('groups'));
+			if ($filter_courses != 0){
+				$sql="select id from ".$CFG->prefix."groups where courseid=".$filter_courses;
+				$grouplist= array_keys(get_records_sql($sql));
+			}else
+				$grouplist = array_keys(get_records('groups'));
 		}
 
 		$groupoptions = array();
