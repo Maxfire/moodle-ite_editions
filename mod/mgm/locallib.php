@@ -2470,6 +2470,8 @@ function mgm_rollback_borrador($editionid, $courseid) {
     		AND released='0'";
 
     execute_sql($sql);
+    //eliminar los descartes
+    delete_records('edicion_descartes', 'edicionid', $editionid, 'courseid', $courseid);
 }
 
 function mgm_edition_set_user_address($userid, $address) {

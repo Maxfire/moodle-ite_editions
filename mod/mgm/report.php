@@ -38,6 +38,8 @@ if (!isloggedin() or isguestuser()) {
 $params='?id=';
 $reporttype = required_param('report_type');
 $courseid = optional_param('courseid', 0, PARAM_INT);
+$filter_editions=optional_param('filter_editions', 0, PARAM_INT);
+$filter_courses=optional_param('filter_courses', 0, PARAM_INT);
 $id=0;
 if ($reporttype){
 	$reports=mgm_get_reports();
@@ -55,9 +57,17 @@ if ($id){
 if ($courseid){
 	$params=$params."&courseid=". $courseid;
 }
-$edition=mgm_get_active_edition();
-if ($edition){
-	$params=$params.'&filter_editions='.$edition->id;
+if ($filter_editions){
+	$params=$params.'&filter_editions='.$filter_editions;
+}else{
+	$edition=mgm_get_active_edition();
+	if ($edition){
+		$params=$params.'&filter_editions='.$edition->id;
+	}
 }
+if ($filter_courses){
+		$params=$params.'&filter_courses='.$filter_courses;
+}
+
 #$params='?id=45&filter_editions=3';
 redirect("$CFG->wwwroot".'/blocks/configurable_reports/viewreport.php'. $params);

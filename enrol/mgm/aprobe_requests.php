@@ -45,7 +45,12 @@ $borrador = optional_param('borrador', false, PARAM_BOOL);
 $inscribe = optional_param('inscribe', false, PARAM_BOOL);
 $rollback = optional_param('rollback', false, PARAM_BOOL);
 $force = optional_param('force', false, PARAM_BOOL);
-//$pepe = optional_param('pepe', false, PARAM_BOOL);
+
+if (isset($_POST['state'])){
+	$states=$_POST['state'];
+}else{
+  $states=false;
+}
 
 // Editions
 $editions = get_records('edicion');
@@ -66,6 +71,8 @@ if (isset($editions) && is_array($editions)) {
         );
     }
 }
+
+
 
 // Strings
 $strmgm            = get_string('mgm', 'mgm');
@@ -132,6 +139,17 @@ if ($inscribe) {
     // Check if users are <= than places
     $plazas = mgm_get_edition_course_criteria($id, $courseid)->plazas;
     if (count($users) > $plazas && !$force) {
+    		if ($states){//Set descartes
+	    		foreach($users as $user) {
+		        unset($states[$user]);
+		    	}
+		    	if (!$borrador and !$force){
+		    		if (! mgm_set_edicion_descartes($id, $courseid, $states)){
+		    			error('stateerror', 'mgm ');
+		    		}
+		    	}
+    		}
+
         $a = new stdClass();
         $a->alumnos = count($users);
         $a->plazas = $plazas;
@@ -149,14 +167,23 @@ if ($inscribe) {
         print_footer();
         die();
     }
-		$states=$_POST['state'];
-    foreach($users as $user) {
-        mgm_inscribe_user_in_edition($id, $user, $courseid, $borrador);
-        unset($states[$user]);
-    }
-    if (! mgm_set_edicion_descartes($id, $courseid, $states)){
-    	error('stateerror', 'mgm ');
-    }
+		if ($states){//Set descartes
+	    foreach($users as $user) {
+	        mgm_inscribe_user_in_edition($id, $user, $courseid, $borrador);
+	        unset($states[$user]);
+	    }
+	    if (!$borrador and !$force){
+	    	if (! mgm_set_edicion_descartes($id, $courseid, $states)){
+	    		error('stateerror', 'mgm ');
+	    	}
+	    }
+		}
+		else{
+			foreach($users as $user) {
+				mgm_inscribe_user_in_edition($id, $user, $courseid, $borrador);
+	    }
+		}
+
     if ($borrador) {
         mgm_enrol_edition_course($id, $courseid);
         if (mgm_create_enrolment_groups($id, $courseid)) {
@@ -180,17 +207,21 @@ if ($id) {
         // Table data
         unset($editiontable->data);
         foreach (mgm_get_edition_courses($edition) as $course) {
+        		$linkdescartes='';
             $sql = "SELECT id FROM ".$CFG->prefix."edicion_inscripcion
             	    WHERE edicionid='".$id."' AND value='".$course->id."' AND released='1'";
             if ($inscripcion = get_records_sql($sql)) {
                 $asignado = $stryes;
                 $link = '<b>'.$course->fullname.'</b>';
+                $linkdescartes = '<a href="'.$CFG->wwwroot . '/mod/mgm/report.php?report_type=Report032&filter_editions='.$edition->id.'&filter_courses='.$course->id.'" style="color: green;" alt="Ver descartes"> (Ver Descartes)</a>';
+
             } else {
                 $asignado = $strno;
                 $sql = "SELECT id FROM ".$CFG->prefix."edicion_inscripcion
             	    WHERE edicionid='".$id."' AND value='".$course->id."' AND released='0'";
                 if ($borrador = get_records_sql($sql)) {
                     $link = '(Borrador) <a href="aprobe_requests.php?id='.$edition->id.'&courseid='.$course->id.'" style="color: red;" alt="Borrador">'.$course->fullname.'</a>';
+                    $linkdescartes = '<a href="'.$CFG->wwwroot . '/mod/mgm/report.php?report_type=Report032&filter_editions='.$edition->id.'&filter_courses='.$course->id.'" style="color: green;" alt="Ver descartes"> (Ver Descartes)</a>';
                 } else {
                     $link = '<a href="aprobe_requests.php?id='.$edition->id.'&courseid='.$course->id.'">'.$course->fullname.'</a>';
                 }
@@ -201,7 +232,7 @@ if ($id) {
                 $plazas = count($inscripcion).'/'.mgm_get_edition_course_criteria($edition->id, $course->id)->plazas;
             }
             $editiontable->data[] = array(
-            	$link,
+            	$link.$linkdescartes,
                 $asignado,
                 $plazas,
                 mgm_edition_get_solicitudes($edition, $course)
