@@ -318,4 +318,10 @@ $string['serror_2']='Centro privado';
 $string['serror_3']='Curso ya certificado';
 $string['serror_4']='Comunidad autonoma';
 $string['provisional']='<b>La concesión o denegación de cursos tiene carácter provisional</b><br />';
+$string['admin_mgm']='Administración';
+$string['action']='Acción';
+$string['sql_report']='Crear funciones mysql';
+$string['create_report']='Crear nuevos informes';
+$string['update_report']='Actualizar los informes existentes';
+$string['admin_report']='MGM: Administración de informes';
 

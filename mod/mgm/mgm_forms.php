@@ -30,4 +30,33 @@ class edicion_form extends moodleform {
 //        $renderer->setGroupElementTemplate($template, 'usersgrp');
     }
 }
+
+class admin_form extends moodleform {
+    function definition() {
+        $mform =& $this->_form;
+				$actionoptions = array('elegir'=>'Elegir','loadchistory'=>"Cargar historico de certificaciones",'loadcolegios' =>'Actualizar centros');
+				$mform->addElement('select', 'action', get_string('action', 'mgm'), $actionoptions);
+				$mform->addElement('file', 'userfile', get_string('file'));
+				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
+        $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));
+        $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
+
+    }
+}
+
+class report_form extends moodleform {
+    function definition() {
+        $mform =& $this->_form;
+				$options = array(1=>"Si", 0=>'No');
+				$mform->addElement('select', 'sql', get_string('sql_report', 'mgm'),$options);
+				$mform->addElement('select', 'create', get_string('create_report', 'mgm'),$options);
+				$mform->addElement('select', 'update', get_string('update_report', 'mgm'),$options);
+				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
+        $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));
+        $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
+
+    }
+}
+
+
 ?>

@@ -56,7 +56,8 @@ if ($data = $mform->get_data(false)) {
     else if (!empty($data->next)) {
     	if ($mform->save_files($tempdir)) {
     		$mform->_upload_manager->inputname='userfile';
-    		$filename=$mform->get_new_filename();
+    		$filename=$tempdir.$mform->get_new_filename();
+    		$mform->save_files($tempdir);
     		if ($filename){
     			print 'fichero' . $filename . ' guardado';
     		}

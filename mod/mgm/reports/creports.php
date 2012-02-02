@@ -34,14 +34,17 @@
 
 require_once('../../../config.php');
 require_once($CFG->dirroot."/mod/mgm/locallib.php");
+require_once($CFG->dirroot."/mod/mgm/mgm_forms.php");
+require_once($CFG->libdir.'/adminlib.php');
 
-
+$strtitle = get_string('admin_report', 'mgm');
 require_login();
 require_capability('mod/mgm:createedicion', get_context_instance(CONTEXT_SYSTEM));
 
 
 
-function mgm_creports($create=1, $update=0){
+
+function mgm_creports($create=1, $update=0, $sqlfunc=1){
 		$TYPE='5';
 		global $USER;
 		$reports=array();
@@ -116,11 +119,10 @@ Begin
          end into cd;
   RETURN cd;
 end ";
-
-		$a=execute_sql_arr($sqlarr, $continue=true, $feedback=true);
-
+		if ($sqlfunc){
+	  	execute_sql_arr($sqlarr, $continue=true, $feedback=true);
+		}
 		##Definicion de informes
-
 		#Acta
 		$reports['Acta']=new stdClass();
 		$reports['Acta']->name =get_string('Acta', 'mgm');
@@ -315,7 +317,7 @@ end ";
 		$reports['Report032']->export='ods,xls';
 		$reports['Report032']->ownerid=$USER->id;
 		$reports['Report032']->courseid=SITEID;
-
+  $dev='';
 	foreach($reports as $name => $report){
 		if ($rec=get_record('edicion_ite', 'type',$TYPE, 'name', $name)){#Existe el informe
 			if ($update){
@@ -336,20 +338,52 @@ end ";
    			}
 			}
 		}
-		print($result);
+		if(isset($result)){
+			$dev=$dev.$name.': '.$result. '<br />';
+		}
 	}
+	return $dev;
 }
 
-$navlinks = array();
-$navlinks[] = array('name' => $strediciones, 'type' => 'misc');
-$navlinks[] = array('name' => $strespecs, 'type' => 'misc');
 
-$navigation = build_navigation($navlinks);
+$mform = new report_form("$CFG->wwwroot".'/mod/mgm/reports/creports_mgm.php');
 
+$mform = new report_form("$CFG->wwwroot".'/mod/mgm/reports/creports.php');
+admin_externalpage_setup('updatereports', mgm_update_edition_button());
+admin_externalpage_print_header();
+print_heading($strtitle);
 print_simple_box_start('center');
 
-print_header("Configuración de Informes MGM", get_string('adminreportsmgm', 'mgm'), $navigation);
+if ($data = $mform->get_data(false)) {
+    if 	(!empty($data->cancel)){
+    	unset($_POST);
+    	redirect("$CFG->wwwroot".'/index.php');
+    }else if (!empty($data->next)) {
+    	$sql=$create=$update=0;
+			if ($data->sql==1){
+				$sql=1;
+			}
+    	if ($data->create==1){
+				$create=1;
+			}
+    	if ($data->update==1){
+				$update=1;
+			}
+			$dev=mgm_creports($create,$update, $sql);
+			print $dev;
+			print '<br /<b>Todos los datos procesados.<b />';
+			print_simple_box_end();
+			admin_externalpage_print_footer();
+			die();
+    }
+}
 
-mgm_creports(1,1);
+$mform->display();
 print_simple_box_end();
+admin_externalpage_print_footer();
+
+
+
+
+
 

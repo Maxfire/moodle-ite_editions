@@ -78,7 +78,10 @@ $ADMIN->add(
     'mgmcertifications', new admin_externalpage('importdata', get_string('importdata', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/import.php', 'mod/mgm:createedicion')
 );
-
+$ADMIN->add(
+    'config', new admin_externalpage('admin_mgm', get_string('admin_mgm', 'mgm'),
+        $CFG->wwwroot . '/mod/mgm/admin/admin_mgm.php', 'mod/mgm:createedicion')
+);
 $ADMIN->add(
     'config', new admin_externalpage('especdata', get_string('especdata', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/espec.php', 'mod/mgm:createedicion')
