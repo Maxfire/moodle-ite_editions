@@ -55,6 +55,8 @@ function mgm_creports($create=1, $update=0, $sqlfunc=1){
 		$sqlarr[0]='drop function if exists get_ca';
 		$sqlarr[1]="create function get_ca(cc INT)
 returns varchar(20)
+DETERMINISTIC
+CONTAINS SQL
 Begin
   declare ca varchar(20);
   declare cod varchar(2);
@@ -91,6 +93,8 @@ end";
 		$sqlarr[2]='drop function if exists get_cd';
 		$sqlarr[3]="create function get_cd(ccd varchar(4))
 returns varchar(50)
+DETERMINISTIC
+CONTAINS SQL
 Begin
   declare cd varchar(50);
   select case when ccd like '0000' then 'NO FUNCIONARIO'
