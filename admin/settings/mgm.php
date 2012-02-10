@@ -31,6 +31,7 @@ $ADMIN->add('ediciones', new admin_category('mgmcertifications', get_string('cer
 $ADMIN->add('ediciones', new admin_category('mgmreports', get_string('reports', 'mgm')));
 $ADMIN->add('mgmreports', new admin_category('editionanalitycs', get_string('edanalitycs', 'mgm')));
 $ADMIN->add('mgmreports', new admin_category('maintenance', get_string('maintenance', 'mgm')));
+$ADMIN->add('ediciones', new admin_category('tools', get_string('tools', 'mgm')));
 $ADMIN->add(
 	'ediciones', new admin_externalpage('edicionesmgmt', get_string('edicionesmgmt', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/index.php?editionedit=on', 'mod/mgm:createedicion')
@@ -160,6 +161,10 @@ $ADMIN->add(
 );
 
 $ADMIN->add(
-    'mgmcertifications', new admin_externalpage('joinusers', get_string('joinusers', 'mgm'),
+    'tools', new admin_externalpage('joinusers', get_string('joinusers', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/join_users.php', 'mod/mgm:createedicion')
+);
+$ADMIN->add(
+    'tools', new admin_externalpage('userbulkmgm', get_string('userbulk', 'admin'),
+        $CFG->wwwroot . '/mod/mgm/user_bulk.php', 'mod/mgm:createedicion')
 );

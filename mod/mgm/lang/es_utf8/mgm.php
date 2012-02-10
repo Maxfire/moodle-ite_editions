@@ -324,4 +324,15 @@ $string['sql_report']='Crear funciones mysql';
 $string['create_report']='Crear nuevos informes';
 $string['update_report']='Actualizar los informes existentes';
 $string['admin_report']='MGM: Administración de informes';
+$string['tools']='Herramientas';
+$string['category']='Categoría';
+$string['pagetitle']='Título de página';
+$string['pagehead']='Cabecera de página';
+$string['letterhead']='Cabecera de carta';
+$string['letterbody']='Cuerpo de carta';
+$string['letterfoot']='Pie de carta';
+$string['pagefoot']='Pie de página';
+$string['page']='Página';
+$string['letter']='Carta';
+$string['show_users']='Mostrar Usuarios';
 

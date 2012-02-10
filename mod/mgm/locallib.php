@@ -3610,6 +3610,46 @@ function mgm_set_centro($reg){
 }
 
 
+function mgm_parse_msg($msg, $userid, $editionid){
+	   global $CFG;
+     $arol='5';
+     $sql="
+     SELECT u.firstname nombre,u.lastname apellidos, eu.dni dni, eu.cc, u.email, c.fullname as curso, ect.dgenerica, ect.despecifica, ect.direccion, ect.cp , ect.localidad, ect.provincia, ect.pais, ect.telefono
+     FROM mdl_user u left join  mdl_edicion_user eu on (u.id=eu.userid) left join mdl_edicion_centro ect on ect.codigo=eu.cc,
+     mdl_edicion_course ec left join mdl_course c on ec.courseid=c.id , mdl_role_assignments AS ra INNER JOIN mdl_context AS context ON ra.contextid=context.id
+     where context.contextlevel = 50 AND ra.roleid=".$arol." AND u.id=ra.userid AND context.instanceid=ec.courseid AND u.id=".$userid." AND ec.edicionid=". $editionid;
+     $sql=str_replace("prefix_", $CFG->prefix, $sql);
+     if($reg=get_record_sql($sql)){
+       $fields=array('nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
+       foreach($fields as $field){
+     	   $msg=str_replace('#'.$field, $reg->$field, $msg);
+       }
+     }
+     return $msg;
+}
+
+function mgm_parse_letter($data, $userid, $editionid){
+	   global $CFG;
+     $arol='5';
+     $sql="
+     SELECT u.firstname nombre,u.lastname apellidos, eu.dni dni, eu.cc, u.email, c.fullname as curso, ect.dgenerica, ect.despecifica, ect.direccion, ect.cp , ect.localidad, ect.provincia, ect.pais, ect.telefono
+     FROM mdl_user u left join  mdl_edicion_user eu on (u.id=eu.userid) left join mdl_edicion_centro ect on ect.codigo=eu.cc,
+     mdl_edicion_course ec left join mdl_course c on ec.courseid=c.id , mdl_role_assignments AS ra INNER JOIN mdl_context AS context ON ra.contextid=context.id
+     where context.contextlevel = 50 AND ra.roleid=".$arol." AND u.id=ra.userid AND context.instanceid=ec.courseid AND u.id=".$userid." AND ec.edicionid=". $editionid;
+     $sql=str_replace("prefix_", $CFG->prefix, $sql);
+     if($reg=get_record_sql($sql)){
+     	$letter=new stdClass();
+       $fields=array('nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
+       foreach($fields as $field){
+     	   $data->letterhead=str_replace('#'.$field, $reg->$field, $data->letterhead);
+     	   $data->letterbody=str_replace('#'.$field, $reg->$field, $data->letterbody);
+     	   $data->letterfoot=str_replace('#'.$field, $reg->$field, $data->letterfoot);
+       }
+       return $data;
+     }
+     return false;
+}
+
 function mgm_get_string($str){
 	$dev=get_string($str);
 	if ($dev[0] == '['){
