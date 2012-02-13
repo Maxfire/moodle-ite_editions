@@ -3692,13 +3692,13 @@ class Edicion {
         return $this -> anoacademico;
     }
 
-    function getCursos() {
+    function getCursos($show=false) {
         $cursosdata = mgm_get_edition_courses($this -> data);
         $cursos = array();
         $numactividad = 1;
         if($cursosdata)
             foreach($cursosdata as $cursodata) {
-                $cursos[$cursodata -> id] = new Curso($cursodata, $this, $numactividad);
+                $cursos[$cursodata -> id] = new Curso($cursodata, $this, $numactividad, $show);
                 $numactividad++;
             }
         return $cursos;
@@ -3716,6 +3716,7 @@ class Curso {
     var $incidencias = array();
     var $info;
     var $tareas = array();
+    var $show=array('norol'=>1, 'nodni'=>1, 'usuario'=>1, 'curso'=>1);
     function format_text($str){
     	  if ($str){
 
@@ -3727,12 +3728,14 @@ class Curso {
     function cargarEdata($campo, $ncampo) {
         if(!$campo) {
             $this -> info -> campo = $ncampo;
-            $this -> incidencias[] = get_string('incidencia_curso', 'mgm', $this -> info);
+            if($this->show['curso']){
+            	$this -> incidencias[] = get_string('incidencia_curso', 'mgm', $this -> info);
+            }
         }
         $this -> edata[$ncampo] = $campo;
     }
 
-    function Curso($data, $edicion, $numactividad) {
+    function Curso($data, $edicion, $numactividad, $show=false) {
         $this -> data = $data;
         $this -> edicion = $edicion;
         $this -> dbedata = mgm_get_edition_course($edicion -> data -> id, $data -> id);
@@ -3741,6 +3744,12 @@ class Curso {
         $this -> info -> edicion = $this -> edicion -> data -> name;
         $this -> info -> cursoid = $this -> data -> id;
         $this -> info -> edicionid = $this -> edicion -> data -> id;
+    		if($show){
+    	  	foreach($show as $k=>$s){
+    	  		$this->show[$k]=$s;
+    	  	}
+    	  }
+
 
         $this -> edata['anoacademico'] = $this->format_text($this -> edicion -> getAnoAcademico());
         #Obligatorio
@@ -3912,14 +3921,14 @@ class Curso {
     function getParticipantes() {
         if($this -> dparticipantes)
             return $this -> participantes;
-        $this -> participantes = array();
+        $participantes = array();
         $userlist = mgm_get_course_participants($this -> data, true);
         if($userlist)
             foreach($userlist as $userdata) {
-                $this -> participantes[$userdata -> userid] = new Usuario($userdata, $this);
+                $participantes[$userdata -> userid] = new Usuario($userdata, $this, $this->show);
             }
-        $this -> dparticipantes = True;
-        return $this -> participantes;
+        //$this -> dparticipantes = True;
+        return $participantes;
     }
 
     function aprobado($usuario) {
@@ -3951,6 +3960,7 @@ class Usuario {
     var $curso;
     var $incidencias = array();
     var $info;
+    var $show=array('norol'=>1, 'nodni'=>1, 'usuario'=>1);
     function format_text($str){
     	  if ($str){
     	   return '"'.str_replace('"','',$str).'"';;
@@ -3981,7 +3991,12 @@ class Usuario {
     	$this -> dbdata=$data;
     }
 
-    function Usuario($data, $curso) {
+    function Usuario($data, $curso, $show=false) {
+    	  if($show){
+    	  	foreach($show as $k=>$s){
+    	  		$this->show[$k]=$s;
+    	  	}
+    	  }
         $this -> data = $data;
         $this -> curso = $curso;
         $this -> info -> nombre = $data -> username;
@@ -4001,9 +4016,11 @@ class Usuario {
             #Obligatorio, "N" o "P" o "T"
             $this -> edata['DNI'] = null;
             #Obligatorio
-            $this -> incidencias[] = get_string('incidencia_usuario', 'mgm', $this -> info);
+            if ($this->show['usuario']){
+              $this -> incidencias[] = get_string('incidencia_usuario', 'mgm', $this -> info);
+            }
         } else {
-            if(!$this -> dbdata -> dni || strlen($this -> dbdata -> dni) != 9)
+            if((!$this -> dbdata -> dni || strlen($this -> dbdata -> dni) != 9) && $this->show['nodni'])
                 $this -> incidencias[] = get_string('incidencia_dni', 'mgm', $this -> info);
             $this -> edata['tipoid'] = $this->format_text($this -> dbdata -> tipoid);
             $this -> edata['DNI'] = strtoupper($this -> dbdata -> dni);
@@ -4021,7 +4038,7 @@ class Usuario {
         $this -> edata['generacertif'] = null;
         $this -> edata['codtipoparticipante'] = $this->format_text($this -> getTipo());
         #Obligatorio
-        if(!$this -> edata['codtipoparticipante'])
+        if(!$this -> edata['codtipoparticipante']  && $this->show['norol'])
             $this -> incidencias[] = get_string('incidencia_no_tipo_usuario', 'mgm', $this -> info);
         $this -> edata['codmodalidad'] = $this->format_text($this -> curso -> edata['codmodalidad']);
         #Obligatorio, proviene de la actividad/curso
@@ -4153,9 +4170,16 @@ class EmisionDatos {
     var $uexcluidos;
     var $separador_campo = ';';
     var $prefix = 'mgm_export';
+    var $show=array('nodni'=>1, 'norol'=> 1, 'usuario'=>1, 'curso'=>1, 'tareas'=>0, 'noapto'=>0);
 
     function EmisionDatos($edicion = null) {
         $this -> edicion = new Edicion($edicion);
+    }
+
+    function setLog($show){
+    	foreach($show as $k=>$v){
+    		$this->show[$k]=$v;
+    	}
     }
 
     function Validar($fechaactual = null) {
@@ -4165,7 +4189,7 @@ class EmisionDatos {
         $cursos = $this -> edicion -> getCursos();
 
         $tareas_sin_f = array();
-        if($cursos)
+        if($cursos && $this->show['tareas'])
             foreach($cursos as $curso) {
                 $usuarios = array_merge($curso -> getTutores(), $curso -> getCoordinadores());
                 $tareas = $curso -> getTareas();
@@ -4210,7 +4234,7 @@ class EmisionDatos {
         $ret = new stdClass();
         $ret -> ok = True;
         $ret -> incidencias = array();
-        $cursos = $this -> edicion -> getCursos();
+        $cursos = $this -> edicion -> getCursos($this->show);
         $fparticipantes = fopen("/tmp/participantes.csv", "w");
         $factividades = fopen("/tmp/actividades.csv", "w");
         $fprofesores = fopen("/tmp/profesores.csv", "w");
@@ -4218,8 +4242,12 @@ class EmisionDatos {
         $cabecera_actividades = False;
         $cabecera_profesores = False;
         $profesores = array();
+        $inicio=(int)time();
         if($cursos)
+            $i=0;
             foreach($cursos as $curso) {
+								$i++;
+								$actual=$inicio-(int)time();
                 if(!$cabecera_participantes) {
                     fwrite($factividades, '"'. implode('"'. $this -> separador_campo .'"', array_keys($curso -> edata)) . '"'."\n");
                     $cabecera_actividades = True;
@@ -4229,7 +4257,9 @@ class EmisionDatos {
                 else
                 		fwrite($factividades, implode($this -> separador_campo, $curso -> edata) . "\n");
                 $participantes = $curso -> getParticipantes();
-                foreach($participantes as $participante) {
+//                $memory=memory_get_usage();
+//                print $i.'-'.$curso->data->fullname . '-' . $curso->participantes.' - Mem: '.$memory/(1024*1024).' Tiempo: '.$actual. '<br/>';
+                foreach($participantes as $k=>$participante) {
                     if(!$cabecera_participantes) {
                         fwrite($fparticipantes,'"' . implode('"'. $this -> separador_campo . '"', array_keys($participante -> edata)) .'"'."\n");
                         $cabecera_participantes = True;
@@ -4242,10 +4272,12 @@ class EmisionDatos {
 		                        if($participante -> dbdata)
 		                            $profesores[$participante -> edata['DNI']] = $participante;
 		                        fwrite($fparticipantes, implode($this -> separador_campo, $participante -> edata) . "\n");
-		                    } elseif(!$aprobado && $participante -> edata['codtipoparticipante'])
+		                    } elseif(!$aprobado && $participante -> edata['codtipoparticipante'] && $this->show['noapto'])
 		                        $ret -> incidencias[] = get_string('incidencia_no_aprobado', 'mgm', $participante -> info);
                     }
+
                 }
+                unset($curso);
             }
         if($profesores)
             foreach($profesores as $profesor) {

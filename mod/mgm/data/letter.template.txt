@@ -1,17 +1,13 @@
 pagetitle:
-MINISTERIO DE EDUCACIÓN
+Ministerio de Educación, Cultura y Deporte
 
 pagehead1:
-SECRETARIA DE ESTADO 
-DE EDUCACIÓN Y 
-FORMACIÓN PROFESIONAL
+Subdirección General Integrada en la Dirección General de Evaluación y Cooperación
 
-DIRECCIÓN GENERAL
-DE FORMACIÓN PROFESIONAL
+Secretaría de Estado de Educación, Formación Profesional y Universidades
 
 pagehead2:
-INSTITUTO 
-DE TECNOLOGÍAS EDUCATIVAS
+Instituto Nacional de Tecnologías Educativas y de Formación del Profesorado
 
 letterhead:
 #nombre #apellidos
@@ -27,22 +23,32 @@ En relación con el curso “#curso“, para el que has sido seleccionado/a, te 
 Adjuntamos el documento “Orientaciones generales al alumnado”, que te servirá de ayuda para comenzar. También te enviamos una copia en CD o DVD de los materiales formativos.
 
 Podrás acceder a la plataforma a partir del día 04 de Octubre. 
+
 En el caso de que no recuerdes tus contraseñas puedes hacer una recuperación de las mismas desde este enlace:
+
 http://formacionprofesorado.educacion.es/apls/moodle/web/login/index.php
+
 Utilizando como correo electrónico de referencia #email.
-Una vez tengas la contraseña y el usuario puedes acceder al curso desde nuestra página Web: http://formacionprofesorado.educacion.esen el menú de la izquierda verás la opción Acceso de usuarios, haciendo clic sobre este enlace se mostrarán dos formularios de acceso. 
+Una vez tengas la contraseña y el usuario puedes acceder al curso desde nuestra página Web:
+
+http://formacionprofesorado.educacion.es
+
+en el menú de la izquierda verás la opción Acceso de usuarios, haciendo clic sobre este enlace se mostrarán dos formularios de acceso.
+ 
 Para acceder al Aula Virtual Debes introducir tus claves en el formulario Acceso Formación Moodle – ITE .
+
 Ya dentro de la plataforma accede al curso que te hemos asignado desde la categoría “Formación en red”.
 La comunicación con el tutor/a se realizará principalmente mediante un sistema de correo integrado, que se encuentra en el Aula Virtual del curso en el apartado “Correo interno”.Al comienzo del curso recibirás un mensaje de saludo del tutor/a, al que deberás responder para confirmar que la comunicación está establecida. En el caso de que en el transcurso de 5 días desde la fecha de comienzo no hubieras recibido el mensaje de tu tutor/a, conviene que seas tú quien le envíe uno.
+
 Un cordial saludo,
 
 letterfoot:
 Fdo.: Carmen Arenas Fonollosa
 Jefa del Servicio de Formación en Red
-Instituto de Tecnologías Educativas
+Instituto Nacional de Tecnologías Educativas y de Formación del Profesorado
 
 pagefoot1:
-http://www.ite.educacion.es/formacion/enred
+http://formacionprofesorado.educacion.es/
 formacion@ite.educacion.es
 
 pagefoot2:

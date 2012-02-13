@@ -335,4 +335,11 @@ $string['pagefoot']='Pie de página';
 $string['page']='Página';
 $string['letter']='Carta';
 $string['show_users']='Mostrar Usuarios';
+$string['showincidents']='Incidencias a mostrar';
+$string['nodni']='DNI no establecido';
+$string['norol']='Rol no establecido';
+$string['usuario']='Datos extendidos de usuario';
+$string['curso']='Curso';
+$string['noapto']='No Apto';
+$string['tarea']='Tarea sin finalizar';
 

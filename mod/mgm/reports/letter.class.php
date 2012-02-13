@@ -44,6 +44,7 @@ function LETTERPDF($data,$orientation='P',$unit='mm',$format='A4'){
     $this->cabecera1=false;
     $this->cabecera2=false;
 }
+
 public function Header()
   {
     global $CFG;
@@ -52,19 +53,20 @@ public function Header()
     $this->setXY(35,15);
     $this->MultiCell(100,4,$this->getTitleOp(),0,'L');
     $this->SetFont('Arial','',7);
-    $this->setXY(120,4);
+    $this->setXY(120,8);
     $this->SetFillColor(200);
-    $this->MultiCell(50,3,$this->getCabecera1(),0,'L', true);
-    $this->setXY(120,25);
-    $this->MultiCell(50,3,$this->getCabecera2(),0,'L');
+    $this->MultiCell(65,3,$this->getCabecera1(),0,'L', true);
+    $this->setXY(50,32);
+    $this->MultiCell(150,3,$this->getCabecera2(),0,'R');
     $this->SetLineWidth(.3);
     $this->Line(6,36,200,36);
-
     $this->Ln(5);
   }
   //pie de pagina
 public function Footer()
   {
+  	$this->SetLineWidth(.3);
+    $this->Line(6,274,200,274);
     $this->SetXY(20,-20);
     $this->SetFont('Arial','I',8);
     $this->MultiCell(80,3,iconv('UTF-8', 'windows-1252', $this->getFooter1()), 0, 'L');
@@ -141,10 +143,11 @@ public function AddLetter($letterhead, $letterbody, $letterfoot){
     $this->MultiCell(194,4,iconv('UTF-8', 'windows-1252', $letterhead),0, 'R');
     $this->SetFont('Arial','',10);
     $this->setXY(20,70);
-    $this->MultiCell(170,4,iconv('UTF-8', 'windows-1252', $letterbody),0, 'L');
-    $this->Image($CFG->dirroot. '/mod/mgm/pix/letter_002.jpg',50,180,43.2, 20.4);
-    $this->Image($CFG->dirroot. '/mod/mgm/pix/letter_003.png',95,180,32.9, 34.9);
-    $this->setXY(6,215);
+    $this->MultiCell(170,4,iconv('UTF-8', 'windows-1252', $letterbody),0, 'J');
+    $y=$this->GetY();
+    $this->Image($CFG->dirroot. '/mod/mgm/pix/letter_002.jpg',50,$y,43.2, 20.4);
+    $this->Image($CFG->dirroot. '/mod/mgm/pix/letter_003.png',95,$y,32.9, 34.9);
+    $this->setXY(6,$y+40);
     $this->MultiCell(200,4,iconv('UTF-8', 'windows-1252', $letterfoot), 0, 'C');
 }
 

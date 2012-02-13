@@ -53,8 +53,6 @@ class report_form extends moodleform {
     }
 }
 
-
-/* User filterig by edition course and other*/
 class user_filter extends moodleform {
 	var $_filters;
 
@@ -260,9 +258,7 @@ class action_users extends moodleform {
 }
 
 
-
 class user_letter_form extends moodleform {
-
     function definition() {
 
         $mform =& $this->_form;
@@ -299,9 +295,9 @@ class user_letter_form extends moodleform {
 				while (! feof($handle)) {
 					$line = fgets($handle);
 					$f=rtrim($line, " :\n");
-					if ($f==''){//saltamos lineas en blanco, con espacios
-						continue;
-					}
+//					if ($f==''){//saltamos lineas en blanco, con espacios
+//						continue;
+//					}
 					if (array_search($f, $labels)!==false){
 						$field=$f;
 						$data[$field]='';
@@ -320,4 +316,45 @@ class user_letter_form extends moodleform {
 
 
 }
+
+class export_data extends moodleform {
+    function definition() {
+        $mform =& $this->_form;
+        $achoices = array();
+        $filter_editions = optional_param('edition',0,PARAM_INT);
+				$editionlist = array_keys(get_records('edicion'));
+				$editionoptions = array();
+				$editionoptions[0] = get_string('choose');
+				if(!empty($editionlist)){
+					$editions = get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
+					foreach($editions as $c){
+						$editionoptions[$c->id] = format_string($c->name);
+					}
+				}
+
+				$mform->addElement('select', 'edition', get_string('edition', 'mgm'), $editionoptions);
+
+				$mform->addElement('header', 'incidencias', get_string('showincidents', 'mgm'));
+				$mform->setType('edition', PARAM_INT);        $objs = array();
+				$mform->addElement('advcheckbox', 'nodni', get_string('nodni', 'mgm'));
+				$mform->addElement('advcheckbox', 'norol', get_string('norol', 'mgm'));
+				$mform->addElement('advcheckbox', 'usuario', get_string('usuario', 'mgm'));
+				$mform->addElement('advcheckbox', 'curso', get_string('curso', 'mgm'));
+				$mform->addElement('advcheckbox', 'noapto', get_string('noapto', 'mgm'));
+				$mform->addElement('advcheckbox', 'tarea', get_string('tarea', 'mgm'));
+				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
+        $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));
+        $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
+        $mform->setDefault('nodni', 1);
+        $mform->setDefault('norol', 1);
+        $mform->setDefault('usuario', 1);
+        $mform->setDefault('curso', 1);
+
+    }
+}
+
+
+
+
+
 ?>

@@ -44,7 +44,7 @@ $tempdir = $CFG->dataroot."/temp/";
 $filename = optional_param('filename');
 $generated = optional_param('generated');
 
-$mform = new edicion_form("$CFG->wwwroot".'/mod/mgm/export.php');
+$mform = new export_data("$CFG->wwwroot".'/mod/mgm/export.php');
 
 if ($filename && file_exists($tempdir.$filename)) {
   $lifetime = 0;
@@ -60,15 +60,25 @@ else if ($generated) {
   	print_heading($strtitle);
   	print_simple_box_start('center');
   	$emision = new EmisionDatos($edicion);
+  	if (isset($SESSION->showi)){
+  		$emision->setLog($SESSION->showi);
+  	}
+  	$inicio=time();
   	$validacion = $emision->Validar();
   	$afichero = $emision->aFichero( $tempdir );
-
+//    $fin=time();
+//    echo  'Memoria ' . memory_get_usage();
+//    echo '-------<br />';
+//    echo 'Tiempoinicio '.$inicio .'<br />';
+//    echo 'Tiempofin '.$fin .'<br />';
+//    $total=(int)$fin-(int)$inicio;
+//    echo 'tardatiempo '.$total .'<br />';
   	foreach (array_merge($validacion->incidencias, $afichero->incidencias) as $incidencia)
     	echo $incidencia;
-
 	  echo get_string('file_export_link', 'mgm', $afichero);
   	print_simple_box_end();
   	admin_externalpage_print_footer();
+  	unset($SESSION->showi);
 	}
 }
 else if ($data = $mform->get_data(false)){
@@ -78,6 +88,14 @@ else if ($data = $mform->get_data(false)){
     }
     else if (!empty($data->next)) {
     	$edicion=$data->edition;
+    	$SESSION->showi=array();
+    	$SESSION->showi['nodni']=$data->nodni;
+    	$SESSION->showi['norol']=$data->norol;
+    	$SESSION->showi['usuario']=$data->usuario;
+    	$SESSION->showi['curso']=$data->curso;
+    	$SESSION->showi['noapto']=$data->noapto;
+    	$SESSION->showi['tarea']=$data->tarea;
+
     	if (! isset($edicion) or $edicion == 0){
     		error('Edicion no valida',"$CFG->wwwroot".'/mod/mgm/export.php');
     	}
