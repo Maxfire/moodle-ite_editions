@@ -157,7 +157,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="edicion_centro" COMMENT="Edicion Centros" PREVIOUS="edicion_cert_history">
+    <TABLE NAME="edicion_centro" COMMENT="Edicion Centros" PREVIOUS="edicion_cert_history" NEXT="edicion_descartes">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="pais"/>
         <FIELD NAME="pais" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="localidad"/>
