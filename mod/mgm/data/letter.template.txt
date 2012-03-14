@@ -35,6 +35,7 @@ http://formacionprofesorado.educacion.es
 
 en el menú de la izquierda verás la opción Acceso de usuarios, haciendo clic sobre este enlace se mostrarán dos formularios de acceso.
  
+
 Para acceder al Aula Virtual Debes introducir tus claves en el formulario Acceso Formación Moodle.
 
 Ya dentro de la plataforma accede al curso que te hemos asignado desde la categoría “Formación en red”.
