@@ -2859,7 +2859,7 @@ function mgm_is_course_certified($userid, $courseid) {
  * @param string $roleid
  * @return boolean
  */
-function mgm_certificate_course($userid, $courseid, $edition, $roleid = 0) {
+function mgm_certificate_course($userid, $courseid, $edition, $roleid = 0, $tipodocumento=false, $numdocumento=false) {
     global $CFG;
 
     if(!$userid || !$courseid || !$edition || !$roleid) {
@@ -2881,6 +2881,13 @@ function mgm_certificate_course($userid, $courseid, $edition, $roleid = 0) {
         $data -> courseid = $courseid;
         $data -> edicionid = $edition -> id;
         $data -> roleid = $roleid;
+        if ($tipodocumento){
+        	$data -> tipodocumento = $tipodocumento;
+        }
+        if ($numdocumento){
+        	$data -> numdocumento = $numdocumento;
+        }
+
         $data -> confirm = true;
 
         return insert_record('edicion_cert_history', $data);
@@ -2914,7 +2921,7 @@ function mgm_certificate_edition($edition) {
                 continue ;
             }
 
-            if(!mgm_certificate_course($participant -> userid, $course -> idnumber, $edition, $participant -> roleid)) {
+            if(!mgm_certificate_course($participant -> userid, $course -> idnumber, $edition, $participant -> roleid, $participant -> tipoid, $participant -> dni)) {
                 return false;
             }
         }
@@ -3041,14 +3048,15 @@ function mgm_get_course_participants($course, $real = false) {
     }
 
     if($real)
-        $select = "SELECT DISTINCT u.id as userid, ctx.id as ctxid, u.username, r.roleid ";
+        $select = "SELECT DISTINCT u.id as userid, ctx.id as ctxid, u.username, r.roleid, eu.tipoid, eu.dni ";
     else
-        $select = "SELECT DISTINCT ctx.id, u.id as userid, u.username, r.roleid ";
+        $select = "SELECT DISTINCT ctx.id, u.id as userid, u.username, r.roleid, eu.tipoid, eu.dni ";
     $from = "FROM ".$CFG->prefix."user u " .
             "LEFT OUTER JOIN " .$CFG->prefix."context ctx " .
-            "ON (u.id=ctx.instanceid AND ctx.contextlevel=".CONTEXT_USER.")".
+            "ON (u.id=ctx.instanceid AND ctx.contextlevel=".CONTEXT_USER.") ".
             "JOIN ".$CFG->prefix."role_assignments r ".
-            "ON u.id=r.userid ";
+            "ON u.id=r.userid ".
+    				"LEFT JOIN ". $CFG->prefix ."edicion_user eu ON u.id=eu.userid ";
 
     // we are looking for all users with this role assigned in this context or higher
     if($usercontexts = get_parent_contexts($context)) {
@@ -3614,13 +3622,13 @@ function mgm_parse_msg($msg, $userid, $editionid){
 	   global $CFG;
      $arol='5';
      $sql="
-     SELECT u.firstname nombre,u.lastname apellidos, eu.dni dni, eu.cc, u.email, c.fullname as curso, ect.dgenerica, ect.despecifica, ect.direccion, ect.cp , ect.localidad, ect.provincia, ect.pais, ect.telefono
+     SELECT u.username usuario, u.firstname nombre,u.lastname apellidos, eu.dni dni, eu.cc, u.email, c.fullname as curso, ect.dgenerica, ect.despecifica, ect.direccion, ect.cp , ect.localidad, ect.provincia, ect.pais, ect.telefono
      FROM mdl_user u left join  mdl_edicion_user eu on (u.id=eu.userid) left join mdl_edicion_centro ect on ect.codigo=eu.cc,
      mdl_edicion_course ec left join mdl_course c on ec.courseid=c.id , mdl_role_assignments AS ra INNER JOIN mdl_context AS context ON ra.contextid=context.id
      where context.contextlevel = 50 AND ra.roleid=".$arol." AND u.id=ra.userid AND context.instanceid=ec.courseid AND u.id=".$userid." AND ec.edicionid=". $editionid;
      $sql=str_replace("prefix_", $CFG->prefix, $sql);
      if($reg=get_record_sql($sql)){
-       $fields=array('nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
+       $fields=array('usuario', 'nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
        foreach($fields as $field){
      	   $msg=str_replace('#'.$field, $reg->$field, $msg);
        }
@@ -3632,14 +3640,14 @@ function mgm_parse_letter($data, $userid, $editionid){
 	   global $CFG;
      $arol='5';
      $sql="
-     SELECT u.firstname nombre,u.lastname apellidos, eu.dni dni, eu.cc, u.email, c.fullname as curso, ect.dgenerica, ect.despecifica, ect.direccion, ect.cp , ect.localidad, ect.provincia, ect.pais, ect.telefono
+     SELECT u.username usuario, u.firstname nombre,u.lastname apellidos, eu.dni dni, eu.cc, u.email, c.fullname as curso, ect.dgenerica, ect.despecifica, ect.direccion, ect.cp , ect.localidad, ect.provincia, ect.pais, ect.telefono
      FROM mdl_user u left join  mdl_edicion_user eu on (u.id=eu.userid) left join mdl_edicion_centro ect on ect.codigo=eu.cc,
      mdl_edicion_course ec left join mdl_course c on ec.courseid=c.id , mdl_role_assignments AS ra INNER JOIN mdl_context AS context ON ra.contextid=context.id
      where context.contextlevel = 50 AND ra.roleid=".$arol." AND u.id=ra.userid AND context.instanceid=ec.courseid AND u.id=".$userid." AND ec.edicionid=". $editionid;
      $sql=str_replace("prefix_", $CFG->prefix, $sql);
      if($reg=get_record_sql($sql)){
      	$letter=new stdClass();
-       $fields=array('nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
+       $fields=array('usuario', 'nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
        foreach($fields as $field){
      	   $data->letterhead=str_replace('#'.$field, $reg->$field, $data->letterhead);
      	   $data->letterbody=str_replace('#'.$field, $reg->$field, $data->letterbody);
@@ -3918,14 +3926,14 @@ class Curso {
         return $participantes;
     }
 
-    function getParticipantes() {
+    function getParticipantes($filter_apto=True) {
         if($this -> dparticipantes)
             return $this -> participantes;
         $participantes = array();
         $userlist = mgm_get_course_participants($this -> data, true);
         if($userlist)
             foreach($userlist as $userdata) {
-                $participantes[$userdata -> userid] = new Usuario($userdata, $this, $this->show);
+                $participantes[$userdata -> userid] = new Usuario($userdata, $this, $this->show, $filter_apto);
             }
         //$this -> dparticipantes = True;
         return $participantes;
@@ -3960,6 +3968,8 @@ class Usuario {
     var $curso;
     var $incidencias = array();
     var $info;
+    var $apto;
+    var $tipoparticipante;
     var $show=array('norol'=>1, 'nodni'=>1, 'usuario'=>1);
     function format_text($str){
     	  if ($str){
@@ -3991,7 +4001,7 @@ class Usuario {
     	$this -> dbdata=$data;
     }
 
-    function Usuario($data, $curso, $show=false) {
+    function Usuario($data, $curso, $show=false, $filter_apto=True) {
     	  if($show){
     	  	foreach($show as $k=>$s){
     	  		$this->show[$k]=$s;
@@ -3999,6 +4009,8 @@ class Usuario {
     	  }
         $this -> data = $data;
         $this -> curso = $curso;
+        $this -> apto=$this->curso->aprobado($this);
+        $this -> tipoparticipante=$this -> getTipo();
         $this -> info -> nombre = $data -> username;
         $this -> info -> id = $data -> userid;
         $this -> info -> curso = $this -> curso -> data -> fullname;
@@ -4020,8 +4032,13 @@ class Usuario {
               $this -> incidencias[] = get_string('incidencia_usuario', 'mgm', $this -> info);
             }
         } else {
-            if((!$this -> dbdata -> dni || strlen($this -> dbdata -> dni) != 9) && $this->show['nodni'])
+        	  if ($filter_apto){
+        	    if((!$this -> dbdata -> dni || strlen($this -> dbdata -> dni) != 9) && $this->show['nodni'] && ($this->apto && $this -> tipoparticipante=='A'))
                 $this -> incidencias[] = get_string('incidencia_dni', 'mgm', $this -> info);
+        	  }else{
+        	  	if((!$this -> dbdata -> dni || strlen($this -> dbdata -> dni) != 9) && $this->show['nodni'])
+        	  		$this -> incidencias[] = get_string('incidencia_dni', 'mgm', $this -> info);
+        	  }
             $this -> edata['tipoid'] = $this->format_text($this -> dbdata -> tipoid);
             $this -> edata['DNI'] = strtoupper($this -> dbdata -> dni);
             $this -> edata['DNI'] = $this->format_text(substr($this -> edata['DNI'], strspn($this -> edata['DNI'], '0')));
@@ -4036,10 +4053,11 @@ class Usuario {
         $this -> edata['numregistro'] = null;
         $this -> edata['numregistroCCAA'] = null;
         $this -> edata['generacertif'] = null;
-        $this -> edata['codtipoparticipante'] = $this->format_text($this -> getTipo());
+        $this -> edata['codtipoparticipante'] = $this->format_text($this->tipoparticipante);
         #Obligatorio
-        if(!$this -> edata['codtipoparticipante']  && $this->show['norol'])
+        if(!$this -> edata['codtipoparticipante']  && $this->show['norol']){
             $this -> incidencias[] = get_string('incidencia_no_tipo_usuario', 'mgm', $this -> info);
+        }
         $this -> edata['codmodalidad'] = $this->format_text($this -> curso -> edata['codmodalidad']);
         #Obligatorio, proviene de la actividad/curso
         $this -> edata['fechainicio'] = $this -> curso -> edata['fechainicio'];
@@ -4171,9 +4189,12 @@ class EmisionDatos {
     var $separador_campo = ';';
     var $prefix = 'mgm_export';
     var $show=array('nodni'=>1, 'norol'=> 1, 'usuario'=>1, 'curso'=>1, 'tareas'=>0, 'noapto'=>0);
+    var $alumnos_aptos=true;
+    var $filter_aptos=true;
 
-    function EmisionDatos($edicion = null) {
+    function EmisionDatos($edicion = null, $filter_aptos=True) {
         $this -> edicion = new Edicion($edicion);
+        $this -> filter_aptos=$filter_aptos;
     }
 
     function setLog($show){
@@ -4256,7 +4277,7 @@ class EmisionDatos {
                     $ret -> incidencias = array_merge($ret -> incidencias, $curso -> incidencias);
                 else
                 		fwrite($factividades, implode($this -> separador_campo, $curso -> edata) . "\n");
-                $participantes = $curso -> getParticipantes();
+                $participantes = $curso -> getParticipantes($this->filter_aptos);
 //                $memory=memory_get_usage();
 //                print $i.'-'.$curso->data->fullname . '-' . $curso->participantes.' - Mem: '.$memory/(1024*1024).' Tiempo: '.$actual. '<br/>';
                 foreach($participantes as $k=>$participante) {
@@ -4267,8 +4288,7 @@ class EmisionDatos {
                     if($participante -> incidencias)
                         $ret -> incidencias = array_merge($ret -> incidencias, $participante -> incidencias);
                     else{
-		                    if(in_array($participante -> edata['codtipoparticipante'], array('C', 'T')) || $aprobado = $curso -> aprobado($participante)) {
-
+		                    if(in_array($participante -> edata['codtipoparticipante'], array('C', 'T')) || $aprobado = $participante->apto) {
 		                        if($participante -> dbdata)
 		                            $profesores[$participante -> edata['DNI']] = $participante;
 		                        fwrite($fparticipantes, implode($this -> separador_campo, $participante -> edata) . "\n");
@@ -4585,7 +4605,94 @@ class JoinUsers{
 
 		}
 
-		function getCertificateRow(){
+		function getCertificateRow(){}
+}
 
+
+class ImportData{
+		var $filename=false;
+    var $cmdPath='/usr/bin/';
+    var $edition=0;
+
+		function ImportData($file=false, $edition=0){
+			if ($file){
+				$this->setFile($file);
+			}
+			$this->edition=$edition;
 		}
+
+		function setFile($file){
+			if (file_exists($file)){
+   			$this->filename=$file;
+   			return true;
+			}
+   		return false;
+		}
+
+		function getTables(){
+			$dev=false;
+			if ($this->filename){
+        $cmd=$this->cmdPath."mdb-tables ".$this->filename;
+      	$dev=system($cmd, $ret);
+			}
+			if ($ret!=0){
+				$dev=false;
+			}else{
+				$dev=explode(' ', $dev );
+			}
+			return $dev;
+		}
+
+#return  a handle for manipulate the command output
+#if any problem return false.
+		function getDataTableHandle($table){
+			$dev=false;
+			if ($this->filename){
+        $cmd=$this->cmdPath."mdb-export ".$this->filename. ' ' . $table;
+      	$dev=popen($cmd, "r");
+			}
+
+			return $dev;
+		}
+
+	  function setDataHistory(){
+	  	$tables=$this->getTables();
+	  	if ($tables && array_search('PARTICIPANTES', $tables)!== FALSE){
+				$handle=$this->getDataTableHandle('PARTICIPANTES');
+				if($handle){
+					$head=fgetcsv($handle, 0, ",", '"', '\\');
+	  		  while (($reg = fgetcsv($handle, 0, ",", '"', '\\')) !== FALSE) {
+			    	$cert_reg=new stdClass();
+			    	$cert_reg->userid=0;
+			    	$cert_reg->edicionid=$this->edition;
+			    	$cert_reg->courseid='0';
+			    	$cert_reg->roleid=0;
+			    	$cert_reg->numregistro=$reg[10];
+			    	$cert_reg->confirm=1;
+			    	$cert_reg->tipodocumento='N';
+			    	$cert_reg->numdocumento='0';
+						if (isset($reg[2])){
+							$cert_reg->tipodocumento=$reg[2];
+						}
+					  if (isset($reg[3])){
+						  $cert_reg->userid=mgm_get_userid_from_dni($reg[3]);
+						  $cert_reg->numdocumento=$reg[3];
+					  }
+						if (isset($reg[5])){
+							$cert_reg->courseid=$reg[5];
+						}
+						$dev=mgm_set_cert_history($cert_reg);
+						$out=$out.$dev[1];
+			    }
+				}
+	  	}else{
+	  		$dev=array(1, 'No se ha encontrado la tabla participantes.');
+	  	}
+	  	return false;
+
+
+	  }
+
+
+
 }

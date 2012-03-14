@@ -11,7 +11,7 @@ Instituto Nacional de Tecnologías Educativas y de Formación del Profesorado
 
 letterhead:
 #nombre #apellidos
-#despecifica
+#dgenerica #despecifica
 #direccion
 #cp #localidad
 #provincia
@@ -35,7 +35,7 @@ http://formacionprofesorado.educacion.es
 
 en el menú de la izquierda verás la opción Acceso de usuarios, haciendo clic sobre este enlace se mostrarán dos formularios de acceso.
  
-Para acceder al Aula Virtual Debes introducir tus claves en el formulario Acceso Formación Moodle – ITE .
+Para acceder al Aula Virtual Debes introducir tus claves en el formulario Acceso Formación Moodle.
 
 Ya dentro de la plataforma accede al curso que te hemos asignado desde la categoría “Formación en red”.
 La comunicación con el tutor/a se realizará principalmente mediante un sistema de correo integrado, que se encuentra en el Aula Virtual del curso en el apartado “Correo interno”.Al comienzo del curso recibirás un mensaje de saludo del tutor/a, al que deberás responder para confirmar que la comunicación está establecida. En el caso de que en el transcurso de 5 días desde la fecha de comienzo no hubieras recibido el mensaje de tu tutor/a, conviene que seas tú quien le envíe uno.

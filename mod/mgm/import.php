@@ -64,7 +64,9 @@ if ($data = $mform->get_data(false)) {
     	}
     	$edicion=$data->edition;
     	if (isset($edicion) and $edicion != 0 and $filename){
-    		print "procesar la edicion y el fichero";
+    		$idata=new ImportData($filename);
+    		$tables=$idata->setDataHistory();
+    		print "Tablas: " . $tables;
 				die();
 
     	}else{

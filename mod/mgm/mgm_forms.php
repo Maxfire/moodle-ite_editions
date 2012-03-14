@@ -246,7 +246,7 @@ class user_filter extends moodleform {
 class action_users extends moodleform {
     function definition() {
         $mform =& $this->_form;
-				$actionoptions = array(0=>'Elegir',1=>"Enviar correo",2 =>'Generar cartas');
+				$actionoptions = array(0=>'Elegir',1=>"Enviar mensaje",2 =>'Generar cartas');
 				$mform->addElement('select', 'action', get_string('action', 'mgm'), $actionoptions);
 				$objs = array();
 				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
@@ -333,9 +333,10 @@ class export_data extends moodleform {
 				}
 
 				$mform->addElement('select', 'edition', get_string('edition', 'mgm'), $editionoptions);
+				$mform->setType('edition', PARAM_INT);        $objs = array();
+				$mform->addElement('advcheckbox', 'filteraptos', get_string('filteraptos', 'mgm'));
 
 				$mform->addElement('header', 'incidencias', get_string('showincidents', 'mgm'));
-				$mform->setType('edition', PARAM_INT);        $objs = array();
 				$mform->addElement('advcheckbox', 'nodni', get_string('nodni', 'mgm'));
 				$mform->addElement('advcheckbox', 'norol', get_string('norol', 'mgm'));
 				$mform->addElement('advcheckbox', 'usuario', get_string('usuario', 'mgm'));
@@ -345,6 +346,7 @@ class export_data extends moodleform {
 				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
         $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));
         $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
+        $mform->setDefault('filteraptos', 1);
         $mform->setDefault('nodni', 1);
         $mform->setDefault('norol', 1);
         $mform->setDefault('usuario', 1);

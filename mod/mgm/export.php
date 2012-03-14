@@ -59,13 +59,22 @@ else if ($generated) {
   	admin_externalpage_print_header();
   	print_heading($strtitle);
   	print_simple_box_start('center');
-  	$emision = new EmisionDatos($edicion);
+  	if (isset($SESSION->filteraptos)){
+  		$filteraptos=$SESSION->filteraptos;
+  	}else{
+  		$filteraptos=true;
+  	}
+  	$emision = new EmisionDatos($edicion, $filteraptos);
   	if (isset($SESSION->showi)){
   		$emision->setLog($SESSION->showi);
   	}
   	$inicio=time();
   	$validacion = $emision->Validar();
   	$afichero = $emision->aFichero( $tempdir );
+//		$cursos = $emision -> edicion -> getCursos($emision->show);
+//		foreach($cursos as $curso){
+//			$afichero = $emision->aFichero( $tempdir, $curso );
+//		}
 //    $fin=time();
 //    echo  'Memoria ' . memory_get_usage();
 //    echo '-------<br />';
@@ -89,12 +98,14 @@ else if ($data = $mform->get_data(false)){
     else if (!empty($data->next)) {
     	$edicion=$data->edition;
     	$SESSION->showi=array();
+
     	$SESSION->showi['nodni']=$data->nodni;
     	$SESSION->showi['norol']=$data->norol;
     	$SESSION->showi['usuario']=$data->usuario;
     	$SESSION->showi['curso']=$data->curso;
     	$SESSION->showi['noapto']=$data->noapto;
     	$SESSION->showi['tarea']=$data->tarea;
+    	$SESSION->filteraptos=$data->filteraptos;
 
     	if (! isset($edicion) or $edicion == 0){
     		error('Edicion no valida',"$CFG->wwwroot".'/mod/mgm/export.php');

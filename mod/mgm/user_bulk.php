@@ -40,7 +40,7 @@ if ($data = $ufiltering->get_data(false)) {
     	<input type="hidden" value="'.sesskey().'" name="sesskey">
     	<SELECT name="action">
 		  <OPTION VALUE="0">Elegir</OPTION>
-		  <OPTION VALUE="1">Enviar Correo</OPTION>
+		  <OPTION VALUE="1">Enviar mensaje</OPTION>
 		  <OPTION VALUE="2">Generar cartas</OPTION>
 			</SELECT>
     	<input type="submit" name="submit_action" id="Submit_btn1" value="'.get_string('next').'">

@@ -342,4 +342,5 @@ $string['usuario']='Datos extendidos de usuario';
 $string['curso']='Curso';
 $string['noapto']='No Apto';
 $string['tarea']='Tarea sin finalizar';
+$string['filteraptos']='Solo Alumnos Aptos';
 

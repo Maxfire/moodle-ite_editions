@@ -37,10 +37,10 @@ if ($action=='1'){
 	        	  $tmp_msg=$msg;
 	        	  $tmp_msg=mgm_parse_msg($tmp_msg, $user->id, $SESSION->bulk_filters['edicionid']);
 	            message_post_message($USER, $user, $tmp_msg, FORMAT_HTML, 'direct');
+
 	        }
-	        die;
 	    }
-	    redirect($return);
+	    notice('!Los mensajes han sido enviados!', $return);
 	}
 	// disable html editor if not enabled in preferences
 	if (!get_user_preferences('message_usehtmleditor', 0)) {
@@ -77,7 +77,7 @@ if ($action=='1'){
 
 	admin_externalpage_print_header();
 	$msgform->display();
-	print '<div><a><b>Comonides disponibles para el alumno:</b> #nombre, #apellidos, #email, #cc </a></div>';
+	print '<div><a><b>Comonides disponibles para el alumno:</b> #nombre, #apellidos, #email, #cc, #usuario </a></div>';
 	print '<div><a><b>Comonides disponibles para el centro:</b> #dgenerica, #despecifica, #cp, #direccion, #localidad, #provincia, #pais, #telefono  </a></div>';
 	print '<div><a><b>Comonides disponibles para el curso:</b>  #curso  </a></div>';
 	admin_externalpage_print_footer();
@@ -115,7 +115,7 @@ if ($action=='1'){
 
 	admin_externalpage_print_header();
 	$letterform->display();
-	print '<div><a><b>Comonides disponibles para el alumno:</b> #nombre, #apellidos, #email, #cc </a></div>';
+	print '<div><a><b>Comonides disponibles para el alumno:</b> #nombre, #apellidos, #email, #cc, #usuario  </a></div>';
 	print '<div><a><b>Comonides disponibles para el centro:</b> #dgenerica, #despecifica, #cp, #direccion, #localidad, #provincia, #pais, #telefono  </a></div>';
 	print '<div><a><b>Comonides disponibles para el curso:</b>  #curso  </a></div>';
 	admin_externalpage_print_footer();
