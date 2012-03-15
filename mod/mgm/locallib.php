@@ -4203,12 +4203,6 @@ class EmisionDatos {
     	}
     }
 
-    function setLog($show){
-    	foreach($show as $k=>$v){
-    		$this->show[$k]=$v;
-    	}
-    }
-
     function Validar($fechaactual = null) {
         if(!$fechaactual)
             $fechaactual = mktime();
