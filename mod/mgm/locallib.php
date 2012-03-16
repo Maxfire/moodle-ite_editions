@@ -4028,16 +4028,15 @@ class Usuario {
             #Obligatorio, "N" o "P" o "T"
             $this -> edata['DNI'] = null;
             #Obligatorio
-            if ($this->show['usuario']){
-              $this -> incidencias[] = get_string('incidencia_usuario', 'mgm', $this -> info);
-            }
+            $this -> incidencias[] = array('usuario',get_string('incidencia_usuario', 'mgm', $this -> info));
+
         } else {
-        	  if ($filter_apto){
-        	    if((!$this -> dbdata -> dni || strlen($this -> dbdata -> dni) != 9) && $this->show['nodni'] && ($this->apto && $this -> tipoparticipante=='A'))
-                $this -> incidencias[] = get_string('incidencia_dni', 'mgm', $this -> info);
+        	  if ($filter_apto && $this -> tipoparticipante=='A'){
+        	    if((!$this -> dbdata -> dni || strlen($this -> dbdata -> dni) != 9) && ($this->apto ))
+                $this -> incidencias[] = array('nodni',get_string('incidencia_dni', 'mgm', $this -> info));
         	  }else{
-        	  	if((!$this -> dbdata -> dni || strlen($this -> dbdata -> dni) != 9) && $this->show['nodni'])
-        	  		$this -> incidencias[] = get_string('incidencia_dni', 'mgm', $this -> info);
+        	  	if((!$this -> dbdata -> dni || strlen($this -> dbdata -> dni) != 9))
+        	  		$this -> incidencias[] = array('nodni',get_string('incidencia_dni', 'mgm', $this -> info));
         	  }
             $this -> edata['tipoid'] = $this->format_text($this -> dbdata -> tipoid);
             $this -> edata['DNI'] = strtoupper($this -> dbdata -> dni);
@@ -4055,8 +4054,8 @@ class Usuario {
         $this -> edata['generacertif'] = null;
         $this -> edata['codtipoparticipante'] = $this->format_text($this->tipoparticipante);
         #Obligatorio
-        if(!$this -> edata['codtipoparticipante']  && $this->show['norol']){
-            $this -> incidencias[] = get_string('incidencia_no_tipo_usuario', 'mgm', $this -> info);
+        if(!$this -> edata['codtipoparticipante'] ){
+            $this -> incidencias[] = array('norol',get_string('incidencia_no_tipo_usuario', 'mgm', $this -> info));
         }
         $this -> edata['codmodalidad'] = $this->format_text($this -> curso -> edata['codmodalidad']);
         #Obligatorio, proviene de la actividad/curso
@@ -4269,7 +4268,7 @@ class EmisionDatos {
             foreach($cursos as $curso) {
 								$i++;
 								$actual=$inicio-(int)time();
-                if(!$cabecera_participantes) {
+                if(!$cabecera_actividades) {
                     fwrite($factividades, '"'. implode('"'. $this -> separador_campo .'"', array_keys($curso -> edata)) . '"'."\n");
                     $cabecera_actividades = True;
                 }
@@ -4285,14 +4284,24 @@ class EmisionDatos {
                         fwrite($fparticipantes,'"' . implode('"'. $this -> separador_campo . '"', array_keys($participante -> edata)) .'"'."\n");
                         $cabecera_participantes = True;
                     }
-                    if($participante -> incidencias)
-                        $ret -> incidencias = array_merge($ret -> incidencias, $participante -> incidencias);
+                    if($participante -> incidencias){
+                    	  $tmp_inc=array();
+                        foreach($participante -> incidencias as $incidencia){
+                        	if ($this->show[$incidencia[0]])
+                        	  $tmp_inc[]=$incidencia[1];
+                        }
+                        if ($tmp_inc){
+                        	$ret -> incidencias = array_merge($ret -> incidencias, $tmp_inc);
+                        }
+                		}
                     else{
-		                    if(in_array($participante -> edata['codtipoparticipante'], array('C', 'T')) || $aprobado = $participante->apto) {
+                    	  $c1=in_array($participante -> tipoparticipante, array('C', 'T')) || $aprobado = $participante->apto;
+                    	  $c2=!$aprobado && $participante -> edata['codtipoparticipante'] && $this->show['noapto'];
+		                    if($c1) {
 		                        if($participante -> dbdata)
 		                            $profesores[$participante -> edata['DNI']] = $participante;
 		                        fwrite($fparticipantes, implode($this -> separador_campo, $participante -> edata) . "\n");
-		                    } elseif(!$aprobado && $participante -> edata['codtipoparticipante'] && $this->show['noapto'])
+		                    } elseif($c2)
 		                        $ret -> incidencias[] = get_string('incidencia_no_aprobado', 'mgm', $participante -> info);
                     }
 
