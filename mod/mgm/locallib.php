@@ -3692,7 +3692,7 @@ class Edicion {
             $year = date("Y", $this -> data -> inicio);
             //Inicio de año academico el 15 de septiembre
             //TODO: Parametrizar?
-            if($yday < date("z", mktime(0, 0, 0, 9, 15, 2011))) {
+            if($yday < date("z", mktime(0, 0, 0, 7, 1, 2011))) {
                 $year--;
             }
             $this -> anoacademico = $year . $year + 1;
