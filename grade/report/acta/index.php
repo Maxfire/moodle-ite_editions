@@ -1,4 +1,4 @@
-<?php
+<?php;
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -22,7 +22,7 @@ require_once $CFG->dirroot.'/mod/mgm/locallib.php';
 
 $courseid = required_param('id', PARAM_INT);
 $userid   = optional_param('userid', $USER->id, PARAM_INT);
-
+$groupid = optional_param('group', 0, PARAM_INT);
 /// basic access checks
 if (!$course = get_record('course', 'id', $courseid)) {
     print_error('nocourseid');
@@ -76,13 +76,13 @@ if (!$access) {
 }
 
 /// return tracking object
-$gpr = new grade_plugin_return(array('type'=>'report', 'plugin'=>'user', 'courseid'=>$courseid, 'userid'=>$userid));
+$gpr = new grade_plugin_return(array('type'=>'report', 'plugin'=>'acta', 'courseid'=>$courseid, 'userid'=>$userid));
 
 /// last selected report session tracking
 if (!isset($USER->grade_last_report)) {
     $USER->grade_last_report = array();
 }
-$USER->grade_last_report[$course->id] = 'user';
+$USER->grade_last_report[$course->id] = 'grade';
 
 
 //first make sure we have proper final grades - this must be done before constructing of the grade tree
@@ -108,13 +108,32 @@ $MGMINF->courseid=$courseid;
 $MGMINF->userid=$userid;
 
 
-if ($course)
-$params='?id='.$reportid . '&filter_courses=' . $courseid . $groups. '&report_name=' . $reporttype . '&download=true&format=pdf';
-if (has_capability('moodle/grade:viewall', $context)) { //Only Teachers will see de Acta
-	   redirect("$CFG->wwwroot".'/blocks/configurable_reports/viewreport.php'. $params);
+if (has_capability('moodle/grade:viewall', $context)) { //Teachers will see all student reports
+		if ($groups == ''){//admin
+			if ($groupid){
+				$groups='&filter_groups=('.$groupid.')';
+				$params='?id='.$reportid . '&filter_courses=' . $courseid . $groups. '&report_name=' . $reporttype . '&download=true&format=pdf&admin=true';
+		  	redirect("$CFG->wwwroot".'/blocks/configurable_reports/viewreport.php'. $params);
+			}
+      print_grade_page_head($courseid, 'report', 'acta');
+      groups_print_course_menu($course, $gpr->get_return_url('index.php?id='.$courseid, array('userid'=>0)));
+      print_footer($course);
+
+		}else{//tutor del curso
+		  $params='?id='.$reportid . '&filter_courses=' . $courseid . $groups. '&report_name=' . $reporttype . '&download=true&format=pdf';
+		  redirect("$CFG->wwwroot".'/blocks/configurable_reports/viewreport.php'. $params);
+		}
+
 } else { //Students can not see act
     error("Acción no permitida.", $CFG->wwwroot.'/course/view.php?id='.$courseid);
 }
+
+//print_footer($course);
+
+
+
+
+
 //print_footer($course);
 
 ?>

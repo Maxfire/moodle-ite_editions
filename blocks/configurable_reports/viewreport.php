@@ -95,7 +95,10 @@
 			if ($format=='pdf'){
 				$filtercourseid = optional_param('filter_courses',false);
 				$reportname = optional_param('report_name',false);
-				export_report($reportclass, $filtercourseid, $reportname);
+				$admin = optional_param('admin',false);
+				$filtergroupid = optional_param('filter_groups',false);
+
+				export_report($reportclass, $filtercourseid, $reportname, $admin, $filtergroupid);
 			}
 			export_report($reportclass->finalreport);
 		}

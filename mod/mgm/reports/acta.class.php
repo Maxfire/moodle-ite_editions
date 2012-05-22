@@ -21,6 +21,8 @@ var $fontList;
 var $issetfont;
 var $issetcolor;
 var $username;
+var $adminMsg;
+var $adminSig;
 var $cabecera1;
 var $cabecera2;
 
@@ -40,6 +42,9 @@ function ACTAPDF($orientation='P',$unit='mm',$format='A4'){
     $this->username=false;
     $this->cabecera1=false;
     $this->cabecera2=false;
+    $this->adminMsg='';
+    $this->adminSig='';
+
 }
 public function Header()
   {
@@ -70,8 +75,20 @@ public function Footer()
     $this->Cell(50,15,'',1,0,'C');
     $this->SetXY(-60,-8);
     $this->Cell(50,5,iconv('UTF-8', 'windows-1252', $this->getUsername()),0,0,'C');
-    $this->SetXY(120,-15);
+    if ($this->adminMsg != ''){
+    	$this->SetXY(-50,-20);
+    }else{
+    	$this->SetXY(120,-15);
+    }
     $this->Cell(0,10,'Fecha: '. date("d-m-Y"),0,0,'L');
+    $this->SetXY(15,-20);
+    $this->SetFont('Arial','B',8);
+    $this->Cell(0,10,iconv('UTF-8', 'windows-1252', $this->getAdminMsg()),0,0,'L');
+    $this->SetXY(50,-12);
+    $this->SetFont('Arial','I',6);
+    $this->MultiCell(100,2,iconv('UTF-8', 'windows-1252', $this->getAdminSig()),0,0,'R');
+    $this->SetFont('Arial','I',8);
+
 
   }
 public function setUsername($str)
@@ -82,6 +99,20 @@ public function setUsername($str)
 //Obtiene el texto de la cabecera
 public function getUsername(){
     return $this->username;
+}
+
+public function setAdminMsg($str){
+	$this->adminMsg=$str;
+}
+public function getAdminMsg($str){
+	return $this->adminMsg;
+}
+
+public function setAdminSig($str){
+	$this->adminSig=$str;
+}
+public function getAdminSig($str){
+	return $this->adminSig;
 }
 
 public function setCaberera1($str)

@@ -22,7 +22,7 @@
   * @date: 2009
   */
 
-function export_report($report, $filtercourseid=false, $reportname=false){
+function export_report($report, $filtercourseid=false, $reportname=false, $admin=false, $filtergroupid){
 	global $CFG;
   require_once($CFG->dirroot.'/mod/mgm/oppdflib.class.php');
   require_once($CFG->dirroot.'/mod/mgm/reports/acta.class.php');
@@ -55,21 +55,48 @@ function export_report($report, $filtercourseid=false, $reportname=false){
     	$username=$report->currentuser->lastname . ', ' . $report->currentuser->firstname;
     	$coursename='--';
     	$edicionname='--';
+    	$fechas='';
     	if ($filtercourseid){
     		$course=get_record('course', 'id', $filtercourseid);
     		if ($course){
     			$coursename=$course->fullname;
+    			$course_extend=get_record('edicion_course', 'courseid', $filtercourseid);
+    			if ($course_extend){
+    				$fechas="\nFecha: " . date('d/m/Y', $course_extend->fechainicio) . " - " . date('d/m/Y', $course_extend->fechafin);
+    			}
     		}
     		$edition=mgm_get_course_edition($filtercourseid);
     		if ($edition){
     			$edicionname=$edition->name;
     		}
     	}
+			if ($admin){
+				$groupid=trim($filtergroupid, '()');
+				$roles=mgm_get_certification_roles();
+				$roleid=$roles['tutor'];
+				$sql="SELECT ra.userid FROM ". $CFG -> prefix . "role_assignments ra left join ". $CFG -> prefix . "groups_members gm on (ra.userid=gm.userid)
+				where contextid IN (SELECT id FROM ". $CFG -> prefix . "context m where contextlevel=50 and instanceid=".$filtercourseid.")
+				and groupid=".$groupid." and roleid=". $roleid ;
+				if ($tutorid=get_record_sql($sql)){
+					$t=get_record('user', 'id', $tutorid->userid);
+					$tutor=$t->lastname . ', ' . $t->firstname;
+				}else{
+					$tutor='Desconocido';
+				}
+				#Parametrizar
+				$pdffile->setAdminMsg(get_string('acta_admin_msg','mgm'));
+				$pdffile->setAdminSig(get_string('acta_admin_sig','mgm'));
+				$username='';
 
-    	$cabecera2="Edicion: " .$edicionname ."\nCurso: ". $coursename ."\nTutor/a: " . $username ;
-      $pdffile->opCabecera($cabecera1, $cabecera2);
-      $pdffile->SetUsername($username);
-      $colwidth=array(20,70,40,20,20);
+			}
+			else{
+       $tutor=$username;
+			}
+			$alumnos=$rkey+1;
+			$cabecera2="Edición: " .$edicionname ."\nCurso: ". $coursename ."\nTutor/a: " . $tutor. $fechas . "   Alumnos: $alumnos";
+			$pdffile->opCabecera($cabecera1, $cabecera2);
+			$pdffile->SetUsername($username);
+			$colwidth=array(20,70,40,20,20);
     }else{
     	$pdffile = new OPPDF();
     	$pdffile->opCabecera($cabecera1);

@@ -343,4 +343,6 @@ $string['curso']='Curso';
 $string['noapto']='No Apto';
 $string['tarea']='Tarea sin finalizar';
 $string['filteraptos']='Solo Alumnos Aptos';
+$string['acta_admin_msg']='Documento generado por Administración INTEF';
+$string['acta_admin_sig']="Dª Mª del Carmen Arenas Fonollosa, Jefa del Servicio de Formación en Red del Profesorado.\nInstituto Nacional de Tecnologías Educativas. INTEF. Ministerio de Educación,Cultura y Deporte.";
 
