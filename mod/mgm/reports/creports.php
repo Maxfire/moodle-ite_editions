@@ -85,8 +85,12 @@ Begin
 	      when cod REGEXP '26' then 'RIOJA'
 	      when cod REGEXP '51' then 'CEUTA'
 	      when cod REGEXP '52' then 'MELILLA'
-              when cod='00' then 'INDEFINIDA'
-         end into ca;
+        when cod='00' then case when cc2='00000075' then 'ONCE'
+				      when cc2='00000050' then 'EXTRANJERO'
+				      when cc2='00000025' then 'AULAS ITINERANTES'
+				      else 'INDEFINIDA'
+				 end
+  end into ca;
   RETURN ca;
 end";
 		##Funcion para obtener los cuerpos docentes a partir del codigo
