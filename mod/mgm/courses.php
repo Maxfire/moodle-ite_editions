@@ -95,19 +95,21 @@ $criteria->dependencias = $dependencias;
 $tasks = array();
 foreach (mgm_get_course_tasks($courseid) as $task) {
     $tasks[$task->id] = $task->itemname;
-} 
+}
 $criteria->tasks = $tasks;
-
+if ($criteria->fechainimodalidad===null){
+	unset($criteria->fechainimodalidad);
+}
 $mform = new mgm_course_edit_form('courses.php', $criteria);
 $mform->set_data($criteria);
 
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot.'/mod/mgm/courses.php');
-} else if ($data = $mform->get_data()) {    
+} else if ($data = $mform->get_data()) {
     if ($data->opcion1 == $data->opcion2 && $data->opcion1 != 'ninguna') {
         error(get_string('opcionesduplicadas', 'mgm'), 'courses.php?courseid='.$courseid.'&edicionid='.$edicionid);
     }
-    mgm_set_edition_course_criteria($data);    
+    mgm_set_edition_course_criteria($data);
     redirect('courses.php?courseid='.$data->courseid.'&edicionid='.$data->edicionid);
 }
 

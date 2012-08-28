@@ -65,6 +65,13 @@ $format = optional_param('format', '', PARAM_ALPHA);
 $type = optional_param('type', '', PARAM_ALPHA);
 $multiple = optional_param('multiple', false, PARAM_BOOL);
 $editionid = optional_param('edition', 0, PARAM_INT);
+$change_state = optional_param('change_state', 0, PARAM_INT);
+
+
+if ($change_state==1 && $editionid){
+	  mgm_set_edition_paid($editionid);
+	  redirect($CFG->wwwroot.'/mod/mgm/index?editionedit=on');
+}
 
 if ($id) {
     if (!$course = get_record('course', 'id', $id)) {

@@ -57,91 +57,103 @@ class mgm_course_edit_form extends moodleform {
         }
 
         $mform->addElement('header', 'course_extend', get_string('course_extend', 'mgm'));
-        
+
         $mform->addElement('select', 'codagrupacion', get_string('codagrupacion', 'mgm'), $CODIGOS_AGRUPACION);
         $mform->addRule('codagrupacion', get_string('required'), 'required', null);
         $mform->addRule('codagrupacion', get_string('numeric', 'mgm'), 'numeric');
-        
+        $mform->setDefault('codagrupacion', 25);
+
         $mform->addElement('select', 'codmodalidad', get_string('codmodalidad', 'mgm'), $MODALIDADES);
         $mform->addRule('codmodalidad', get_string('required'), 'required', null);
-        
+
         $mform->addElement('select', 'codprovincia', get_string('codprovincia', 'mgm'), $PROVINCIAS);
         $mform->addRule('codprovincia', get_string('required'), 'required', null);
-        
+        $mform->setDefault('codprovincia', 280);
+
         $mform->addElement('select', 'codpais', get_string('codpais', 'mgm'), $PAISES);
         $mform->addRule('codpais', get_string('required'), 'required', null);
-        
+
         $mform->addElement('select', 'codmateria', get_string('codmateria', 'mgm'), $MATERIAS);
         $mform->addRule('codmateria', get_string('required'), 'required', null);
-        
+        $mform->setDefault('codmateria', 3801);
+
         $mform->addElement('select', 'codniveleducativo', get_string('codniveleducativo', 'mgm'), $NIVELES_EDUCATIVOS );
         $mform->addRule('codniveleducativo', get_string('required'), 'required', null);
-        
+        $mform->setDefault('codniveleducativo', 25);
+
         $mform->addElement('text', 'numhoras', get_string('numhoras', 'mgm'));
         $mform->addRule('numhoras', get_string('required'), 'required', null);
         $mform->addRule('numhoras', get_string('numeric', 'mgm'), 'numeric');
-        
+
         $mform->addElement('text', 'numcreditos', get_string('numcreditos', 'mgm'));
         $mform->addRule('numcreditos', get_string('required'), 'required', null);
         $mform->addRule('numcreditos', get_string('numeric', 'mgm'), 'numeric');
-        
+
         $mform->addElement('date_selector', 'fechainicio', get_string('fechainicio', 'mgm'));
         $mform->addRule('fechainicio', get_string('required'), 'required', null);
-        
+
         $mform->addElement('date_selector', 'fechafin', get_string('fechafin', 'mgm'));
         $mform->addRule('fechafin', get_string('required'), 'required', null);
-        
+
         $mform->addElement('text', 'localidad', get_string('localidad', 'mgm'));
         $mform->addRule('localidad', get_string('required'), 'required', null);
-        
+        $mform->setDefault('localidad', "En Red" );
+
         $mform->addElement('date_selector', 'fechainimodalidad', get_string('fechainimodalidad', 'mgm'));
         $mform->addRule('fechainimodalidad', get_string('required'), 'required', null);
-        $mform->setDefault('fechainimodalidad', mktime(0,0,0,9,1,1975));
-        
+        $mform->setDefault('fechainimodalidad', mktime(0,0,0,10,29,2011));
+
         $mform->addElement('text', 'tutorpayment', get_string('tutor_payment', 'mgm'));
         $mform->addRule('tutorpayment', get_string('required'), 'required', null);
-        $mform->setDefault('tutorpayment', 60);
-        
+        $mform->setDefault('tutorpayment', 65);
+
         $mform->addElement('text', 'duration', get_string('duration', 'mgm'));
         $mform->addRule('duration', get_string('required'), 'required', null);
         $mform->setDefault('duration', 2);
-        
+
         $mform->addElement('text', 'prevlab', get_string('prevlab', 'mgm'));
         $mform->addRule('prevlab', get_string('required'), 'required', null);
         $mform->setDefault('prevlab', 180);
-        
+
         $mform->addElement('text', 'tramo[0]', get_string('tramo', 'mgm').' 1-5');
         $mform->addRule('tramo[0]', get_string('required'), 'required', null);
         $mform->setDefault('tramo[0]', ($this->_customdata->tramo[0]) ? $this->_customdata->tramo[0] : 350);
-        
+
         $mform->addElement('text', 'tramo[1]', get_string('tramo', 'mgm').' 6-10');
         $mform->addRule('tramo[1]', get_string('required'), 'required', null);
-        $mform->setDefault('tramo[1]', ($this->_customdata->tramo[1]) ? $this->_customdata->tramo[1] : 350);
-        
+        $mform->setDefault('tramo[1]', ($this->_customdata->tramo[1]) ? $this->_customdata->tramo[1] : 450);
+
         $mform->addElement('text', 'tramo[2]', get_string('tramo', 'mgm').' 11-15');
         $mform->addRule('tramo[2]', get_string('required'), 'required', null);
-        $mform->setDefault('tramo[2]', ($this->_customdata->tramo[2]) ? $this->_customdata->tramo[2] : 350);
-        
+        $mform->setDefault('tramo[2]', ($this->_customdata->tramo[2]) ? $this->_customdata->tramo[2] : 500);
+
         $mform->addElement('text', 'tramo[3]', get_string('tramo', 'mgm').' 16-20');
         $mform->addRule('tramo[3]', get_string('required'), 'required', null);
-        $mform->setDefault('tramo[3]', ($this->_customdata->tramo[3]) ? $this->_customdata->tramo[3] : 350);
-        
+        $mform->setDefault('tramo[3]', ($this->_customdata->tramo[3]) ? $this->_customdata->tramo[3] : 550);
+
         $mform->addElement('text', 'tramo[4]', get_string('tramo', 'mgm').' 20+');
         $mform->addRule('tramo[4]', get_string('required'), 'required', null);
-        $mform->setDefault('tramo[4]', ($this->_customdata->tramo[4]) ? $this->_customdata->tramo[4] : 350);
-        
+        $mform->setDefault('tramo[4]', ($this->_customdata->tramo[4]) ? $this->_customdata->tramo[4] : 600);
+
         $tasks = array(0 => 'Automático');
         $atasks = & $this->_customdata->tasks;
         $tasks += $atasks;
-        
-        $mform->addElement('select', 'ecuadortask', get_string('ecuadortask', 'mgm'), $tasks);        
-        
+
+
+        $mform->addElement('select', 'ecuadortask', get_string('ecuadortask', 'mgm'), $tasks);
+				foreach($tasks as $k=>$v){
+        	if(preg_match('/^ec-/', $v)){
+        		$mform->setDefault('ecuadortask', $k);
+        		break;
+        	}
+        }
+
         $mform->addElement('header', 'criteria', get_string('criterios', 'mgm'));
 
         $mform->addElement('text', 'plazas', get_string('plazas', 'mgm'));
         $mform->addRule('plazas', get_string('required'), 'required', null);
         $mform->addRule('plazas', get_string('numeric', 'mgm'), 'numeric');
-        
+
         $mform->addElement('text', 'numgroups', get_string('numgroups', 'mgm'));
         $mform->addRule('numgroups', get_string('required'), 'required', null);
         $mform->addRule('numgroups', get_string('numeric', 'mgm'), 'numeric');
@@ -150,14 +162,15 @@ class mgm_course_edit_form extends moodleform {
             'ninguna'		 => get_string('sinprioridad', 'mgm'),
             'centros'        => get_string('prioridadcentro', 'mgm'),
             'especialidades' => get_string('prioridadespec', 'mgm')
-        );        
+        );
 
         $mform->addElement('select', 'opcion1', get_string('opcionuno', 'mgm'), $choices, 'onChange="mgm_opciones(true);"');
         $mform->addElement('select', 'opcion2', get_string('opciondos', 'mgm'), $choices, 'onChange="mgm_opciones(false);"');
-        
-        $comunidades = $COMUNIDADES;                
-        
-        $mform->addElement('select', 'comunidad', get_string('comunidad', 'mgm'), $comunidades);
+
+        $comunidades = $COMUNIDADES;
+
+        $mform->addElement('select', 'comunidad', get_string('comunidad_exclude', 'mgm'), $comunidades);
+        $mform->setHelpButton('comunidad', array('comunidad', 'Ayuda sobre la comunidad', 'mgm'));
 
         $achoices = $schoices = array();
         $aespecs = & $this->_customdata->aespecs;
@@ -207,11 +220,11 @@ class mgm_course_edit_form extends moodleform {
 
 
         $dpends = array();
-        $dchoices = array();     
+        $dchoices = array();
 
         foreach ($this->_customdata->dependencias as $k => $v) {
-            $dchoices[$k] = ($v->idnumber != "") ? $v->idnumber : "NO CODE"." (".$v->fullname.")"; 
-        } 
+            $dchoices[$k] = ($v->idnumber != "") ? $v->idnumber : "NO CODE"." (".$v->fullname.")";
+        }
 
         $dpends[] =& $mform->createElement('checkbox', 'depends', '',
                            '', 'id="dcheck" onclick="if(this.checked) {

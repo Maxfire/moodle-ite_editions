@@ -30,6 +30,7 @@
 
 require_once('../../config.php');
 require_once($CFG->dirroot."/mod/mgm/locallib.php");
+require_once($CFG->dirroot."/mod/mgm/mgm_forms.php");
 
 require_login();
 
@@ -49,7 +50,26 @@ print_simple_box_start('center');
 print_header("", get_string('especdata', 'mgm'), $navigation);
 
 if(mgm_especs_exists()) {
+
     echo "<center><h1>Especialidades encontradas en la base de datos</h1></center>";
+		$mform = new espec_form("$CFG->wwwroot".'/mod/mgm/espec.php');
+		if ($data = $mform->get_data(false)) {
+    	if 	(!empty($data->cancel)){
+    			unset($_POST);
+    			redirect("$CFG->wwwroot".'/index.php');
+    	}
+    	else if (!empty($data->update)) {
+    		 if (mgm_update_especs()){
+    		 		echo "<center><h1>Especialidades actualizadas!</h1></center>";
+    		 		redirect("$CFG->wwwroot".'/index.php');
+    		 }else{
+    		 		echo "<center><h1>No se ha podido actualizar las especialidades!</h1></center>";
+    		 		redirect("$CFG->wwwroot".'/index.php');
+    		 }
+
+    	}
+		}
+		$mform->display();
 } else {
     mgm_create_especs();
     echo "<center><h1>Se han creado las especialidades en la base de datos. Recargue.</h1></center>";

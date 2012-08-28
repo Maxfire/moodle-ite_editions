@@ -40,6 +40,7 @@ if (!isloggedin() or isguestuser()) {
 
 $id = optional_param('id', 0, PARAM_INT);
 $courseid = optional_param('courseid', 0, PARAM_INT);
+#$cuerpodocente = optional_param('cdocente', false);
 
 // Editions
 $editions = get_records('edicion');
@@ -58,9 +59,14 @@ $navlinks[] = array('name' => $strediciones, 'type' => 'misc');
 $navlinks[] = array('name' => $strperfil, 'type' => 'misc');
 
 $navigation = build_navigation($navlinks);
-
+$userdata = mgm_get_user_extend($USER->id);
 $selectedespecs = mgm_get_user_especialidades($USER->id);
-$allespecs = mgm_get_user_available_especialidades($USER->id);
+
+if ($_POST['codcuerpodocente']){
+	$allespecs = mgm_get_user_available_especialidades($USER->id, $_POST['codcuerpodocente']);
+}else{
+	$allespecs = mgm_get_user_available_especialidades($USER->id, $userdata->codcuerpodocente );
+}
 
 $aespecs = $sespecs = array();
 
@@ -75,7 +81,6 @@ if ($aedition=mgm_get_active_edition() and $aedition->state=='matriculacion'){
 	 error(get_string('nomodifydata', 'mgm'));
 }
 
-$userdata = mgm_get_user_extend($USER->id);
 $userdata->sespecs = $sespecs;
 $userdata->aespecs = $aespecs;
 
@@ -85,24 +90,25 @@ $mform->set_data($userdata);
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot.'/index.php');
 } else if ($data = $mform->get_data()) {
-    $sdata = mgm_set_userdata($USER->id, $data, false);
-
-    if ($sdata == MGM_DATA_CC_ERROR) {
-        error(get_string('cc_no_error', 'mgm'), $CFG->wwwroot.'/mod/mgm/user.php');
-    }
-
-    if ($sdata == MGM_DATA_DNI_ERROR) {
-        error(get_string('dnimulti', 'mgm'), $CFG->wwwroot.'/mod/mgm/user.php');
-    }
-
-    if ($sdata == MGM_DATA_DNI_INVALID) {
-        error(get_string('dninotvalid', 'mgm'), $CFG->wwwroot.'/mod/mgm/user.php');
-    }
-		if ($sdata == MGM_DATA_NO_ERROR) {
-      mgm_set_userdata($USER->id, $data, true);
-    }
-
-    notice(get_string('codemessage', 'mgm'), $CFG->wwwroot.'/index.php');
+	  if (isset($data->submitbutton) || isset($data->addsel) || isset($data->removesel)){
+	    $sdata = mgm_set_userdata($USER->id, $data, false);
+	    if ($sdata == MGM_DATA_CC_ERROR) {
+	        error(get_string('cc_no_error', 'mgm'), $CFG->wwwroot.'/mod/mgm/user.php');
+	    }
+	    if ($sdata == MGM_DATA_DNI_ERROR) {
+	        error(get_string('dnimulti', 'mgm'), $CFG->wwwroot.'/mod/mgm/user.php');
+	    }
+	    if ($sdata == MGM_DATA_DNI_INVALID) {
+	        error(get_string('dninotvalid', 'mgm'), $CFG->wwwroot.'/mod/mgm/user.php');
+	    }
+			if ($sdata == MGM_DATA_NO_ERROR) {
+	      mgm_set_userdata($USER->id, $data, true);
+	    }
+	    if(isset($data->addsel) || isset($data->removesel)){
+	    	redirect($CFG->wwwroot.'/mod/mgm/user.php');
+	    }
+	    notice(get_string('codemessage', 'mgm'), $CFG->wwwroot.'/index.php');
+	  }
 }
 
 print_header($strmatricular, $strmatricular, $navigation);

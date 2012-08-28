@@ -65,6 +65,7 @@ $string['certified'] = 'Certificado';
 $string['certondraft'] = 'Borrador de certificación de la edición generado';
 $string['certonvalidate'] = 'Borrador de certificación de la edición validado';
 $string['comunidad'] = 'Comunidad Autónoma';
+$string['comunidad_exclude'] = 'Comunidad Autónoma (Excluir)';
 $string['certvalidatesure'] = '¿Seguro que desea validar el borrador de certificación de la edición?';
 $string['createcriteria'] = 'Crear nuevos criterios';
 $string['createedition'] = 'Crear nueva edición';
@@ -345,4 +346,4 @@ $string['tarea']='Tarea sin finalizar';
 $string['filteraptos']='Solo Alumnos Aptos';
 $string['acta_admin_msg']='Documento generado por Administración INTEF';
 $string['acta_admin_sig']="Dª Mª del Carmen Arenas Fonollosa, Jefa del Servicio de Formación en Red del Profesorado.\nInstituto Nacional de Tecnologías Educativas. INTEF. Ministerio de Educación,Cultura y Deporte.";
-
+$string['do_paid']="Marcar edicion como Pagada";

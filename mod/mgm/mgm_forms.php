@@ -356,7 +356,15 @@ class export_data extends moodleform {
 }
 
 
+class espec_form extends moodleform {
+function definition() {
+        $mform =& $this->_form;
+				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
+        $objs[1] =& $mform->createElement('submit', 'update', get_string('update'));
+        $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
+    }
 
+}
 
 
 ?>

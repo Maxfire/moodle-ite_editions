@@ -73,8 +73,11 @@ class enrol_mgm_form extends moodleform {
 		    $mform->addRule('address', $strrequired, 'required', null, 'client');
     		$mform->setType('address', PARAM_MULTILANG);
 
-        $mform->addElement('select', 'codcuerpodocente', get_string('codcuerpodocente','mgm'), $CUERPOS_DOCENTES);
-        $mform->addRule('codcuerpodocente', $strrequired, 'required', null);
+    		$objs = array();
+        $objs[] =& $mform->createElement('select', 'codcuerpodocente', get_string('codcuerpodocente','mgm'), $CUERPOS_DOCENTES);
+        $objs[] =& $mform->createElement('submit', 'selcuerpodocente', 'Filtrar especialidades');
+        $mform->addGroup($objs, 'cuerpodocentegroup',get_string('codcuerpodocente','mgm') , array(' '), false);
+        $mform->addRule('cuerpodocentegroup', get_string('required'), 'required', null);
 
         $mform->addElement('select', 'codniveleducativo', get_string('codniveleducativo','mgm'), $NIVELES_EDUCATIVOS);
         $mform->addRule('codniveleducativo', $strrequired, 'required', null);
@@ -92,11 +95,9 @@ class enrol_mgm_form extends moodleform {
         if (is_array($aespecs)) {
             $achoices += $aespecs;
         }
-
         if (is_array($sespecs)) {
             $schoices += $sespecs;
         }
-
 				$mform->addElement('static', 'especialidadeswarn', get_string('note', 'mgm'). ':', get_string('multiselectespec', 'mgm'));
         $especs[0] = & $mform->addElement('select', 'especialidades', get_string('especialidades', 'mgm'), $achoices);
         $especs[0]->setMultiple(true);
@@ -186,6 +187,25 @@ class enrol_mgm_form extends moodleform {
     }
 
     function definition_after_data() {
+    	        // if language does not exist, use site default lang
+//        if ($langsel = $mform->getElementValue('lang')) {
+//            $lang = reset($langsel);
+//            // missing _utf8 in language, add it before further processing. MDL-11829 MDL-16845
+//            if (strpos($lang, '_utf8') === false) {
+//                $lang = $lang . '_utf8';
+//                $lang_el =& $mform->getElement('lang');
+//                $lang_el->setValue($lang);
+//            }
+//            // check lang exists
+//            if (!file_exists($CFG->dataroot.'/lang/'.$lang) and
+//              !file_exists($CFG->dirroot .'/lang/'.$lang)) {
+//                $lang_el =& $mform->getElement('lang');
+//                $lang_el->setValue($CFG->lang);
+//            }
+//        }
+
+
+
     }
 }
 

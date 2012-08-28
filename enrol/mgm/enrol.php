@@ -136,13 +136,17 @@ class enrolment_plugin_mgm {
                 }
             }
         }
-				$allespecs = mgm_get_all_especialidades();
-
+        $user=get_record('user', 'id', $USER->id);
+				$data2 = mgm_get_user_extend($USER->id);
+ 		    if ($_POST['codcuerpodocente']){
+			     $allespecs = mgm_get_all_especialidades($_POST['codcuerpodocente']);
+			  }else{
+				   $allespecs = mgm_get_all_especialidades($data2->codcuerpodocente );
+				}
 				if (!empty($allespecs)) {
     			$aespecs = $allespecs;
 				}
-				  $user=get_record('user', 'id', $USER->id);
-					$data2 = mgm_get_user_extend($USER->id);
+
 					$data2 ->firstname=$user->firstname;
 					$data2 ->lastname=$user->lastname;
 					$data2 ->email=$user->email;
@@ -153,6 +157,10 @@ class enrolment_plugin_mgm {
 					$data2->course=$course;
 					$data2->edition=$edition;
 					$data2->id=$course->id;
+					if ($userspec=mgm_get_user_especialidades($USER->id)){
+						$data2->especialidades=array_keys($userspec);
+					}
+
 
         // Print form
         require_once($CFG->dirroot.'/enrol/mgm/enrol_form.php');
@@ -181,41 +189,43 @@ class enrolment_plugin_mgm {
         if ($data=$eform->get_data() ) {
 				//Si data devuelve algun valor (not null) entonces los datos del formulario de entrada son correctos.
 				   //guardar datos de usuario
-				   $user=new stdClass();
-				   $user->id=$USER->id;
-				   $user->firstname=$data->firstname;
-				   $user->lastname=$data->lastname;
-				   $user->email=$data->email;
-				   $user->phone1=$data->phone1;
-				   $user->address=$data->address;
-				   update_record('user', $user);
+				   if (isset($data->submitbutton)){
+					   $user=new stdClass();
+					   $user->id=$USER->id;
+					   $user->firstname=$data->firstname;
+					   $user->lastname=$data->lastname;
+					   $user->email=$data->email;
+					   $user->phone1=$data->phone1;
+					   $user->address=$data->address;
+					   update_record('user', $user);
 
-				   //guardar datos de usuario  y centro mgm
-					 $mgmuser=new stdClass();
-					 $mgmuser->tipoid=$data->tipoid;
-					 $mgmuser->dni=$data->dni;
-					 $mgmuser->codcuerpodocente=$data->codcuerpodocente;
-					 $mgmuser->codniveleducativo=$data->codniveleducativo;
-					 $mgmuser->sexo=$data->sexo;
-					 //especialidades //
-					 if (isset($data->especialidades)){
-					 	$mgmuser->especialidades=implode("\n", $data -> especialidades);
-					 }
-					 $mgmuser->cc=$data->cc;
-					 $mgmuser->codpostal=$data->codpostal;
-					 $mgmuser->codprovincia=$data->codprovincia;
-					 $mgmuser->codpais=$data->codpais;
+					   //guardar datos de usuario  y centro mgm
+						 $mgmuser=new stdClass();
+						 $mgmuser->tipoid=$data->tipoid;
+						 $mgmuser->dni=$data->dni;
+						 $mgmuser->codcuerpodocente=$data->codcuerpodocente;
+						 $mgmuser->codniveleducativo=$data->codniveleducativo;
+						 $mgmuser->sexo=$data->sexo;
+						 //especialidades //
+						 if (isset($data->especialidades)){
+						 	$mgmuser->especialidades=implode("\n", $data -> especialidades);
+						 }
+						 $mgmuser->cc=$data->cc;
+						 $mgmuser->codpostal=$data->codpostal;
+						 $mgmuser->codprovincia=$data->codprovincia;
+						 $mgmuser->codpais=$data->codpais;
 
-					 mgm_set_userdata2($USER->id, $mgmuser, true);
-					 $ch=mgm_check_cert_history($USER->id, $courses);
-					 if ($ch[0]){//Ningun curso ya certificado
-           		mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses, $ret);
-           		notice_yesno(get_string('preinscrito', 'mgm'), '?id='.$course->id,
-                         $CFG->wwwroot.'/index.php');
-            die();
-					 }else{//alguno de los cursos esta certificado para el dni del usuario
-					   error($ch[1], '?id='.$course->id);
-					 }
+						 mgm_set_userdata2($USER->id, $mgmuser, true);
+						 $ch=mgm_check_cert_history($USER->id, $courses);
+						 if ($ch[0]){//Ningun curso ya certificado
+	           		mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses, $ret);
+	           		notice_yesno(get_string('preinscrito', 'mgm'), '?id='.$course->id,
+	                         $CFG->wwwroot.'/index.php');
+	            die();
+						 }else{//alguno de los cursos esta certificado para el dni del usuario
+						   error($ch[1], '?id='.$course->id);
+						 }
+				   }
         }
 
         $eform->display();

@@ -90,9 +90,9 @@ define('MGM_STATE_GE_ERROR', 12);//Todos los cursos tienen que haber finalizado 
 
 
 
-global $NIVELES_EDUCATIVOS, $CUERPOS_DOCENTES, $PAISES, $PROVINCIAS, $COMUNIDADES;
+global $NIVELES_EDUCATIVOS, $CUERPOS_DOCENTES, $PAISES, $PROVINCIAS, $COMUNIDADES, $MEC_CODES, $MGM_ITE_CUERPOS_ESPECS;
 
-$CODIGOS_AGRUPACION = array("0" => "0 Agrupación General", "1" => "1 Agrupación de Cursos", "2" => "2 Investigación Nacional", "3" => "3 Proyectos de Formación", "4" => "4 Comenius", "5" => "5 Lingua", "6" => "6 Arion", "7" => "7 Petra I y II", "8" => "8 Leonardo Da Vinci", "9" => "9 Música y Danza", "10" => "10 Enseñanza de Idiomas", "11" => "11 Titulaciones de Primer Ciclo", "12" => "12 Titulaciones de Segundo Ciclo", "13" => "13 Titulaciones de Tercer Ciclo", "14" => "14 Investigación Provincial", "15" => "15 Investigación Carácter Distinto", "16" => "16 Proyecto Innovación", "17" => "17 Minerva", "18" => "18 Medidas de acompañamiento", "19" => "19 Grundtvig", "20" => "20 Acciones conjuntas");
+$CODIGOS_AGRUPACION = array("0" => "0 Agrupación General", "1" => "1 Agrupación de Cursos", "2" => "2 Investigación Nacional", "3" => "3 Proyectos de Formación", "4" => "4 Comenius", "5" => "5 Lingua", "6" => "6 Arion", "7" => "7 Petra I y II", "8" => "8 Leonardo Da Vinci", "9" => "9 Música y Danza", "10" => "10 Enseñanza de Idiomas", "11" => "11 Titulaciones de Primer Ciclo", "12" => "12 Titulaciones de Segundo Ciclo", "13" => "13 Titulaciones de Tercer Ciclo", "14" => "14 Investigación Provincial", "15" => "15 Investigación Carácter Distinto", "16" => "16 Proyecto Innovación", "17" => "17 Minerva", "18" => "18 Medidas de acompañamiento", "19" => "19 Grundtvig", "20" => "20 Acciones conjuntas", "25" => "25 En Red");
 
 $MODALIDADES = array("10" => "10 Curso", "20" => "20 Grupos de Trabajo", "30" => "30 Seminarios", "A0" => "A0 Curso a distancia");
 
@@ -106,13 +106,16 @@ $NIVELES_EDUCATIVOS = array('19' => '19 COMPENSATORIA', '17' => '17 EDUCACION DE
 
 $CUERPOS_DOCENTES = array("0000" => "0000 NO FUNCIONARIO", "0590" => "0590 PROFESORES DE ENSEÑANZA SECUNDARIA", "0591" => "0591 PROF. TECNICOS FORMACION PROFESIONAL", "0592" => "0592 PROFESORES DE ESC. OFICIALES DE IDIOMAS", "0593" => "0593 CATEDRATICOS DE MUSICA Y ARTES ESCENICAS", "0594" => "0594 PROFESORES DE MUSICA Y ARTES ESCENICAS", "0595" => "0595 PROFESORES DE ARTES PLASTICAS Y DISEÑO", "0596" => "0596 MAESTROS DE TALLER ARTES PLAST. Y DISEÑO", "0597" => "0597 MAESTROS", "5407" => "5407 ESCALA DOCENTE GRUPO A DE LA AISS", "5423" => "5423 ESCALA DOCENTE GRUPO B DE LA AISS", "6470" => "6470 PROF.NUMER. Y PSICOL. ENS.INTEGR.", "6471" => "6471 PROF.MATER.TECN.-PROF.Y EDUC.E.I.", "6472" => "6472 PROF.PRACTICAS Y ACTIVIDADES E.I.", "7100" => "7100 INSPECTORES DE EDUCACION", "7110" => "7110 INSPECTORES AL SERVICIO ADMON. EDUCATIVA", "8100" => "8100 PROFESORES UNIVERSITARIOS", "8110" => "8110 ESCALA DE TEC.DE GESTIÓN DE U.SEVILLA", "8120" => "8120 ESCALA TEC. DE GESTIÓN DE U.DE CADIZ", "8121" => "8121 OTROS PROFESORES/OTROS PROFESIONALES", "8122" => "8122 OTROS FUNCIONARIOS DE LA ADMINISTRACION", "8123" => "8123 CATEDRÁTICOS DE UNIVERSIDAD");
 
-$MGM_ITE_ESPECS = array("PS. Tecnología.", "PS. Administración de Empresas.", "PS. Análisis y Química Industrial.", "PS. Construcciones Civiles y Edificación.", "PS. Formación y Orientación Laboral.", "PS. Hostelería y Turismo.", "PS. Informática.", "PS. Intervención Sociocomunitaria.", "PS. Navegación e Instalaciones Marinas.", "PS. Organización y Gestión Comercial.", "PS. Organización y Procesos de Mantenimiento de Vehículos.", "PS. Organización y Proyectos de Fabricación Mecánica.", "PS. Organización y Proyectos de Sistemas Energéticos.", "PS. Procesos de Producción Agraria.", "PS. Procesos en la Industria Alimentaria", "PS. Procesos Sanitarios.", "PS. Procesos y Productos de Textil, Confección y Piel.", "PS. Procesos y Productos de Vidrio y Cerámica.", "PS. Procesos y Productos en Artes Gráficas.", "PS. Procesos y Productos en Madera y Mueble.", "PS. Sistemas Electrónicos.", "PS. Sistemas Electrotécnicos y Automáticos.", "PS. Cocina y Pastelería.", "PS. Estética.", "PS. Fabricación e Instalación de Carpintería y Mueble.", "PS. Mantenimiento de Vehículos.", "PS. Mecanizado y Mantenimiento de Máquinas.", "PS. Patronaje y Confección.", "PS. Peluquería", "PS. Producción en Artes Gráficas.", "PS. Servicios de Restauración.", "PS. Soldadura.", "PMAE. Música.", "PMAE. Danza.", "PAPD. Conservación y restauración de materiales arqueológicos.", "PAPD. Conservación y restauración de obras escultóricas.", "PAPD. Conservación y restauración de obras pictóricas.", "PAPD. Conservación y restauración de Textiles.", "PAPD. Conservación y Restauración del documento gráfico.", "PAPD. Cerámica.", "PAPD. Diseño de interiores.", "PAPD. Diseño de moda.", "PAPD. Diseño de producto.", "PAPD. Diseño gráfico.", "PAPD. Vidrio.", "MTAPD. Artesanía y ornamentación con elementos vegetales.", "MTAPD. Bordados y encajes.", "MTAPD. Complementos y accesorios.", "MTAPD. Dorado y Policromía.", "MTAPD. Ebanistería Artística.", "MTAPD. Encuadernación Artística.", "MTAPD. Esmaltes.", "MTAPD. Fotografía y Procesos de reproducción.", "MTAPD. Modelismo y Maquetismo.", "MTAPD. Moldes y reproducciones.", "MTAPD. Musivaria.", "MTAPD. Talla en piedra y madera.", "MTAPD. Técnicas cerámicas.", "MTAPD. Técnicas de grabado y estampación.", "MTAPD. Técnicas de joyería y bisutería.", "MTAPD. Técnicas de orfebrería y platería.", "MTAPD. Técnicas de patronaje y confección.", "MTAPD. Técnicas del metal.", "MTAPD. Técnicas murales.", "MTAPD. Técnicas textiles.", "MTAPD. Técnicas vidrieras.", "M. Educación Infantil.", "M. Primaria.", "M. Pedagogía Terapéutica.", "M. Audición y Lenguaje.", "M. Educación Física.", "M. Música.", "M. Idioma extranjero: Inglés.", "M. Idioma extranjero: Francés.", "CoEOI. Alemán.", "CoEOI. Árabe", "CoEOI.Chino", "CoEOI.Danés", "CoEOI.Español Lengua Extranjera.", "CoEOI. Finés.", "CoEOI. Francés.", "CoEOI. Griego.", "CoEOI. Inglés.", "CoEOI. Irlandés.", "CoEOI. Italiano.", "CoEOI. Japonés.", "CoEOI. Neerlandés.", "CoEOI. Portugués", "CoEOI. Rumano.", "CoEOI. Ruso.", "CoEOI. Sueco.", "CoEOI. Lenguas cooficiales de las Comunidades Autónomas");
+#$MGM_ITE_ESPECS = array("PS. Tecnología.", "PS. Administración de Empresas.", "PS. Análisis y Química Industrial.", "PS. Construcciones Civiles y Edificación.", "PS. Formación y Orientación Laboral.", "PS. Hostelería y Turismo.", "PS. Informática.", "PS. Intervención Sociocomunitaria.", "PS. Navegación e Instalaciones Marinas.", "PS. Organización y Gestión Comercial.", "PS. Organización y Procesos de Mantenimiento de Vehículos.", "PS. Organización y Proyectos de Fabricación Mecánica.", "PS. Organización y Proyectos de Sistemas Energéticos.", "PS. Procesos de Producción Agraria.", "PS. Procesos en la Industria Alimentaria", "PS. Procesos Sanitarios.", "PS. Procesos y Productos de Textil, Confección y Piel.", "PS. Procesos y Productos de Vidrio y Cerámica.", "PS. Procesos y Productos en Artes Gráficas.", "PS. Procesos y Productos en Madera y Mueble.", "PS. Sistemas Electrónicos.", "PS. Sistemas Electrotécnicos y Automáticos.", "PS. Cocina y Pastelería.", "PS. Estética.", "PS. Fabricación e Instalación de Carpintería y Mueble.", "PS. Mantenimiento de Vehículos.", "PS. Mecanizado y Mantenimiento de Máquinas.", "PS. Patronaje y Confección.", "PS. Peluquería", "PS. Producción en Artes Gráficas.", "PS. Servicios de Restauración.", "PS. Soldadura.", "PMAE. Música.", "PMAE. Danza.", "PAPD. Conservación y restauración de materiales arqueológicos.", "PAPD. Conservación y restauración de obras escultóricas.", "PAPD. Conservación y restauración de obras pictóricas.", "PAPD. Conservación y restauración de Textiles.", "PAPD. Conservación y Restauración del documento gráfico.", "PAPD. Cerámica.", "PAPD. Diseño de interiores.", "PAPD. Diseño de moda.", "PAPD. Diseño de producto.", "PAPD. Diseño gráfico.", "PAPD. Vidrio.", "MTAPD. Artesanía y ornamentación con elementos vegetales.", "MTAPD. Bordados y encajes.", "MTAPD. Complementos y accesorios.", "MTAPD. Dorado y Policromía.", "MTAPD. Ebanistería Artística.", "MTAPD. Encuadernación Artística.", "MTAPD. Esmaltes.", "MTAPD. Fotografía y Procesos de reproducción.", "MTAPD. Modelismo y Maquetismo.", "MTAPD. Moldes y reproducciones.", "MTAPD. Musivaria.", "MTAPD. Talla en piedra y madera.", "MTAPD. Técnicas cerámicas.", "MTAPD. Técnicas de grabado y estampación.", "MTAPD. Técnicas de joyería y bisutería.", "MTAPD. Técnicas de orfebrería y platería.", "MTAPD. Técnicas de patronaje y confección.", "MTAPD. Técnicas del metal.", "MTAPD. Técnicas murales.", "MTAPD. Técnicas textiles.", "MTAPD. Técnicas vidrieras.", "M. Educación Infantil.", "M. Primaria.", "M. Pedagogía Terapéutica.", "M. Audición y Lenguaje.", "M. Educación Física.", "M. Música.", "M. Idioma extranjero: Inglés.", "M. Idioma extranjero: Francés.", "CoEOI. Alemán.", "CoEOI. Árabe", "CoEOI.Chino", "CoEOI.Danés", "CoEOI.Español Lengua Extranjera.", "CoEOI. Finés.", "CoEOI. Francés.", "CoEOI. Griego.", "CoEOI. Inglés.", "CoEOI. Irlandés.", "CoEOI. Italiano.", "CoEOI. Japonés.", "CoEOI. Neerlandés.", "CoEOI. Portugués", "CoEOI. Rumano.", "CoEOI. Ruso.", "CoEOI. Sueco.", "CoEOI. Lenguas cooficiales de las Comunidades Autónomas");
 
+$MGM_ITE_ESPECS = array("TECNOLOGÍA","ADMINISTRACIÓN DE EMPRESAS","ANÁLISIS Y QUÍMICA INDUSTRIAL","CONSTRUCCIONES CIVILES Y EDIFICACIÓN","FORMACIÓN Y ORIENTACIÓN LABORAL","HOSTELERÍA Y TURISMO","INFORMÁTICA","INTERVENCIÓN SOCIOCOMUNITARIA","NAVEGACIÓN E INSTALACIONES MARINAS","ORGANIZACIÓN Y GESTIÓN COMERCIAL","ORGANIZACIÓN Y PROCESOS DE MANTENIMIENTO DE VEHÍCULOS","ORGANIZACIÓN Y PROYECTOS DE FABRICACIÓN MECÁNICA","ORGANIZACIÓN Y PROYECTOS DE SISTEMAS ENERGÉTICOS","PROCESOS DE PRODUCCIÓN AGRARIA","PROCESOS EN LA INDUSTRIA ALIMENTARÍA","PROCESOS SANITARIOS","PROCESOS Y PRODUCTOS DE TEXTIL, CONFECCIÓN Y PIEL","PROCESOS Y PRODUCTOS DE VIDRIO Y CERÁMICA","PROCESOS Y PRODUCTOS EN ARTES GRÁFICAS","PROCESOS Y PRODUCTOS EN MADERA Y MUEBLE","SISTEMAS ELECTRÓNICOS","SISTEMAS ELECTROTÉCNICOS Y AUTOMÁTICOS","COCINA Y PASTELERÍA","ESTÉTICA","FABRICACIÓN E INSTALACIÓN DE CARPINTERÍA Y MUEBLE","MANTENIMIENTO DE VEHÍCULOS","MECANIZADO Y MANTENIMIENTO DE MÁQUINAS","PATRONAJE Y CONFECCIÓN","PELUQUERÍA","PRODUCCIÓN EN ARTES GRÁFICAS","SERVICIOS DE RESTAURACIÓN","SOLDADURA","MÚSICA","DANZA CLÁSICA","CONSERVACIÓN Y RESTAURACIÓN DE MATERIALES ARQUEOLÓGICOS","CONSERVACIÓN Y RESTAURACIÓN DE OBRAS ESCULTÓRICAS","CONSERVACIÓN Y RESTAURACIÓN DE OBRAS PICTÓRICAS","CONSERVACIÓN Y RESTAURACIÓN DE TEXTILES","CONSERVACIÓN Y RESTAURACIÓN DEL DOCUMENTO GRÁFICO","CERÁMICA","DISEÑO DE INTERIORES","DISEÑO DE MODA","DISEÑO DE PRODUCTO","DISEÑO GRÁFICO","VIDRIO","ARTESANÍA Y ORNAMENTACIÓN DE ELEMENTOS VEGETALES","BORDADOS Y ENCAJES","COMPLEMENTOS Y ACCESORIOS","DORADO Y POLICROMÍA","EBANISTERÍA ARTÍSTICA","ENCUADERNACIÓN ARTÍSTICA","ESMALTES","FOTOGRAFÍA Y PROCESOS DE REPRODUCCIÓN","MODELISMO Y MAQUETISMO","MOLDES Y REPRODUCCIONES","MUSIVARIA","TALLA EN PIEDRA Y MADERA","TÉCNICAS CERÁMICAS","TÉCNICAS DE GRABADO Y ESTAMPACIÓN","TÉCNICAS DE JOYERÍA Y BISUTERÍA","TÉCNICAS DE ORFEBRERÍA Y PLATERÍA","TÉCNICAS DE PATRONAJE Y CONFECCIÓN","TÉCNICAS DEL METAL","TÉCNICAS MURALES","TÉCNICAS TEXTILES","TÉCNICAS VIDRIERAS","EDUCACIÓN INFANTIL","EDUCACIÓN PRIMARIA","PEDAGOGÍA TERAPEÚTICA","AUDICIÓN Y LENGUAJE","EDUCACIÓN FÍSICA","INTERPRETACIÓN EN EL MUSICAL","LENGUA EXTRANJERA: INGLÉS","LENGUA EXTRANJERA: FRANCÉS","ALEMÁN","ÁRABE","CHINO","DANÉS","ESPAÑOL LENGUA EXTRANJERA","FINES","FRANCÉS","GRIEGO","INGLÉS","IRLANDES","ITALIANO","JAPONÉS","NEERLANDÉS","PORTUGUÉS","RUMANO","RUSO","SUECO","LENGUAS COOFICIALES DE LAS COMUNIDADES AUTÓNOMAS","ACORDEÓN","ACROBACIA","ARPA","ASESORÍA Y PROCESOS DE IMAGEN PERSONAL","BIOLOGÍA Y GEOLOGÍA","CANTO","CANTO APLICADO AL ARTE DRAMÁTICO","CARACTERIZACIÓN E INDUMENTARIA","CATALÁN","CLARINETE","CLAVE","CONTRABAJO","CORO","DANZA APLICADA AL ARTE DRAMÁTICO","DANZA CONTEMPORÁNEA","DANZA ESPAÑOLA","DIBUJO","DIBUJO ARTÍSTICO Y COLOR","DIBUJO TÉCNICO","DICCIÓN Y EXPRESIÓN ORAL","DIRECCIÓN ESCÉNICA","DISEÑO TEXTIL","DRAMATURGIA","ECONOMÍA","EDICIÓN DE ARTE","EQUIPOS ELECTRÓNICOS","ESGRIMA","ESPACIO ESCÉNICO","EUSKERA","EXPRESIÓN CORPORAL","FAGOT","FILOSOFÍA","FÍSICA Y QUÍMICA","FLABIOL I TAMBORI","FLAMENCO","FLAUTA DE PICO","FLAUTA TRAVESERA","FOTOGRAFÍA","FUNDAMENTOS DE COMPOSICIÓN","GAITA GALEGA","GALLEGO","GEOGRAFÍA E HISTORIA","GUITARRA","GUITARRA FLAMENCA","HISTORIA DE LA DANZA","HISTORIA DE LA MÚSICA","HISTORIA DEL ARTE","ILUMINACIÓN","INSTALACIÓN Y MANTENIMIENTO DE EQUIPOS TÉRMICOS Y DE FLUIDOS","INSTALACIONES ELECTROTÉCNICAS","INSTALACIONES Y EQUIPOS DE CRÍA Y CULTIVO","INSTRUMENTOS DE CUERDA PULSADA DEL RENACIMIENTO Y DEL BARROCO","INSTRUMENTOS DE PUA","INTERPRETACIÓN","INTERPRETACIÓN CON OBJETOS","INTERPRETACIÓN EN EL TEATRO DEL GESTO","JOYERÍA Y ORFEBRERÍA","LABORATORIO","LATÍN","LENGUA ARANESA","LENGUA CASTELLANA Y LITERATURA","LENGUA CATALANA Y LITERATURA","LENGUA EXTRANJERA: ALEMÁN","LENGUA Y LITERATURA CATALANAS (ISLAS BALEARES)","LENGUA Y LITERATURA GALLEGA","LENGUA Y LITERATURA VALENCIANA","LENGUA Y LITERATURA VASCA","LENGUA Y LITERATURA VASCA (NAVARRA)","LENGUAJE MUSICAL","LITERATURA DRAMÁTICA","MÁQUINAS, SERVICIOS Y PRODUCCIÓN","MATEMÁTICAS","MATERIALES Y TECNOLOGÍA: CERÁMICA Y VIDRIO","MATERIALES Y TECNOLOGÍA: CONSERVACIÓN Y RESTAURACIÓN","MATERIALES Y TECNOLOGÍA: DISEÑO","MEDIOS AUDIOVISUALES","MEDIOS INFORMÁTICOS","OBOE","OFICINA DE PROYECTOS DE CONSTRUCCIÓN","OFICINA DE PROYECTOS DE FABRICACIÓN MECÁNICA","OPERACIONES DE PROCESOS","OPERACIONES DE PRODUCCIÓN AGRARIA","OPERACIONES Y EQUIPOS DE ELABORACIÓN DE PRODUCTOS ALIMENTARIOS","ORGANIZACIÓN INDUSTRIAL Y LEGISLACIÓN","ÓRGANO","ORIENTACIÓN EDUCATIVA","ORQUESTA","PERCUSIÓN","PIANO","PROCEDIMIENTOS DE DIAGNÓSTICO CLÍNICO Y ORTOPROTÉSICO","PROCEDIMIENTOS SANITARIOS Y ASISTENCIALES","PROCESOS COMERCIALES","PROCESOS DE CULTIVO ACUÍCOLA","PROCESOS DE GESTIÓN ADMINISTRATIVA","PROCESOS DIAGNÓSTICOS CLÍNICOS Y PRODUCTOS ORTOPROTÉSICOS","PROCESOS Y MEDIOS DE COMUNICACIÓN","PRODUCCIÓN TEXTIL Y TRATAMIENTOS FÍSICO-QUÍMICOS","SAXOFÓN","SERVICIOS A LA COMUNIDAD","SISTEMAS Y APLICACIONES INFORMÁTICAS","TÉCNICAS ESCÉNICAS","TÉCNICAS GRÁFICAS","TÉCNICAS Y PROCEDIMIENTOS DE IMAGEN Y SONIDO","TENORA Y TIBLE","TEORÍA E HISTORIA DEL ARTE","TEORÍA TEATRAL","TROMBÓN","TROMPA","TROMPETA","TUBA","TXISTU","VALENCIANO","VASCUENCE (NAVARRA)","VIOLA","VIOLA DA GAMBA","VIOLÍN","VIOLONCELLO","VOLUMEN");
+$MGM_ITE_CUERPOS_ESPECS=array('0000'=>array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209),'0596'=>array(45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65), '0595'=>array(34,35,36,37,38,39,40,41,42,43,44,109,110,113,116,129,138,148,164,165,166,167,168,175,209), '0594'=>array(33,71,92,93,94,97,98,99,101,102,103,104,105,106,107,111,112,114,118,119,121,122,125,126,127,128,130,131,134,135,136,137,139,143,144,145,146,147,160,161,169,176,178,179,180,189,192,193,195,196,197,198,199,200,201,202,205,207,207,208) , '0592'=>array(74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,100,120,132,203), '0591'=>array(22,23,24,25,26,27,28,29,30,31,117,140,141,142,149,162,170,171,172,173,174,181,182,183,185,188,190,191,194), '0597'=>array(32,66,67,68,69,70,74,80,82,120,204), '0590'=>array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,32,70,74,80,81,82,84,87,95,96,108,115,123,124,133,150,151,152,153,155,156,157,158,159,163,177,184,186,187));
 $COMUNIDADES = array(0 => 'NINGUNA', 1 => 'ANDALUCIA', 2 => 'ARAGON', 3 => 'ASTURIAS', 4 => 'BALEARES', 5 => 'CANARIAS', 6 => 'CANTABRIA', 7 => 'CASTILLA Y LEON', 8 => 'CASTILLA LA MANCHA', 9 => 'CATALUÑA', 10 => 'VALENCIA', 11 => 'EXTREMADURA', 12 => 'GALICIA', 13 => 'MADRID', 14 => 'MURCIA', 15 => 'NAVARRA', 16 => 'EUSKADI', 17 => 'RIOJA', 18 => 'CEUTA', 19 => 'MELILLA');
 
 $PROV_COMUNIDADES = array(01 => array(04 => 'Almería', 11 => 'Cádiz', 14 => 'Córdoba', 18 => 'Granada', 21 => 'Huelva', 23 => 'Jaén', 29 => 'Málaga', 41 => 'Sevilla'), 02 => array(22 => 'Huesca', 44 => 'Teruel', 50 => 'Zaragoza'), 03 => array(33 => 'Asturias'), 04 => array(07 => 'Islas Baleares'), 05 => array(35 => 'Las Palmas', 38 => 'Santa Cruz de Tenerife'), 06 => array(39 => 'Cantabria'), 07 => array(05 => 'Ávila', 09 => 'Burgos', 24 => 'León', 34 => 'Palencia', 37 => 'Salamanca', 40 => 'Segovia', 42 => 'Soria', 47 => 'Valladolid', 49 => 'Zamora'), 08 => array(02 => 'Albacete', 13 => 'Ciudad Real', 16 => 'Cuenca', 19 => 'Guadalajara', 45 => 'Toledo'), 09 => array(08 => 'Barcelona', 17 => 'Girona', 25 => 'Lleida', 43 => 'Tarragona'), 10 => array(03 => 'Alicante', 12 => 'Castellón', 46 => 'Valencia'), 11 => array(10 => 'Cáceres', 06 => 'Badajoz'), 12 => array(15 => 'A Coruña', 27 => 'Lugo', 32 => 'Ourense', 36 => 'Pontevedra', ), 13 => array(28 => 'Madrid'), 14 => array(30 => 'Murcia'), 15 => array(31 => 'Navarra'), 16 => array(01 => 'Álava', 20 => 'Guipúzcoa', 48 => 'Vizcaya'), 17 => array(26 => 'La Rioja'), 18 => array(51 => 'Ceuta'), 19 => array(52 => 'Melilla'));
-
+$COMUNIDADES_CC = array('04' => 'ANDALUCIA', '11' => 'ANDALUCIA', '14' => 'ANDALUCIA', '18' => 'ANDALUCIA', '21' => 'ANDALUCIA', '23' => 'ANDALUCIA', '29' => 'ANDALUCIA', '41' => 'ANDALUCIA', '22' => 'Aragon', '44' => 'Aragon', '50' => 'Aragon', '33' => 'Asturias', '07' => 'Baleares', '35' => 'Canarias', '38' => 'Canarias', '39' => 'Cantabria', '05' => 'Castilla Leon', '09' => 'Castilla Leon', '24' => 'Castilla Leon', '34' => 'Castilla Leon', '37' => 'Castilla Leon', '40' => 'Castilla Leon', '42' => 'Castilla Leon', '47' => 'Castilla Leon', '49' => 'Castilla Leon', '02' => 'C. Mancha', '13' => 'C. Mancha', '16' => 'C. Mancha', '19' => 'C. Mancha', '45' => 'C. Mancha', '08' => 'Cataluña', '17' => 'Cataluña', '25' => 'Cataluña', '43' => 'Cataluña', '03' => 'Valencia', '12' => 'Valencia', '46' => 'Valencia', '10' => 'Extremadura', '06' => 'Extremadura', '15' => 'Galicia', '27' => 'Galicia', '32' => 'Galicia', '36' => 'Galicia', '28' => 'Madrid', '30' => 'Murcia', '31' => 'Navarra', '01' => 'Euskadi', '20' => 'Euskadi', '48' => 'Euskadi', '26' => 'La Rioja', '51' => 'Ceuta', '52' => 'Melilla');
 $CSV_CACHED_FILE = array();
+$MEC_PATTERN="/^51|^52|^60|28923065|^00*25|^00*50/";  //Ceuta, Melilla, Extranjero, Interno, Itinerantes, extranjero
 
 /**
  * Checks if an user can perform the view action on module access
@@ -312,8 +315,13 @@ function mgm_get_edition_menu($edition) {
         if(mgm_edition_is_on_validate($edition)) {
             $menu .= ' | <a title="'.get_string('certified', 'mgm').'" href="#">'.
                      '<img src="'.$CFG->pixpath.'/i/tick_green_small.gif" class="iconsmall" alt="'.get_string('certified', 'mgm').'" /></a>';
-            $menu .= ' | <a title="'.get_string('pago', 'mgm').'" href="fees.php?edition='.$edition->id.'&multiple=1">'.
+            if ($edition->paid){
+            	$menu .= ' | <a title="'.get_string('pago', 'mgm').'" href="fees.php?edition='.$edition->id.'&multiple=1">'.
                      '<img src="'.$CFG->pixpath.'/i/lock.gif" class="iconsmall" alt="'.get_string('pago', 'mgm').'" /></a>';
+            }else{
+            	$menu .= ' | <a title="'.get_string('do_paid', 'mgm').'" href="fees.php?change_state=1&edition='.$edition->id.'">'.
+                     '<img src="'.$CFG->pixpath.'/i/lock.gif" class="iconsmall" alt="'.get_string('do_paid', 'mgm').'" /></a>';
+            }
         }
     }
 
@@ -499,6 +507,18 @@ function mgm_update_edition($edition) {
 
     $result = update_record('edicion', $edition);
 
+    if($result) {
+        events_trigger('edition_updated', $edition);
+    }
+
+    return $result;
+}
+
+function mgm_set_edition_paid($editionid){
+	  $editon=new StdClass();
+	  $edition -> id = $editionid;
+		$edition -> paid = 1;
+    $result = update_record('edicion', $edition);
     if($result) {
         events_trigger('edition_updated', $edition);
     }
@@ -1479,7 +1499,7 @@ function mgm_get_user_preinscription_data($line, $edition, $data, $criteria, $co
         }
     }
 		$name=$colors.'<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
-    $tmpdata = array($check, $name.$state, $user->lastname, date("d/m/Y H:i\"s", $line -> timemodified), ($data -> user -> cc) ? $data -> user -> cc : '', $userespecs, $courses);
+    $tmpdata = array($check, $name.$state, $user->lastname, date("d/m/Y H:i\"s", $line -> timemodified), ($data -> user -> cc) ? $data -> user -> cc : '', ($data -> user -> cc) ? mgm_get_ccaa($data -> user -> cc) : '' , $userespecs, $courses);
 
     return $tmpdata;
 }
@@ -1570,8 +1590,8 @@ function mgm_parse_preinscription_data($edition, $course, $data) {
         if(empty($lineuser -> realcourses)) {
             $lineuser -> realcourses[0] = '';
         }
-
         $lineuser -> tmpdata = mgm_get_user_preinscription_data($sqline, $edition, $lineuser, $criteria, $course->id);
+        $lineuser->especs = explode("\n",ltrim($lineuser -> user -> especialidades,"\n"));
         $lineuser -> sqline = $sqline;
         $lineuser -> data = array('opcion1' => array('especialidades' => array('found' => false, 'data' => array()), 'centros' => array('found' => false, 'data' => array('found' => array(), 'notfound' => array()))), 'opcion2' => array('especialidades' => array('found' => false, 'data' => array()), 'centros' => array('found' => false, 'data' => array('found' => array(), 'notfound' => array()))));
 
@@ -1657,7 +1677,7 @@ function mgm_order_preinscription_first_data_opcion($opcion, &$data, $criteria, 
             // First option is centros
             $linedata -> data[$opcion]['centros']['found'] = true;
 
-            if(!empty($linedata -> userdata) && mgm_is_cc_on_csv($linedata->userdata->cc)) {
+            if(!empty($linedata -> user) && mgm_is_cc_on_mec($linedata->user->cc)) {
                 $linedata -> data[$opcion]['centros']['data']['found'] = $linedata;
             } else {
                 $linedata -> data[$opcion]['centros']['data']['notfound'] = $linedata;
@@ -1960,17 +1980,22 @@ function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck 
     		$course_with_inscription=array();
     	}
 	    foreach ($preinscripcion as $i=>$u){
+	    if ($a=get_record('edicion_descartes', 'edicionid', $edition->id,'userid', $u->userid, 'code', 4 )){//Eliminamos usuarios que han sido descartados por comunidad en algun otro curso de la edicion
+							unset($preinscripcion[$i]);
+							continue;
+				  }else{
 	    	  $cursos=explode(',', $u->value);
-					foreach ($cursos as $cid){//eliminamos usuarios con opciones prioritarias aun no asignadas
-						if ($cid != $course->id){
-							if(array_search($cid, $course_with_inscription) === FALSE){
-							  unset($preinscripcion[$i]);
-							  break;
+						foreach ($cursos as $cid){//eliminamos usuarios con opciones prioritarias aun no asignadas
+							if ($cid != $course->id){
+								if(array_search($cid, $course_with_inscription) === FALSE){
+								  unset($preinscripcion[$i]);
+								  break;
+								}
+							}else{
+								break;
 							}
-						}else{
-							break;
 						}
-					}
+				  }
 	    }
 
 
@@ -2101,24 +2126,37 @@ function mgm_get_user_especialidades($userid) {
     return array();
 }
 
-function mgm_get_user_available_especialidades($userid) {
+function mgm_get_user_available_especialidades($userid, $codcuerpodocente=false) {
     global $CFG;
 
     $data = mgm_get_user_especialidades($userid);
     $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
     		WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
     $especialidades = explode("\n",  get_record_sql($sql) -> value);
-
     $strdata = implode(',', $data);
     $filterespecialidades = array_filter($especialidades, create_function('$element', '$data = explode(",", "' . $strdata . '"); return (!in_array($element, $data));'));
-
+    if ($codcuerpodocente){
+    	global $MGM_ITE_CUERPOS_ESPECS;
+    	$a=array_intersect_key($filterespecialidades, array_flip($MGM_ITE_CUERPOS_ESPECS[$codcuerpodocente]));
+    	asort($a, SORT_STRING);
+    	return $a;
+    }
+    asort($filterespecialidades, SORT_STRING);
     return $filterespecialidades;
 }
-function mgm_get_all_especialidades() {
+function mgm_get_all_especialidades($codcuerpodocente=false) {
 	  global $CFG;
+
 	  $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
     		WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
     $especialidades = explode("\n",  get_record_sql($sql) -> value);
+    if ($codcuerpodocente){
+    	global $MGM_ITE_CUERPOS_ESPECS;
+    	$a=array_intersect_key($especialidades, array_flip($MGM_ITE_CUERPOS_ESPECS[$codcuerpodocente]));
+    	asort($a, SORT_STRING );
+    	return $a;
+    }
+    asort($especialidades, SORT_STRING);
     return $especialidades;
 
 
@@ -2132,7 +2170,7 @@ function mgm_get_all_especialidades() {
  * @return string
  */
 function mgm_check_user_cc($code, &$ret) {
-    if(!mgm_is_cc_on_csv($code)) {
+    if(!mgm_is_cc_on_db($code)) {
         $ret = MGM_DATA_CC_ERROR;
         return '';
     }
@@ -2232,6 +2270,41 @@ function mgm_set_userdata2($userid, $data, $create=true) {
     return $ret;
 }
 
+/**
+ * Return if a given cc is in MEC_PATTERN
+ * @param string $cc
+ * @return boolean
+ */
+function mgm_get_ccaa($cc) {
+  global $COMUNIDADES_CC;
+	while( strlen($cc)<8){
+   		$cc='0'.$cc;
+  }
+  $key=substr($cc, 0, 2);
+  if (array_key_exists ( $key , $COMUNIDADES_CC )){
+  	return $COMUNIDADES_CC[$key];
+  }
+	return '';
+}
+
+
+
+
+/**
+ * Return if a given cc is in MEC_PATTERN
+ * @param string $cc
+ * @return boolean
+ */
+function mgm_is_cc_on_mec($cc) {
+	  global $MEC_PATTERN;
+		while( strlen($cc)<8){
+   		$cc='0'.$cc;
+   	}
+    if(preg_match($MEC_PATTERN, $cc)) {
+        return $cc;
+    }
+    return false;
+}
 
 
 /**
@@ -2247,29 +2320,20 @@ function mgm_is_cc_on_csv($cc) {
 
     return false;
 }
+function mgm_is_cc_on_db($cc) {
+	if($ccdata=get_record('edicion_centro','codigo', $cc)) {
+            return $cc;
+  }
+  return false;
+}
 
 function mgm_get_cc_type($cc, $sql=false) {
     if(!$cc) {
         return -1;
     }
-
-    if (!$sql) {
-        $ccdata = mgm_get_cc_data();
-        if(array_key_exists($cc, $ccdata)) {
-            return $ccdata[$cc][7];
-        }
-    } else {
-        global $CFG;
-
-        $sql = "SELECT tipo FROM ".$CFG->prefix."edicion_centro
-                WHERE codigo='".$cc."'";
-        if (!$ccdata = get_record_sql($sql)) {
-            return -1;
-        }
-
-        return $ccdata->tipo;
+    if($ccdata=get_record('edicion_centro','codigo', $cc)) {
+    	return $ccdata->tipo;
     }
-
     return -1;
 }
 
@@ -2279,14 +2343,12 @@ function mgm_get_cc_type($cc, $sql=false) {
  * @return boolean
  */
 function mgm_is_cc_valid($cc) {
-    $ccdata = mgm_get_cc_data();
-    if(array_key_exists($cc, $ccdata)) {
-        if($ccdata[$cc][7] == MGM_PRIVATE_CENTER) {
-            return false;
+    if($ccdata=get_record('edicion_centro','codigo', $cc)) {
+        if($ccdata->tipo != MGM_PRIVATE_CENTER) {
+            return true;
         }
     }
-
-    return true;
+		return false;
 }
 
 /**
@@ -2692,9 +2754,16 @@ function mgm_check_course_dependencies($edition, $course, $user) {
     }
 
     if(mgm_is_course_certified($user -> id, $criteria -> dlist)) {
+
         return true;
     }
-
+		if ($euser = mgm_get_user_extend($user->id)){
+			if ($course2=get_record('course', id, $criteria->dlist)){
+				if (record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course2->idnumber, 'confirm', 1)){
+					return true;
+				}
+			}
+		}
     return false;
 }
 
@@ -3209,6 +3278,26 @@ function mgm_create_especs() {
     }
 
     return true;
+}
+
+function mgm_update_especs() {
+    global $CFG;
+    global $MGM_ITE_ESPECS;
+		$sql = "SELECT id FROM " . $CFG -> prefix . "edicion_ite
+            WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
+    if($especs=get_record_sql($sql)) {
+        //Data exist. Just update it
+        $especs -> type = MGM_ITE_ESPECIALIDADES;
+        $especs -> name = 'Especialidades';
+        $especs -> value = implode("\n", $MGM_ITE_ESPECS);
+        $dev=update_record('edicion_ite', $especs);
+    }
+		if ($dev){
+			return true;
+		}else{
+			return false;
+		}
+    return false;
 }
 
 /**

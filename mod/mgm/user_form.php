@@ -64,8 +64,11 @@ class mod_mgm_user_form extends moodleform {
         $mform->addElement('select', 'codniveleducativo', get_string('codniveleducativo','mgm'), $NIVELES_EDUCATIVOS);
         $mform->addRule('codniveleducativo', get_string('required'), 'required', null);
 
-        $mform->addElement('select', 'codcuerpodocente', get_string('codcuerpodocente','mgm'), $CUERPOS_DOCENTES);
-        $mform->addRule('codcuerpodocente', get_string('required'), 'required', null);
+        $objs = array();
+        $objs[] =& $mform->createElement('select', 'codcuerpodocente', get_string('codcuerpodocente','mgm'), $CUERPOS_DOCENTES);
+        $objs[] =& $mform->createElement('submit', 'selcuerpodocente', 'Filtrar especialidades');
+        $mform->addGroup($objs, 'cuerpodocentegroup',get_string('codcuerpodocente','mgm') , array(' '), false);
+        $mform->addRule('cuerpodocentegroup', get_string('required'), 'required', null);
 
         $mform->addElement('text', 'codpostal', get_string('codpostal','mgm'), array('size' => '5'));
         $mform->addRule('codpostal', get_string('required'), 'required', null);
@@ -160,5 +163,4 @@ class mod_mgm_user_form extends moodleform {
 
         return $errors;
     }
-
 }
