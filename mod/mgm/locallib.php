@@ -831,7 +831,7 @@ function mgm_set_edition_course_criteria($data) {
         foreach($data->sespecs as $k => $v) {
             $criteria -> type = MGM_CRITERIA_ESPECIALIDAD;
             $criteria -> value = $v;
-            if(!$criteriaid = rmgm_edition_course_criteria_data_exists($criteria)) {
+            if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
                 continue ;
             } else {
                 delete_records('edicion_criterios', 'id', $criteriaid -> id);
