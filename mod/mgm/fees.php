@@ -69,6 +69,7 @@ $change_state = optional_param('change_state', 0, PARAM_INT);
 
 
 if ($change_state==1 && $editionid){
+		global $CFG;
 	  mgm_set_edition_paid($editionid);
 	  redirect($CFG->wwwroot.'/mod/mgm/index?editionedit=on');
 }
