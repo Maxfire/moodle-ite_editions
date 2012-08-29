@@ -809,6 +809,12 @@ function mgm_set_edition_course_criteria($data) {
             update_record('edicion_criterios', $criteria);
             unset($criteria -> id);
         }
+    }else{//eliminar dependencia
+    		$criteria -> type = MGM_CRITERIA_DEPEND;
+        $criteria -> value = $data -> dpendsgroup['dlist'];
+        if($criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
+        	 delete_records('edicion_criterios', 'id', $criteriaid -> id);
+        }
     }
 
     // Add especialidad
