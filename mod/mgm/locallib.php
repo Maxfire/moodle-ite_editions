@@ -115,7 +115,7 @@ $COMUNIDADES = array(0 => 'NINGUNA', 1 => 'ANDALUCIA', 2 => 'ARAGON', 3 => 'ASTU
 $PROV_COMUNIDADES = array(01 => array(04 => 'Almería', 11 => 'Cádiz', 14 => 'Córdoba', 18 => 'Granada', 21 => 'Huelva', 23 => 'Jaén', 29 => 'Málaga', 41 => 'Sevilla'), 02 => array(22 => 'Huesca', 44 => 'Teruel', 50 => 'Zaragoza'), 03 => array(33 => 'Asturias'), 04 => array(07 => 'Islas Baleares'), 05 => array(35 => 'Las Palmas', 38 => 'Santa Cruz de Tenerife'), 06 => array(39 => 'Cantabria'), 07 => array(05 => 'Ávila', 09 => 'Burgos', 24 => 'León', 34 => 'Palencia', 37 => 'Salamanca', 40 => 'Segovia', 42 => 'Soria', 47 => 'Valladolid', 49 => 'Zamora'), 08 => array(02 => 'Albacete', 13 => 'Ciudad Real', 16 => 'Cuenca', 19 => 'Guadalajara', 45 => 'Toledo'), 09 => array(08 => 'Barcelona', 17 => 'Girona', 25 => 'Lleida', 43 => 'Tarragona'), 10 => array(03 => 'Alicante', 12 => 'Castellón', 46 => 'Valencia'), 11 => array(10 => 'Cáceres', 06 => 'Badajoz'), 12 => array(15 => 'A Coruña', 27 => 'Lugo', 32 => 'Ourense', 36 => 'Pontevedra', ), 13 => array(28 => 'Madrid'), 14 => array(30 => 'Murcia'), 15 => array(31 => 'Navarra'), 16 => array(01 => 'Álava', 20 => 'Guipúzcoa', 48 => 'Vizcaya'), 17 => array(26 => 'La Rioja'), 18 => array(51 => 'Ceuta'), 19 => array(52 => 'Melilla'));
 $COMUNIDADES_CC = array('04' => 'ANDALUCIA', '11' => 'ANDALUCIA', '14' => 'ANDALUCIA', '18' => 'ANDALUCIA', '21' => 'ANDALUCIA', '23' => 'ANDALUCIA', '29' => 'ANDALUCIA', '41' => 'ANDALUCIA', '22' => 'Aragon', '44' => 'Aragon', '50' => 'Aragon', '33' => 'Asturias', '07' => 'Baleares', '35' => 'Canarias', '38' => 'Canarias', '39' => 'Cantabria', '05' => 'Castilla Leon', '09' => 'Castilla Leon', '24' => 'Castilla Leon', '34' => 'Castilla Leon', '37' => 'Castilla Leon', '40' => 'Castilla Leon', '42' => 'Castilla Leon', '47' => 'Castilla Leon', '49' => 'Castilla Leon', '02' => 'C. Mancha', '13' => 'C. Mancha', '16' => 'C. Mancha', '19' => 'C. Mancha', '45' => 'C. Mancha', '08' => 'Cataluña', '17' => 'Cataluña', '25' => 'Cataluña', '43' => 'Cataluña', '03' => 'Valencia', '12' => 'Valencia', '46' => 'Valencia', '10' => 'Extremadura', '06' => 'Extremadura', '15' => 'Galicia', '27' => 'Galicia', '32' => 'Galicia', '36' => 'Galicia', '28' => 'Madrid', '30' => 'Murcia', '31' => 'Navarra', '01' => 'Euskadi', '20' => 'Euskadi', '48' => 'Euskadi', '26' => 'La Rioja', '51' => 'Ceuta', '52' => 'Melilla');
 $CSV_CACHED_FILE = array();
-$MEC_PATTERN="/^51|^52|^60|28923065|^00*25|^00*50/";  //Ceuta, Melilla, Extranjero, Interno, Itinerantes, extranjero
+$MEC_PATTERN="/^51|^52|^60|28923065|^00*25|^00*50|^00*15|^00*35/";  //Ceuta, Melilla, Extranjero, Interno, Itinerantes, extranjero, iberoamerica, eTwinning
 
 /**
  * Checks if an user can perform the view action on module access
@@ -2714,7 +2714,7 @@ function mgm_get_courses($course) {
 
 function mgm_check_cert_history($userid, $courses){
 	global $CFG;
-	$ret=array(True, '');
+	$ret=array(True, '', 0);
 	$rcourses = array();
   foreach($courses as $course) {
   	if($course) {
@@ -2731,8 +2731,9 @@ function mgm_check_cert_history($userid, $courses){
 			foreach($course_objs as $course){
 				if (isset($course->idnumber) && isset($euser->dni)){
 				  if (record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course->idnumber, 'confirm', 1)){
-				  	$ret[1]=$ret[1]. get_string('coursecertfied', 'mgm', $course->fullname). '<br/>';
 				  	$ret[0]=false;
+				  	$ret[1]=$ret[1]. get_string('coursecertfied', 'mgm', $course->fullname). '<br/>';
+				  	$ret[2]=$course->id;
 				  }
 				}
 			}

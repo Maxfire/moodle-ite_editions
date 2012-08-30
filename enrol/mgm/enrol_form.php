@@ -180,8 +180,29 @@ class enrol_mgm_form extends moodleform {
     				$errors['dni']=get_string('nochangedni', 'mgm');
     				return $errors;
     			}
-
     		}
+    		//validate depends:
+				$courses = array();
+				$edition=$this->_customdata->edition;
+				if ($edition) {
+        	foreach ($data->option as $k=>$option) {
+        		  if ($course=get_record('course', 'id', $option)){
+        				if (!mgm_check_course_dependencies($edition, $course, $USER)) {
+        					$errors['option['.$k.']']=get_string('nodependencias', 'mgm');
+        				}
+            		$courses[$k] = $option;
+        		  }
+        	}
+        	//validate cert history
+					$ch=mgm_check_cert_history($USER->id, $courses);
+					if (! $ch[0]){//alguno de los cursos esta certificado para el dni del usuario
+						foreach ($data->option as $k=>$option) {
+							if ($ch[2]==$option){
+									$errors['option['.$k.']']=$ch[1];
+							}
+						}
+					}
+				}
 
         return $errors;
     }
