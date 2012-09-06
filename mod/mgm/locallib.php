@@ -2712,7 +2712,7 @@ function mgm_get_courses($course) {
     return $data;
 }
 
-function mgm_check_cert_history($userid, $courses){
+function mgm_check_cert_history($userid, $courses, $dni=False){
 	global $CFG;
 	$ret=array(True, '', 0);
 	$rcourses = array();
@@ -2728,8 +2728,11 @@ function mgm_check_cert_history($userid, $courses){
 	if ($euser = mgm_get_user_extend($userid)){
 		  $consulta='SELECT id, idnumber, fullname FROM  '. $CFG -> prefix .'course where  id in ('.$strcourses.')';
 		  $course_objs=get_records_sql($consulta);
+		  if ($dni){
+		  	$euser->dni=$dni;
+		  }
 			foreach($course_objs as $course){
-				if (isset($course->idnumber) && isset($euser->dni)){
+				if (isset($course->idnumber) && isset($euser->dni) && $euser->dni != ''){
 				  if (record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course->idnumber, 'confirm', 1)){
 				  	$ret[0]=false;
 				  	$ret[1]=$ret[1]. get_string('coursecertfied', 'mgm', $course->fullname). '<br/>';
@@ -2749,7 +2752,7 @@ function mgm_check_cert_history($userid, $courses){
  * @param object $user
  * @return boolean
  */
-function mgm_check_course_dependencies($edition, $course, $user) {
+function mgm_check_course_dependencies($edition, $course, $user, $dni=False) {
     global $CFG;
 
     if(!$criteria = mgm_get_edition_course_criteria($edition -> id, $course -> id)) {
@@ -2766,7 +2769,11 @@ function mgm_check_course_dependencies($edition, $course, $user) {
     }
 		if ($euser = mgm_get_user_extend($user->id)){
 			if ($course2=get_record('course', id, $criteria->dlist)){
-				if (record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course2->idnumber, 'confirm', 1)){
+
+				if ($dni){
+					$euser->dni=$dni;
+				}
+				if (record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course2->idnumber, 'confirm', 1) && $euser->dni != ''){
 					return true;
 				}
 			}

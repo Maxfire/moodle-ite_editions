@@ -187,14 +187,14 @@ class enrol_mgm_form extends moodleform {
 				if ($edition) {
         	foreach ($data->option as $k=>$option) {
         		  if ($course=get_record('course', 'id', $option)){
-        				if (!mgm_check_course_dependencies($edition, $course, $USER)) {
+        				if (!mgm_check_course_dependencies($edition, $course, $USER, $data->dni)) {
         					$errors['option['.$k.']']=get_string('nodependencias', 'mgm');
         				}
             		$courses[$k] = $option;
         		  }
         	}
         	//validate cert history
-					$ch=mgm_check_cert_history($USER->id, $courses);
+					$ch=mgm_check_cert_history($USER->id, $courses, $data->dni);
 					if (! $ch[0]){//alguno de los cursos esta certificado para el dni del usuario
 						foreach ($data->option as $k=>$option) {
 							if ($ch[2]==$option){
