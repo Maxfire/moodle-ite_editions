@@ -34,7 +34,7 @@ require_login();
 $id = optional_param('id', 0, PARAM_INT);    // Edition id
 
 if ($id) {
-    if (!$edition = get_record('edicion', 'id', $id)) {
+    if (!$edition = $DB->get_record('edicion', 'id', $id)) {
         error('Edition not known!');
     }
 

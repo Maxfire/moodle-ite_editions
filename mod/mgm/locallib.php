@@ -435,7 +435,7 @@ function mgm_print_fees_ediciones_list() {
 }
 
 function mgm_get_edition_courses($edition) {
-    global $CFG;
+    global $CFG, $DB;
 
     if(!is_object($edition)) {
         return array();
@@ -448,7 +448,7 @@ function mgm_get_edition_courses($edition) {
     	    )
     	    ORDER BY fullname;";
 
-    if(!$courses = get_records_sql($sql)) {
+    if(!$courses = $DB->get_records_sql($sql)) {
         return array();
     }
 
@@ -456,7 +456,7 @@ function mgm_get_edition_courses($edition) {
 }
 
 function mgm_get_edition_available_courses($edition) {
-    global $CFG;
+    global $CFG, $DB;
     require_once ("$CFG->dirroot/enrol/enrol.class.php");
 
     $sql = "SELECT id, fullname, enrol FROM " . $CFG -> prefix . "course
@@ -467,7 +467,7 @@ function mgm_get_edition_available_courses($edition) {
 				SELECT courseid FROM " . $CFG -> prefix . "edicion_course
 			) AND id != '1'
 			ORDER BY fullname";
-    $courses = get_records_sql($sql);
+    $courses = $DB->get_records_sql($sql);
     $ret = array();
     foreach($courses as $course) {
         if(enrolment_factory::factory($course -> enrol) instanceof enrolment_plugin_mgm) {
@@ -3279,7 +3279,7 @@ function mgm_download_doc($fields) {
  * Create some needed data on database if not exists
  */
 function mgm_create_especs() {
-    global $CFG;
+    global $CFG, $DB;
     global $MGM_ITE_ESPECS;
 
     if(!mgm_especs_exists()) {
@@ -3288,14 +3288,14 @@ function mgm_create_especs() {
         $nespecs -> type = MGM_ITE_ESPECIALIDADES;
         $nespecs -> name = 'Especialidades';
         $nespecs -> value = implode("\n", $MGM_ITE_ESPECS);
-        insert_record('edicion_ite', $nespecs);
+        $DB->insert_record('edicion_ite', $nespecs);
     }
 
     return true;
 }
 
 function mgm_update_especs() {
-    global $CFG;
+    global $CFG, $DB;
     global $MGM_ITE_ESPECS;
 		$sql = "SELECT id FROM " . $CFG -> prefix . "edicion_ite
             WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
@@ -3304,7 +3304,7 @@ function mgm_update_especs() {
         $especs -> type = MGM_ITE_ESPECIALIDADES;
         $especs -> name = 'Especialidades';
         $especs -> value = implode("\n", $MGM_ITE_ESPECS);
-        $dev=update_record('edicion_ite', $especs);
+        $dev=$DB->update_record('edicion_ite', $especs);
     }
 		if ($dev){
 			return true;
@@ -3321,12 +3321,12 @@ function mgm_update_especs() {
  * @return mixed
  */
 function mgm_especs_exists() {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
             WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
 
-    return get_record_sql($sql);
+    return $DB->get_record_sql($sql);
 }
 
 function mgm_get_microtime() {

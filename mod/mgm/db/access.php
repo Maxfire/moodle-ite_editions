@@ -48,12 +48,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$mod_mgm_capabilities = array(
+$capabilities = array(
 
     'mod/mgm:viewedicion' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
+        'archetypes' => array(
             'guest' => CAP_ALLOW,
             'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
@@ -66,7 +66,7 @@ $mod_mgm_capabilities = array(
         'riskbitmap' => RISK_CONFIG,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
+        'archetypes' => array(
             'admin' => CAP_ALLOW
         )
     ),
@@ -75,7 +75,7 @@ $mod_mgm_capabilities = array(
         'riskbitmap' => RISK_CONFIG,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
+        'archetypes' => array(
             'admin' => CAP_ALLOW
         )
     ),
@@ -84,7 +84,7 @@ $mod_mgm_capabilities = array(
         'riskbitmap' => RISK_CONFIG,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
+        'archetypes' => array(
             'admin' => CAP_ALLOW
         )
     ),
@@ -92,7 +92,7 @@ $mod_mgm_capabilities = array(
     'mod/mgm:aprobe' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
+        'archetypes' => array(
             'admin' => CAP_ALLOW
         )
     )

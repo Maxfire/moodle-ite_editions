@@ -60,7 +60,7 @@ $strstate          = get_string('state', 'mgm');
 
 
 // Editions
-$editions = get_records('edicion');
+$editions = $DB->get_records('edicion');
 
 if (mgm_update_edition_button()) {
     if($editionedit !== -1) {
@@ -123,16 +123,15 @@ print_table($editiontable);
 echo '<div class="mod-mgm buttons">';
 // Print button for creating new editions
 if (mgm_can_do_create()) {
-    print_single_button('edicionedit.php', '', $straddedicion, 'get');
+    //print_single_button('edicionedit.php', '', $straddedicion, 'get');
+    echo $OUTPUT->single_button(new moodle_url('edicionedit.php', array()), $straddedicion, 'get');
 }
 echo '</div>';
-
-admin_externalpage_print_footer();
+echo $OUTPUT->footer();
 
 function print_edition_edit_header() {
-    global $CFG;
+    global $CFG, $OUTPUT;;
     require_once($CFG->libdir.'/adminlib.php');
-
     admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
-    admin_externalpage_print_header();
+    echo $OUTPUT->header(); 
 }

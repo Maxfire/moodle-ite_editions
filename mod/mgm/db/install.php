@@ -37,10 +37,10 @@ function xmldb_mgm_install() {
     $result = mgm_create_especs();
 
     // Install default common logging actions
-    update_log_display_entry('mgm', 'add', 'mgm', 'name');
-    update_log_display_entry('mgm', 'update', 'mgm', 'name');
-    update_log_display_entry('mgm', 'view', 'mgm', 'name');
-    update_log_display_entry('mgm', 'view all', 'mgm', 'name');
+//     update_log_display_entry('mgm', 'add', 'mgm', 'name');
+//     update_log_display_entry('mgm', 'update', 'mgm', 'name');
+//     update_log_display_entry('mgm', 'view', 'mgm', 'name');
+//     update_log_display_entry('mgm', 'view all', 'mgm', 'name');
     
     return $result;    
 }

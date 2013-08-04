@@ -6,10 +6,10 @@
   <TABLES>
     <TABLE NAME="mgm" COMMENT="Defines mgm instance" NEXT="edicion">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="name"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="name field for moodle instances" PREVIOUS="id" NEXT="course"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="name" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="course"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"  COMMENT="name field for moodle instances" PREVIOUS="id" NEXT="course"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="name" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="course"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -20,18 +20,19 @@
     </TABLE>
     <TABLE NAME="edicion" COMMENT="Ediciones" PREVIOUS="mgm" NEXT="edicion_course">
       <FIELDS>
-	      <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="name"/>
-				<FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="name field for moodle instances" PREVIOUS="id" NEXT="description"/>
-				<FIELD NAME="description" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="name" NEXT="timecreated"/>
-				<FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="description" NEXT="timemodified"/>
-				<FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="timecreated" NEXT="inicio"/>
-				<FIELD NAME="inicio" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="timemodified" NEXT="fin"/>
-				<FIELD NAME="fin" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="inicio" NEXT="active"/>
-				<FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="fin" NEXT="certified"/>
-				<FIELD NAME="certified" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="active" NEXT="fechaemision"/>
-				<FIELD NAME="fechaemision" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="certified" NEXT="state"/>
-				<FIELD NAME="state" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="borrador" SEQUENCE="false" ENUM="true" ENUMVALUES="'borrador', 'preinscripcion', 'matriculacion', 'en curso', 'gestion', 'finalizada'" COMMENT="Estado" PREVIOUS="fechaemision" NEXT="paid"/>
-				<FIELD NAME="paid" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="state"/>      
+	      <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="name"/>
+				<FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"  COMMENT="name field for moodle instances" PREVIOUS="id" NEXT="description"/>
+				<FIELD NAME="description" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="name" NEXT="timecreated"/>
+				<FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="description" NEXT="timemodified"/>
+				<FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="timecreated" NEXT="inicio"/>
+				<FIELD NAME="inicio" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="timemodified" NEXT="fin"/>
+				<FIELD NAME="fin" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="inicio" NEXT="active"/>
+				<FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="fin" NEXT="certified"/>
+				<FIELD NAME="certified" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="active" NEXT="fechaemision"/>
+				<FIELD NAME="fechaemision" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="certified" NEXT="state"/>
+				<FIELD NAME="state" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="borrador" SEQUENCE="false" COMMENT="Estado" PREVIOUS="fechaemision" NEXT="paid"/>
+<!-- 				<FIELD NAME="state" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="borrador" SEQUENCE="false" ENUM="true" ENUMVALUES="'borrador', 'preinscripcion', 'matriculacion', 'en curso', 'gestion', 'finalizada'" COMMENT="Estado" PREVIOUS="fechaemision" NEXT="paid"/> -->
+				<FIELD NAME="paid" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="state"/>      
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -39,22 +40,23 @@
     </TABLE>
     <TABLE NAME="edicion_course" COMMENT="Edicion a la que pertenece un curso" PREVIOUS="edicion" NEXT="edicion_criterios">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="edicionid"/>
-        <FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="courseid"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="edicionid" NEXT="codagrupacion"/>
-        <FIELD NAME="codagrupacion" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" ENUM="false" PREVIOUS="courseid" NEXT="codmodalidad"/>
-        <FIELD NAME="codmodalidad" TYPE="char" LENGTH="2" NOTNULL="false" DEFAULT="10" SEQUENCE="false" ENUM="true" ENUMVALUES="'10', '20', '30', 'A0'" COMMENT="Curso, Grupos de Trabajo, Seminarios o Cursos a Distancia" PREVIOUS="codagrupacion" NEXT="codprovincia"/>
-        <FIELD NAME="codprovincia" TYPE="char" LENGTH="3" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="3 primeros dígitos del Código postal. 600 para extranjero" PREVIOUS="codmodalidad" NEXT="codpais"/>
-        <FIELD NAME="codpais" TYPE="char" LENGTH="3" NOTNULL="false" DEFAULT="724" SEQUENCE="false" ENUM="false" PREVIOUS="codprovincia" NEXT="codmateria"/>
-        <FIELD NAME="codmateria" TYPE="char" LENGTH="4" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="codpais" NEXT="codniveleducativo"/>
-        <FIELD NAME="codniveleducativo" TYPE="char" LENGTH="2" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="codmateria" NEXT="numhoras"/>
-        <FIELD NAME="numhoras" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="codniveleducativo" NEXT="numcreditos"/>
-        <FIELD NAME="numcreditos" TYPE="number" LENGTH="3" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" ENUM="false" DECIMALS="1" PREVIOUS="numhoras" NEXT="fechainicio"/>
-        <FIELD NAME="fechainicio" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="numcreditos" NEXT="fechafin"/>
-        <FIELD NAME="fechafin" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="fechainicio" NEXT="localidad"/>
-        <FIELD NAME="localidad" TYPE="char" LENGTH="35" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="fechafin" NEXT="fechainimodalidad"/>
-        <FIELD NAME="fechainimodalidad" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="localidad" NEXT="codactividad"/>
-        <FIELD NAME="codactividad" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false" ENUM="false" PREVIOUS="fechainimodalidad"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="edicionid"/>
+        <FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="courseid"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="edicionid" NEXT="codagrupacion"/>
+        <FIELD NAME="codagrupacion" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"  PREVIOUS="courseid" NEXT="codmodalidad"/>
+        <FIELD NAME="codmodalidad" TYPE="char" LENGTH="2" NOTNULL="false" DEFAULT="10" SEQUENCE="false" COMMENT="Curso, Grupos de Trabajo, Seminarios o Cursos a Distancia" PREVIOUS="codagrupacion" NEXT="codprovincia"/>
+<!--         <FIELD NAME="codmodalidad" TYPE="char" LENGTH="2" NOTNULL="false" DEFAULT="10" SEQUENCE="false" ENUM="true" ENUMVALUES="'10', '20', '30', 'A0'" COMMENT="Curso, Grupos de Trabajo, Seminarios o Cursos a Distancia" PREVIOUS="codagrupacion" NEXT="codprovincia"/> -->
+        <FIELD NAME="codprovincia" TYPE="char" LENGTH="3" NOTNULL="false" SEQUENCE="false"  COMMENT="3 primeros dígitos del Código postal. 600 para extranjero" PREVIOUS="codmodalidad" NEXT="codpais"/>
+        <FIELD NAME="codpais" TYPE="char" LENGTH="3" NOTNULL="false" DEFAULT="724" SEQUENCE="false"  PREVIOUS="codprovincia" NEXT="codmateria"/>
+        <FIELD NAME="codmateria" TYPE="char" LENGTH="4" NOTNULL="false" SEQUENCE="false"  PREVIOUS="codpais" NEXT="codniveleducativo"/>
+        <FIELD NAME="codniveleducativo" TYPE="char" LENGTH="2" NOTNULL="false" SEQUENCE="false"  PREVIOUS="codmateria" NEXT="numhoras"/>
+        <FIELD NAME="numhoras" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="codniveleducativo" NEXT="numcreditos"/>
+        <FIELD NAME="numcreditos" TYPE="number" LENGTH="3" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  DECIMALS="1" PREVIOUS="numhoras" NEXT="fechainicio"/>
+        <FIELD NAME="fechainicio" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"  PREVIOUS="numcreditos" NEXT="fechafin"/>
+        <FIELD NAME="fechafin" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"  PREVIOUS="fechainicio" NEXT="localidad"/>
+        <FIELD NAME="localidad" TYPE="char" LENGTH="35" NOTNULL="false" SEQUENCE="false"  PREVIOUS="fechafin" NEXT="fechainimodalidad"/>
+        <FIELD NAME="fechainimodalidad" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"  PREVIOUS="localidad" NEXT="codactividad"/>
+        <FIELD NAME="codactividad" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false"  PREVIOUS="fechainimodalidad"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -62,11 +64,11 @@
     </TABLE>
     <TABLE NAME="edicion_criterios" COMMENT="Criterios de matriculación para una edicion" PREVIOUS="edicion_course" NEXT="edicion_preinscripcion">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="edicion"/>
-        <FIELD NAME="edicion" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="course"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="edicion" NEXT="type"/>
-        <FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" ENUM="false" PREVIOUS="course" NEXT="value"/>
-        <FIELD NAME="value" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="type"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="edicion"/>
+        <FIELD NAME="edicion" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="course"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="edicion" NEXT="type"/>
+        <FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"  PREVIOUS="course" NEXT="value"/>
+        <FIELD NAME="value" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="type"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="edicion"/>
@@ -76,11 +78,11 @@
     </TABLE>
     <TABLE NAME="edicion_preinscripcion" COMMENT="Preinscripciones a una edicion" PREVIOUS="edicion_criterios" NEXT="edicion_inscripcion">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="edicionid"/>
-        <FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="edicionid" NEXT="value"/>
-        <FIELD NAME="value" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="userid" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="value"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="edicionid"/>
+        <FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="edicionid" NEXT="value"/>
+        <FIELD NAME="value" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="userid" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="value"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -91,12 +93,12 @@
     </TABLE>
     <TABLE NAME="edicion_inscripcion" COMMENT="Inscripciones a una edicion" PREVIOUS="edicion_preinscripcion" NEXT="edicion_ite">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="edicionid"/>
-        <FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="edicionid" NEXT="value"/>
-        <FIELD NAME="value" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="userid" NEXT="released"/>
-        <FIELD NAME="released" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="value" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="released"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="edicionid"/>
+        <FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="edicionid" NEXT="value"/>
+        <FIELD NAME="value" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="userid" NEXT="released"/>
+        <FIELD NAME="released" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="value" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="released"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -107,10 +109,10 @@
     </TABLE>
     <TABLE NAME="edicion_ite" COMMENT="Module configuration data" PREVIOUS="edicion_inscripcion" NEXT="edicion_user">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="name"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="shortname" SEQUENCE="false" ENUM="false" COMMENT="name for each field" PREVIOUS="id" NEXT="type"/>
-        <FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" ENUM="false" PREVIOUS="name" NEXT="value"/>
-        <FIELD NAME="value" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="General parameter field" PREVIOUS="type"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="shortname" SEQUENCE="false"  COMMENT="name for each field" PREVIOUS="id" NEXT="type"/>
+        <FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"  PREVIOUS="name" NEXT="value"/>
+        <FIELD NAME="value" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  COMMENT="General parameter field" PREVIOUS="type"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -118,21 +120,24 @@
     </TABLE>
     <TABLE NAME="edicion_user" COMMENT="Edicion users data" PREVIOUS="edicion_ite" NEXT="edicion_cert_history">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="dni"/>
-        <FIELD NAME="dni" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="userid" NEXT="cc"/>
-        <FIELD NAME="cc" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="dni" NEXT="especialidades"/>
-        <FIELD NAME="especialidades" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="cc" NEXT="alt_address"/>
-        <FIELD NAME="alt_address" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="especialidades" NEXT="address"/>
-        <FIELD NAME="address" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="alt_address" NEXT="tipoid"/>
-        <FIELD NAME="tipoid" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false" ENUM="true" ENUMVALUES="'N', 'P', 'T'" COMMENT="Nif, Pasaporte o Tarjeta de residencia" PREVIOUS="address" NEXT="codtipoparticipante"/>
-        <FIELD NAME="codtipoparticipante" TYPE="char" LENGTH="2" NOTNULL="false" SEQUENCE="false" ENUM="true" ENUMVALUES="'A', 'C', 'T'" COMMENT="Asistente, Coordinador o Tutor" PREVIOUS="tipoid" NEXT="codniveleducativo"/>
-        <FIELD NAME="codniveleducativo" TYPE="char" LENGTH="2" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="codtipoparticipante" NEXT="codcuerpodocente"/>
-        <FIELD NAME="codcuerpodocente" TYPE="char" LENGTH="8" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="codniveleducativo" NEXT="codpostal"/>
-        <FIELD NAME="codpostal" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="codcuerpodocente" NEXT="sexo"/>
-        <FIELD NAME="sexo" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false" ENUM="true" ENUMVALUES="'H', 'M'" PREVIOUS="codpostal" NEXT="codpais"/>
-        <FIELD NAME="codpais" TYPE="char" LENGTH="3" NOTNULL="false" DEFAULT="724" SEQUENCE="false" ENUM="false" COMMENT="Código de País" PREVIOUS="sexo" NEXT="codprovincia"/>
-        <FIELD NAME="codprovincia" TYPE="char" LENGTH="3" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="Código de provincia" PREVIOUS="codpais"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="dni"/>
+        <FIELD NAME="dni" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="userid" NEXT="cc"/>
+        <FIELD NAME="cc" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="dni" NEXT="especialidades"/>
+        <FIELD NAME="especialidades" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="cc" NEXT="alt_address"/>
+        <FIELD NAME="alt_address" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="especialidades" NEXT="address"/>
+        <FIELD NAME="address" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="alt_address" NEXT="tipoid"/>
+        <FIELD NAME="tipoid" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Nif, Pasaporte o Tarjeta de residencia" PREVIOUS="address" NEXT="codtipoparticipante"/>
+<!--         <FIELD NAME="tipoid" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false" ENUM="true" ENUMVALUES="'N', 'P', 'T'" COMMENT="Nif, Pasaporte o Tarjeta de residencia" PREVIOUS="address" NEXT="codtipoparticipante"/> -->
+        <FIELD NAME="codtipoparticipante" TYPE="char" LENGTH="2" NOTNULL="false" SEQUENCE="false" PREVIOUS="tipoid" NEXT="codniveleducativo"/>
+<!--         <FIELD NAME="codtipoparticipante" TYPE="char" LENGTH="2" NOTNULL="false" SEQUENCE="false" ENUM="true" ENUMVALUES="'A', 'C', 'T'" COMMENT="Asistente, Coordinador o Tutor" PREVIOUS="tipoid" NEXT="codniveleducativo"/> -->
+        <FIELD NAME="codniveleducativo" TYPE="char" LENGTH="2" NOTNULL="false" SEQUENCE="false"  PREVIOUS="codtipoparticipante" NEXT="codcuerpodocente"/>
+        <FIELD NAME="codcuerpodocente" TYPE="char" LENGTH="8" NOTNULL="false" SEQUENCE="false"  PREVIOUS="codniveleducativo" NEXT="codpostal"/>
+        <FIELD NAME="codpostal" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false"  PREVIOUS="codcuerpodocente" NEXT="sexo"/>
+        <FIELD NAME="sexo" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="codpostal" NEXT="codpais"/>
+<!--         <FIELD NAME="sexo" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false" ENUM="true" ENUMVALUES="'H', 'M'" PREVIOUS="codpostal" NEXT="codpais"/> -->
+        <FIELD NAME="codpais" TYPE="char" LENGTH="3" NOTNULL="false" DEFAULT="724" SEQUENCE="false"  COMMENT="Código de País" PREVIOUS="sexo" NEXT="codprovincia"/>
+        <FIELD NAME="codprovincia" TYPE="char" LENGTH="3" NOTNULL="false" SEQUENCE="false"  COMMENT="Código de provincia" PREVIOUS="codpais"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -143,15 +148,16 @@
     </TABLE>
     <TABLE NAME="edicion_cert_history" COMMENT="Edicion certification history" PREVIOUS="edicion_user" NEXT="edicion_centro">
       <FIELDS>
-				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="courseid"/>
-				<FIELD NAME="courseid" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="userid"/>
-				<FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="courseid" NEXT="edicionid"/>
-				<FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="userid" NEXT="roleid"/>
-				<FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="edicionid" NEXT="numregistro"/>
-				<FIELD NAME="numregistro" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false" ENUM="false" PREVIOUS="roleid" NEXT="confirm"/>
-				<FIELD NAME="confirm" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="numregistro" NEXT="tipodocumento"/>
-				<FIELD NAME="tipodocumento" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="N" SEQUENCE="false" ENUM="true" ENUMVALUES="'N', 'P', 'T'" COMMENT="NIF, Pasaporte o Tarjeta" PREVIOUS="confirm" NEXT="numdocumento"/>
-				<FIELD NAME="numdocumento" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="Numero de DNI, Pasaporte o tarjeta" PREVIOUS="tipodocumento"/>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="courseid"/>
+				<FIELD NAME="courseid" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false"  PREVIOUS="id" NEXT="userid"/>
+				<FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="courseid" NEXT="edicionid"/>
+				<FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="userid" NEXT="roleid"/>
+				<FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="edicionid" NEXT="numregistro"/>
+				<FIELD NAME="numregistro" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false"  PREVIOUS="roleid" NEXT="confirm"/>
+				<FIELD NAME="confirm" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="numregistro" NEXT="tipodocumento"/>
+				<FIELD NAME="tipodocumento" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="N" SEQUENCE="false" COMMENT="NIF, Pasaporte o Tarjeta" PREVIOUS="confirm" NEXT="numdocumento"/>
+<!-- 				<FIELD NAME="tipodocumento" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="N" SEQUENCE="false" ENUM="true" ENUMVALUES="'N', 'P', 'T'" COMMENT="NIF, Pasaporte o Tarjeta" PREVIOUS="confirm" NEXT="numdocumento"/> -->
+				<FIELD NAME="numdocumento" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"  COMMENT="Numero de DNI, Pasaporte o tarjeta" PREVIOUS="tipodocumento"/>
 			</FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -159,18 +165,18 @@
     </TABLE>
     <TABLE NAME="edicion_centro" COMMENT="Edicion Centros" PREVIOUS="edicion_cert_history" NEXT="edicion_descartes">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="pais"/>
-        <FIELD NAME="pais" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="localidad"/>
-        <FIELD NAME="localidad" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="pais" NEXT="dgenerica"/>
-        <FIELD NAME="dgenerica" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="localidad" NEXT="despecifica"/>
-        <FIELD NAME="despecifica" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="dgenerica" NEXT="codigo"/>
-        <FIELD NAME="codigo" TYPE="int" LENGTH="16" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="despecifica" NEXT="naturaleza"/>
-        <FIELD NAME="naturaleza" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="codigo" NEXT="tipo"/>
-        <FIELD NAME="tipo" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="naturaleza" NEXT="direccion"/>
-        <FIELD NAME="direccion" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="tipo" NEXT="cp"/>
-        <FIELD NAME="cp" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="direccion" NEXT="provincia"/>
-        <FIELD NAME="provincia" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="cp" NEXT="telefono"/>
-        <FIELD NAME="telefono" TYPE="char" LENGTH="9" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="provincia"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="pais"/>
+        <FIELD NAME="pais" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="id" NEXT="localidad"/>
+        <FIELD NAME="localidad" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="pais" NEXT="dgenerica"/>
+        <FIELD NAME="dgenerica" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="localidad" NEXT="despecifica"/>
+        <FIELD NAME="despecifica" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="dgenerica" NEXT="codigo"/>
+        <FIELD NAME="codigo" TYPE="int" LENGTH="16" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="despecifica" NEXT="naturaleza"/>
+        <FIELD NAME="naturaleza" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="codigo" NEXT="tipo"/>
+        <FIELD NAME="tipo" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="naturaleza" NEXT="direccion"/>
+        <FIELD NAME="direccion" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="tipo" NEXT="cp"/>
+        <FIELD NAME="cp" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false"  PREVIOUS="direccion" NEXT="provincia"/>
+        <FIELD NAME="provincia" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false"  PREVIOUS="cp" NEXT="telefono"/>
+        <FIELD NAME="telefono" TYPE="char" LENGTH="9" NOTNULL="false" SEQUENCE="false"  PREVIOUS="provincia"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -181,11 +187,11 @@
     </TABLE>
     <TABLE NAME="edicion_descartes" COMMENT="Almacena las preinscripciones descartadas y sus motivos" PREVIOUS="edicion_centro">
 			<FIELDS>
-				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="edicionid"/>
-				<FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" COMMENT="Edición" PREVIOUS="id" NEXT="courseid"/>
-				<FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" COMMENT="Curso" PREVIOUS="edicionid" NEXT="userid"/>
-				<FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" COMMENT="Usuario" PREVIOUS="courseid" NEXT="code"/>
-				<FIELD NAME="code" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" ENUM="false" COMMENT="Codigo del descarte" PREVIOUS="userid"/>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="edicionid"/>
+				<FIELD NAME="edicionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  COMMENT="Edición" PREVIOUS="id" NEXT="courseid"/>
+				<FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  COMMENT="Curso" PREVIOUS="edicionid" NEXT="userid"/>
+				<FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  COMMENT="Usuario" PREVIOUS="courseid" NEXT="code"/>
+				<FIELD NAME="code" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  COMMENT="Codigo del descarte" PREVIOUS="userid"/>
 			</FIELDS>
 			<KEYS>
 				<KEY NAME="primary" TYPE="primary" FIELDS="id"/>
