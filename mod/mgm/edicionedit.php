@@ -30,11 +30,16 @@ require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/edit_form.php');
 
 require_login();
+$systemcontext = context_system::instance();
+$PAGE->set_url('/mgm/index.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
+
 
 $id = optional_param('id', 0, PARAM_INT);    // Edition id
 
 if ($id) {
-    if (!$edition = $DB->get_record('edicion', 'id', $id)) {
+    if (!$edition = $DB->get_record('edicion', array('id'=> $id))) {
         error('Edition not known!');
     }
 
@@ -77,7 +82,7 @@ if ($mform->is_cancelled()) {
     $newedition->name = $data->name;
     $newedition->state = $data->state;
     $newedition->description = $data->description;
-    $newedition->plazas = $data->plazas;
+//     $newedition->plazas = $data->plazas;
     $newedition->inicio = $data->inicio;
     $newedition->fin = $data->fin;
 
@@ -102,7 +107,7 @@ if ($mform->is_cancelled()) {
                 mgm_remove_course($edition, $courseid);
             }
         }
-        if ($reg=get_record('edicion', 'id', $data->id) && $reg>state=='finalizada'){
+        if ($reg=get_record('edicion', array('id'=> $data->id)) && $reg->state=='finalizada'){
         	error(get_string('state_ed_error5', 'mgm'));//no se puede modificar una edicion finalizada
         }else{
         	mgm_update_edition($newedition);
@@ -122,7 +127,17 @@ $streditions = get_string('editions', 'mgm');
 require_once($CFG->libdir.'/adminlib.php');
 
 admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
-admin_externalpage_print_header();
-print_heading($strtitle);
+echo $OUTPUT->header();
+//admin_externalpage_print_header();
+//print_heading($strtitle);
+echo $OUTPUT->heading($strtitle);
 $mform->display();
-admin_externalpage_print_footer();
+echo $OUTPUT->footer();
+//admin_externalpage_print_footer();
+
+// admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
+// $OUTPUT->header();
+// //admin_externalpage_print_header();
+// $OUTPUT->heading($strtitle);
+// $mform->display();
+// $OUTPUT->footer();

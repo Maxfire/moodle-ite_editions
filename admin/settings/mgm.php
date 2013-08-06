@@ -30,8 +30,8 @@ $ADMIN->add('ediciones', new admin_category('config', get_string('config', 'mgm'
 $ADMIN->add('ediciones', new admin_category('mgmcertifications', get_string('certifications', 'mgm')));
 $ADMIN->add('ediciones', new admin_category('mgmreports', get_string('reports', 'mgm')));
 $ADMIN->add('mgmreports', new admin_category('editionanalitycs', get_string('edanalitycs', 'mgm')));
-$ADMIN->add('mgmreports', new admin_category('maintenance', get_string('maintenance', 'mgm')));
-$ADMIN->add('ediciones', new admin_category('tools', get_string('tools', 'mgm')));
+$ADMIN->add('mgmreports', new admin_category('mgmmaintenance', get_string('maintenance', 'mgm')));
+$ADMIN->add('ediciones', new admin_category('mgmtools', get_string('tools', 'mgm')));
 $ADMIN->add(
 	'ediciones', new admin_externalpage('edicionesmgmt', get_string('edicionesmgmt', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/index.php?editionedit=on', 'mod/mgm:createedicion')
@@ -134,11 +134,11 @@ $ADMIN->add(
 );
 
 $ADMIN->add(
-    'maintenance', new admin_externalpage('report020', get_string('Report020', 'mgm'),
+    'mgmmaintenance', new admin_externalpage('report020', get_string('Report020', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report020', 'mod/mgm:createedicion')
 );
 $ADMIN->add(
-    'maintenance', new admin_externalpage('report021', get_string('Report021', 'mgm'),
+    'mgmmaintenance', new admin_externalpage('report021', get_string('Report021', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/report.php?report_type=Report021', 'mod/mgm:createedicion')
 );
 $ADMIN->add(
@@ -161,10 +161,10 @@ $ADMIN->add(
 );
 
 $ADMIN->add(
-    'tools', new admin_externalpage('joinusers', get_string('joinusers', 'mgm'),
+    'mgmtools', new admin_externalpage('joinusers', get_string('joinusers', 'mgm'),
         $CFG->wwwroot . '/mod/mgm/join_users.php', 'mod/mgm:createedicion')
 );
 $ADMIN->add(
-    'tools', new admin_externalpage('userbulkmgm', get_string('userbulk', 'admin'),
+    'mgmtools', new admin_externalpage('userbulkmgm', get_string('userbulk', 'admin'),
         $CFG->wwwroot . '/mod/mgm/user_bulk.php', 'mod/mgm:createedicion')
 );

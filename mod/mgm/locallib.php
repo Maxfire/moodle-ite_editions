@@ -22,7 +22,7 @@
  * logic, should go here. Never include this file from your lib.php!
  *
  * @package   mod_mgm
- * @copyright 2010 Oscar Campos <oscar.campos@open-phoenix.com>
+ * @copyright 2013 Jesús Jaén <jesus.jaen@open-phoenix.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once ($CFG -> dirroot . '/course/lib.php');
@@ -199,7 +199,7 @@ function mgm_can_do_aprobe($cm = 0) {
  * @return string HTML of the editing button, or empty string if the user is not allowed to see it.
  */
 function mgm_update_edition_button($editionid = 0) {
-    global $CFG, $USER;
+    global $CFG, $USER, $OUTPUT;
 
     // Check permissions.
     if(!mgm_can_do_create()) {
@@ -223,16 +223,21 @@ function mgm_update_edition_button($editionid = 0) {
     } else {
         $page = 'index.php';
     }
-
-    return print_single_button($CFG -> wwwroot . '/mod/mgm/' . $page, $options, $label, 'get', '', true);
+	
+    return $OUTPUT->single_button(new moodle_url($CFG -> wwwroot . '/mod/mgm/' . $page, $options), $label, 'get');
 }
 
 function mgm_get_edition_data($edition) {
+	global $DB;
     if(!is_object($edition)) {
         return NULL;
     }
 
-    $fulledition = array('edition' => $edition, 'courses' => get_record('edicion_course', 'edicionid', $edition -> id), 'criteria' => get_record('edicion_criterios', 'edicion', $edition -> id), 'preinscripcion' => get_record('edicion_preinscripcion', 'edicionid', $edition -> id), 'inscripcion' => get_record('edicion_inscripcion', 'edicionid', $edition -> id));
+    $fulledition = array('edition' => $edition,
+    		              'courses' => $DB->get_record('edicion_course', 'edicionid', $edition -> id),
+    		              'criteria' => $DB->get_record('edicion_criterios', 'edicion', $edition -> id),
+						  'preinscripcion' => $DB->get_record('edicion_preinscripcion', 'edicionid', $edition -> id),
+    		              'inscripcion' => $DB->get_record('edicion_inscripcion', 'edicionid', $edition -> id));
 
     return $fulledition;
 }
@@ -244,7 +249,7 @@ function mgm_get_edition_data($edition) {
  * @return string The number of courses in an edition
  */
 function mgm_count_courses($edition) {
-    global $CFG;
+    global $CFG, $DB;
 
     if(!is_object($edition)) {
         return '';
@@ -253,11 +258,12 @@ function mgm_count_courses($edition) {
     $sql = "SELECT COUNT(d.id) FROM " . $CFG -> prefix . "edicion_course d
     		WHERE d.edicionid = $edition->id";
 
-    return get_field_sql($sql);
+    return $DB->get_field_sql($sql);
 }
 
 function mgm_get_edition_course($editionid, $courseid) {
-    return get_record('edicion_course', 'edicionid', $editionid, 'courseid', $courseid);
+	global $DB;
+    return $DB->get_record('edicion_course', 'edicionid', $editionid, 'courseid', $courseid);
 }
 
 /**
@@ -282,45 +288,45 @@ function mgm_get_edition_link($edition) {
  * @return string
  */
 function mgm_get_edition_menu($edition) {
-    global $CFG;
-
+    global $CFG, $OUTPUT;
+    
     if(!is_object($edition)) {
         return '';
     }
 
     $menu = '<a title="' . get_string('edit') . '" href="edicionedit.php?id=' . $edition -> id . '"><img' .
-            ' src="' . $CFG -> pixpath . '/t/edit.gif" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
+            ' src="' . $OUTPUT->pix_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
     $menu .= ' | ';
     $menu .= '<a title="' . get_string('delete') . '" href="delete.php?id=' . $edition -> id . '">' .
-             '<img src="' . $CFG -> pixpath . '/t/delete.gif" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
+             '<img src="' . $OUTPUT->pix_url('t/delete') . '" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
     $menu .= ' | ';
 
     if(mgm_edition_is_active($edition)) {
         $menu .= '<a title="' . get_string('desactivar', 'mgm') . '" href="active.php?id=' . $edition -> id . '">' .
-                 '<img src="' . $CFG -> pixpath . '/t/stop.gif" class="iconsmall" alt="' . get_string('desactivar', 'mgm') . '" /></a>';
+                 '<img src="' . $OUTPUT->pix_url('t/stop'). '" class="iconsmall" alt="' . get_string('desactivar', 'mgm') . '" /></a>';
     } else {
-        $menu .= '<a title="' . get_string('activar', 'mgm') . '" href="active.php?id=' . $edition -> id . '">' . '<img src="' . $CFG -> pixpath . '/t/go.gif" class="iconsmall" alt="' . get_string('activar', 'mgm') . '" /></a>';
+        $menu .= '<a title="' . get_string('activar', 'mgm') . '" href="active.php?id=' . $edition -> id . '">' . '<img src="' . $OUTPUT->pix_url('/t/go') . '" class="iconsmall" alt="' . get_string('activar', 'mgm') . '" /></a>';
     }
     if(!mgm_edition_is_certified($edition)) {
         $menu .= ' | <a title="' . get_string('cert', 'mgm') . '" href="certificate.php?id=' . $edition -> id . '" id="edicion_' . $edition -> id . '">' .
-                 '<img src="' . $CFG -> pixpath . '/t/grades.gif" class="iconsmall" alt="' . get_string('cert', 'mgm') . '" /></a>';
-        $menu .= ' | <a title="' . get_string('pago-nc', 'mgm') . '" href="#">' . '<img src="' . $CFG -> pixpath . '/i/unlock.gif" class="iconsmall" alt="' . get_string('pago-nc', 'mgm') . '" /></a>';
+                 '<img src="' . $OUTPUT->pix_url('/t/grades') . '" class="iconsmall" alt="' . get_string('cert', 'mgm') . '" /></a>';
+        $menu .= ' | <a title="' . get_string('pago-nc', 'mgm') . '" href="#">' . '<img src="' . $OUTPUT->pix_url('/i/unlock') . '" class="iconsmall" alt="' . get_string('pago-nc', 'mgm') . '" /></a>';
     } else {
         if(mgm_edition_is_on_draft($edition)) {
             $menu .= ' | <a title="' . get_string('certdraft', 'mgm') . '" href="certificate.php?id=' . $edition -> id . '&draft=1" id="edicion_' . $edition -> id . '">'.
-                     '<img src="' . $CFG -> pixpath . '/c/site.gif" class="iconsmall" alt="' . get_string('certdraft', 'mgm') . '" /></a>';
-            $menu .= ' | <a title="'.get_string('pago-nc', 'mgm').'" href="#">'.'<img src="'.$CFG->pixpath.'/i/unlock.gif" class="iconsmall" alt="'.get_string('pago-nc', 'mgm').'" /></a>';
+                     '<img src="' . $OUTPUT->pix_url('/c/site') . '" class="iconsmall" alt="' . get_string('certdraft', 'mgm') . '" /></a>';
+            $menu .= ' | <a title="'.get_string('pago-nc', 'mgm').'" href="#">'.'<img src="' . $OUTPUT->pix_url('/i/unlock') . '" class="iconsmall" alt="'.get_string('pago-nc', 'mgm').'" /></a>';
         }
 
         if(mgm_edition_is_on_validate($edition)) {
             $menu .= ' | <a title="'.get_string('certified', 'mgm').'" href="#">'.
-                     '<img src="'.$CFG->pixpath.'/i/tick_green_small.gif" class="iconsmall" alt="'.get_string('certified', 'mgm').'" /></a>';
+                     '<img src="' . $OUTPUT->pix_url('/i/tick_green_small') . '" class="iconsmall" alt="'.get_string('certified', 'mgm').'" /></a>';
             if ($edition->paid){
             	$menu .= ' | <a title="'.get_string('pago', 'mgm').'" href="fees.php?edition='.$edition->id.'&multiple=1">'.
-                     '<img src="'.$CFG->pixpath.'/i/lock.gif" class="iconsmall" alt="'.get_string('pago', 'mgm').'" /></a>';
+                     '<img src="'. $OUTPUT->pix_url('/i/lock') .'" class="iconsmall" alt="'.get_string('pago', 'mgm').'" /></a>';
             }else{
             	$menu .= ' | <a title="'.get_string('do_paid', 'mgm').'" href="fees.php?change_state=1&edition='.$edition->id.'">'.
-                     '<img src="'.$CFG->pixpath.'/i/lock.gif" class="iconsmall" alt="'.get_string('do_paid', 'mgm').'" /></a>';
+                     '<img src="'. $OUTPUT->pix_url('/i/lock').'" class="iconsmall" alt="'.get_string('do_paid', 'mgm').'" /></a>';
             }
         }
     }
@@ -329,9 +335,9 @@ function mgm_get_edition_menu($edition) {
 }
 
 function mgm_print_ediciones_list() {
-    global $CFG;
+    global $CFG, $DB;
 
-    $editions = get_records('edicion');
+    $editions = $DB->get_records('edicion');
 
     $editionimage = '<img src="' . $CFG -> pixpath . '/i/db.gif" alt="" />';
     $courseimage = '<img src="' . $CFG -> pixpath . '/i/course.gif" alt="" />';
@@ -367,9 +373,9 @@ function mgm_print_ediciones_list() {
 }
 
 function mgm_print_whole_ediciones_list() {
-    global $CFG;
+    global $CFG, $DB;
 
-    $editions = get_records('edicion');
+    $editions = $DB->get_records('edicion');
 
     $editionimage = '<img src="' . $CFG -> pixpath . '/i/db.gif" alt="" />';
     $courseimage = '<img src="' . $CFG -> pixpath . '/i/course.gif" alt="" />';
@@ -400,9 +406,9 @@ function mgm_print_whole_ediciones_list() {
 }
 
 function mgm_print_fees_ediciones_list() {
-    global $CFG;
+    global $CFG, $DB;
 
-    $editions = get_records('edicion');
+    $editions = $DB->get_records('edicion');
 
     $editionimage = '<img src="' . $CFG -> pixpath . '/i/db.gif" alt="" />';
     $courseimage = '<img src="' . $CFG -> pixpath . '/i/course.gif" alt="" />';
@@ -457,9 +463,10 @@ function mgm_get_edition_courses($edition) {
 
 function mgm_get_edition_available_courses($edition) {
     global $CFG, $DB;
-    require_once ("$CFG->dirroot/enrol/enrol.class.php");
+//     require_once ("$CFG->dirroot/enrol/enrol.class.php");
 
-    $sql = "SELECT id, fullname, enrol FROM " . $CFG -> prefix . "course
+//     $sql = "SELECT id, fullname, enrol FROM " . $CFG -> prefix . "course
+    $sql = "SELECT id, fullname FROM " . $CFG -> prefix . "course
 			WHERE id NOT IN (
 				SELECT courseid FROM " . $CFG -> prefix . "edicion_course
 				WHERE edicionid = " . $edition -> id . "
@@ -470,9 +477,10 @@ function mgm_get_edition_available_courses($edition) {
     $courses = $DB->get_records_sql($sql);
     $ret = array();
     foreach($courses as $course) {
-        if(enrolment_factory::factory($course -> enrol) instanceof enrolment_plugin_mgm) {
+    	
+//         if(enrolment_factory::factory($course -> enrol) instanceof enrolment_plugin_mgm) {
             $ret[] = $course;
-        }
+//         }
     }
 
     return $ret;
@@ -486,60 +494,57 @@ function mgm_add_course($edition, $courseid) {
         $row -> edicionid = $edition -> id;
         $row -> courseid = $courseid;
 
-        return insert_record('edicion_course', $row);
+        return $DB->insert_record('edicion_course', $row);
     }
 
     return false;
 }
 
 function mgm_remove_course($edition, $courseid) {
+	global $DB;
     if($row = mgm_get_edition_course($edition -> id, $courseid)) {
-        delete_records('edicion_course', 'id', $row -> id);
-
+        $DB->delete_records('edicion_course', 'id', $row -> id);
         return true;
     }
-
     return false;
 }
 
 function mgm_update_edition($edition) {
+	global $DB;
     $edition -> timemodified = time();
-
-    $result = update_record('edicion', $edition);
-
+    $result = $DB->update_record('edicion', $edition);
     if($result) {
         events_trigger('edition_updated', $edition);
     }
-
     return $result;
 }
 
 function mgm_set_edition_paid($editionid){
-	  $editon=new StdClass();
-	  $edition -> id = $editionid;
-		$edition -> paid = 1;
-    $result = update_record('edicion', $edition);
+	global $DB;
+	$editon=new StdClass();
+	$edition -> id = $editionid;
+	$edition -> paid = 1;
+    $result = $DB->update_record('edicion', $edition);
     if($result) {
         events_trigger('edition_updated', $edition);
     }
-
     return $result;
 }
 
 function mgm_create_edition($edition) {
+	global $DB;
     $edition -> timecreated = time();
-
-    $id = insert_record('edicion', $edition);
-
+    $edition -> timemodified = time();
+    $edition -> fechaemision = 0;
+    $id = $DB->insert_record('edicion', $edition);
     if($result) {
         events_trigger('edition_created', get_record('edicion', 'id', $result));
     }
-
     return $result;
 }
 
 function mgm_delete_edition($editionorid) {
-    global $CFG;
+    global $CFG, $DB;
     $result = true;
 
     if(is_object($editionorid)) {
@@ -547,19 +552,16 @@ function mgm_delete_edition($editionorid) {
         $edition = $editionorid;
     } else {
         $editionid = $editionorid;
-        if(!$edition = get_record('edition', 'id', $editionid)) {
+        if(!$edition = $DB->get_record('edition', 'id', $editionid)) {
             return false;
         }
     }
-
     if(!mgm_remove_edition_contents($editionid)) {
         $result = false;
     }
-
-    if(!delete_records('edicion', 'id', $editionid)) {
+    if(!$DB->delete_records('edicion', 'id', $editionid)) {
         $result = false;
     }
-
     if($result) {
         // trigger events
         events_trigger('edition_deleted', $edition);
@@ -567,30 +569,28 @@ function mgm_delete_edition($editionorid) {
 }
 
 function mgm_remove_edition_contents($editionid) {
-    if(!$editon = get_record('edicion', 'id', $editionid)) {
+	global $DB;
+    if(!$editon = $DB->get_record('edicion', 'id', $editionid)) {
         error('Edition ID was incorrect (can\'t find it)');
     }
-
-    delete_records('edicion_course', 'edicionid', $editionid);
-    delete_records('edicion_criterios', 'edicion', $editionid);
-    delete_records('edicion_inscripcion', 'edicionid', $editionid);
-    delete_records('edicion_preinscripcion', 'edicionid', $editionid);
-
+    $DB->delete_records('edicion_course', 'edicionid', $editionid);
+    $DB->delete_records('edicion_criterios', 'edicion', $editionid);
+    $DB->delete_records('edicion_inscripcion', 'edicionid', $editionid);
+    $DB->delete_records('edicion_preinscripcion', 'edicionid', $editionid);
     return true;
 }
 
 function mgm_translate_especialidad($id) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
     		WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
-    $especialidades = explode("\n",  get_record_sql($sql) -> value);
-
+    $especialidades = explode("\n",  $DB->get_record_sql($sql) -> value);
     return ($id !== false && $id != '') ? $especialidades[$id] : '';
 }
 
 function mgm_get_edition_course_criteria($editionid, $courseid) {
-    global $CFG;
+    global $CFG, $DB;
 
     $criteria = new stdClass();
     $criteria -> plazas = 0;
@@ -613,7 +613,7 @@ function mgm_get_edition_course_criteria($editionid, $courseid) {
 
     $sql = 'SELECT * FROM ' . $CFG -> prefix . 'edicion_criterios
     		WHERE edicion = \'' . $editionid . '\' AND course = \'' . $courseid . '\'';
-    if(!$cdata = get_records_sql($sql)) {
+    if(!$cdata = $DB->get_records_sql($sql)) {
         return $criteria;
     }
 
@@ -680,12 +680,11 @@ function mgm_get_edition_course_criteria($editionid, $courseid) {
             $criteria->tramo = explode(',', $c->value);
         }
     }
-
     return $criteria;
 }
 
 function mgm_set_edition_course_criteria($data) {
-    global $CFG;
+    global $CFG, $DB;
 
     $criteria = new stdClass();
     $criteria -> edicion = $data -> edicionid;
@@ -706,7 +705,7 @@ function mgm_set_edition_course_criteria($data) {
     $edata->localidad = $data->localidad;
     $edata->fechainimodalidad = $data ->fechainimodalidad;
 
-    update_record('edicion_course', $edata);
+    $DB->update_record('edicion_course', $edata);
 
     // Plazas
     $criteria -> type = MGM_CRITERIA_PLAZAS;
@@ -715,7 +714,7 @@ function mgm_set_edition_course_criteria($data) {
         insert_record('edicion_criterios', $criteria);
     } else {
         $criteria -> id = $criteriaid -> id;
-        update_record('edicion_criterios', $criteria);
+        $DB->update_record('edicion_criterios', $criteria);
         unset($criteria -> id);
     }
 
@@ -735,10 +734,10 @@ function mgm_set_edition_course_criteria($data) {
     $criteria -> type = MGM_CRITERIA_OPCION1;
     $criteria -> value = $data -> opcion1;
     if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-        insert_record('edicion_criterios', $criteria);
+        $DB->insert_record('edicion_criterios', $criteria);
     } else {
         $criteria -> id = $criteriaid -> id;
-        update_record('edicion_criterios', $criteria);
+        $DB->update_record('edicion_criterios', $criteria);
         unset($criteria -> id);
     }
 
@@ -746,10 +745,10 @@ function mgm_set_edition_course_criteria($data) {
     $criteria -> type = MGM_CRITERIA_OPCION2;
     $criteria -> value = $data -> opcion2;
     if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-        insert_record('edicion_criterios', $criteria);
+        $DB->insert_record('edicion_criterios', $criteria);
     } else {
         $criteria -> id = $criteriaid -> id;
-        update_record('edicion_criterios', $criteria);
+        $DB->update_record('edicion_criterios', $criteria);
         unset($criteria -> id);
     }
     /*
@@ -780,10 +779,10 @@ function mgm_set_edition_course_criteria($data) {
     $criteria -> type = MGM_CRITERIA_COMUNIDAD;
     $criteria -> value = $data -> comunidad;
     if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-        insert_record('edicion_criterios', $criteria);
+        $DB->insert_record('edicion_criterios', $criteria);
     } else {
         $criteria -> id = $criteriaid -> id;
-        update_record('edicion_criterios', $criteria);
+        $DB->update_record('edicion_criterios', $criteria);
         unset($criteria -> id);
     }
 
@@ -791,10 +790,10 @@ function mgm_set_edition_course_criteria($data) {
     $criteria -> type = MGM_CRITERIA_NUMGROUPS;
     $criteria -> value = $data -> numgroups;
     if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-        insert_record('edicion_criterios', $criteria);
+        $DB->insert_record('edicion_criterios', $criteria);
     } else {
         $criteria -> id = $criteriaid -> id;
-        update_record('edicion_criterios', $criteria);
+        $DB->update_record('edicion_criterios', $criteria);
         unset($criteria -> id);
     }
 
@@ -803,17 +802,17 @@ function mgm_set_edition_course_criteria($data) {
         $criteria -> type = MGM_CRITERIA_DEPEND;
         $criteria -> value = $data -> dpendsgroup['dlist'];
         if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-            insert_record('edicion_criterios', $criteria);
+            $DB->insert_record('edicion_criterios', $criteria);
         } else {
             $criteria -> id = $criteriaid -> id;
-            update_record('edicion_criterios', $criteria);
+            $DB->update_record('edicion_criterios', $criteria);
             unset($criteria -> id);
         }
     }else{//eliminar dependencia
-    		$criteria -> type = MGM_CRITERIA_DEPEND;
+    	$criteria -> type = MGM_CRITERIA_DEPEND;
         $criteria -> value = $data -> dpendsgroup['dlist'];
         if($criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-        	 delete_records('edicion_criterios', 'id', $criteriaid -> id);
+        	 $DB->delete_records('edicion_criterios', 'id', $criteriaid -> id);
         }
     }
 
@@ -823,10 +822,10 @@ function mgm_set_edition_course_criteria($data) {
             $criteria -> type = MGM_CRITERIA_ESPECIALIDAD;
             $criteria -> value = $v;
             if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-                insert_record('edicion_criterios', $criteria);
+                $DB->insert_record('edicion_criterios', $criteria);
             } else {
                 $criteria -> id = $criteriaid -> id;
-                update_record('edicion_criterios', $criteria);
+                $DB->update_record('edicion_criterios', $criteria);
                 unset($criteria -> id);
             }
         }
@@ -840,7 +839,7 @@ function mgm_set_edition_course_criteria($data) {
             if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
                 continue ;
             } else {
-                delete_records('edicion_criterios', 'id', $criteriaid -> id);
+                $DB->delete_records('edicion_criterios', 'id', $criteriaid -> id);
             }
         }
     }
@@ -850,10 +849,10 @@ function mgm_set_edition_course_criteria($data) {
         $criteria->type = MGM_CRITERIA_PAGO;
         $criteria->value = $data->tutorpayment;
         if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-            insert_record('edicion_criterios', $criteria);
+            $DB->insert_record('edicion_criterios', $criteria);
         } else {
             $criteria->id = $criteriaid->id;
-            update_record('edicion_criterios', $criteria);
+            $DB->update_record('edicion_criterios', $criteria);
             unset($criteria->id);
         }
     }
@@ -863,10 +862,10 @@ function mgm_set_edition_course_criteria($data) {
         $criteria->type = MGM_CRITERIA_ECUADOR;
         $criteria->value = $data->ecuadortask;
         if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-            insert_record('edicion_criterios', $criteria);
+            $DB->insert_record('edicion_criterios', $criteria);
         } else {
             $criteria->id = $criteriaid->id;
-            update_record('edicion_criterios', $criteria);
+            $DB->update_record('edicion_criterios', $criteria);
             unset($criteria->id);
         }
     }
@@ -876,10 +875,10 @@ function mgm_set_edition_course_criteria($data) {
         $criteria->type = MGM_CRITERIA_DURATION;
         $criteria->value = $data->duration;
         if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-            insert_record('edicion_criterios', $criteria);
+            $DB->insert_record('edicion_criterios', $criteria);
         } else {
             $criteria->id = $criteriaid->id;
-            update_record('edicion_criterios', $criteria);
+            $DB->update_record('edicion_criterios', $criteria);
             unset($criteria->id);
         }
     }
@@ -889,10 +888,10 @@ function mgm_set_edition_course_criteria($data) {
         $criteria->type = MGM_CRITERIA_PREVLAB;
         $criteria->value = $data->prevlab;
         if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-            insert_record('edicion_criterios', $criteria);
+            $DB->insert_record('edicion_criterios', $criteria);
         } else {
             $criteria->id = $criteriaid->id;
-            update_record('edicion_criterios', $criteria);
+            $DB->update_record('edicion_criterios', $criteria);
             unset($criteria->id);
         }
     }
@@ -902,71 +901,68 @@ function mgm_set_edition_course_criteria($data) {
         $criteria->type = MGM_CRITERIA_TRAMOS;
         $criteria->value = implode(',', $data->tramo);
         if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-            insert_record('edicion_criterios', $criteria);
+            $DB->insert_record('edicion_criterios', $criteria);
         } else {
             $criteria->id = $criteriaid->id;
-            update_record('edicion_criterios', $criteria);
+            $DB->update_record('edicion_criterios', $criteria);
             unset($criteria->id);
         }
     }
 }
 
 function mgm_edition_course_criteria_data_exists($criteria) {
-    global $CFG;
+    global $CFG, $DB;
 
     if($criteria -> type !== MGM_CRITERIA_ESPECIALIDAD) {
         $sql = 'SELECT id FROM ' . $CFG -> prefix . 'edicion_criterios
     			WHERE edicion = \'' . $criteria -> edicion . '\' AND course = \'' . $criteria -> course . '\'
     			AND type = \'' . $criteria -> type . '\'';
-        if(!$value = get_record_sql($sql)) {
+        if(!$value = $DB->get_record_sql($sql)) {
             return false;
         }
     } else {
         $sql = 'SELECT id FROM ' . $CFG -> prefix . 'edicion_criterios
     		WHERE edicion = \'' . $criteria -> edicion . '\' AND course = \'' . $criteria -> course . '\'
     		AND type = \'' . $criteria -> type . '\' AND value = \'' . $criteria -> value . '\'';
-        if(!$value = get_record_sql($sql)) {
+        if(!$value = $DB->get_record_sql($sql)) {
             return false;
         }
     }
-
     return $value;
 }
 
 function mgm_get_edition_plazas($edition) {
+	global $DB;
     if(!is_object($edition)) {
         return '';
     }
-
     $plazas = 0;
-    if(get_records('edicion_course', 'edicionid', $edition -> id)) {
-        foreach(get_records('edicion_course', 'edicionid', $edition->id) as $course) {
+    $courses = $DB->get_records('edicion_course', array('edicionid'=> $edition -> id));
+    if($courses) {
+        foreach($courses as $course) {
             if($criteria = mgm_get_edition_course_criteria($edition -> id, $course -> courseid)) {
                 $plazas += $criteria -> plazas;
             }
         }
     }
-
     return $plazas;
 }
 
 function mgm_get_course_especialidades($courseid, $editionid) {
     $criteria = mgm_get_edition_course_criteria($editionid, $courseid);
-
     return $criteria -> espec;
 }
 
 function mgm_get_course_available_especialidades($courseid, $editionid) {
-    global $CFG;
+    global $CFG, $DB;
 
     $data = mgm_get_course_especialidades($courseid, $editionid);
     $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
     		WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
-    $especialidades = explode("\n",  get_record_sql($sql) -> value);
+    $especialidades = explode("\n",  $DB->get_record_sql($sql) -> value);
 
     $strdata = implode(',', $data);
     $filterespecialidades = array_filter($especialidades, create_function('$element', '$data = explode(",", "' . $strdata . '"); return (!in_array($element, $data));'));
-
     return $filterespecialidades;
 }
 
@@ -976,10 +972,10 @@ function mgm_get_course_available_especialidades($courseid, $editionid) {
  * @return object bool
  */
 function mgm_get_active_edition() {
-    if(!$edition = get_record('edicion', 'active', 1)) {
+	global $DB;
+    if(!$edition = $DB->get_record('edicion', 'active', 1)) {
         return false;
     }
-
     return $edition;
 }
 
@@ -1038,7 +1034,6 @@ function mgm_set_edition_certification_on_draft($edition) {
             return true;
         }
     }
-
     return false;
 }
 
@@ -1055,7 +1050,6 @@ function mgm_set_edition_certification_on_validate($edition) {
             return true;
         }
     }
-
     return false;
 }
 
@@ -1066,23 +1060,22 @@ function mgm_set_edition_certification_on_validate($edition) {
  * @return null object The edition object
  */
 function mgm_get_course_edition($id) {
-    if(!$row = get_record('edicion_course', 'courseid', $id)) {
+	global $DB;
+    if(!$row = $DB->get_record('edicion_course', 'courseid', $id)) {
         return null;
     }
-
-    if(!$edition = get_record('edicion', 'id', $row -> edicionid)) {
+    if(!$edition = $DB->get_record('edicion', 'id', $row -> edicionid)) {
         return null;
     }
-
     return $edition;
 }
 
 function mgm_get_edition_user_options($edition, $user) {
-    global $CFG;
+    global $CFG, $DB;
     $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_preinscripcion
     		WHERE edicionid = '" . $edition . "' AND userid = '" . $user . "'";
 
-    if(!$data = get_record_sql($sql)) {
+    if(!$data = $DB->get_record_sql($sql)) {
         return false;
     } else {
         $data = $data -> value;
@@ -1092,38 +1085,36 @@ function mgm_get_edition_user_options($edition, $user) {
     foreach($options as $option) {
         $choices[] = $option;
     }
-
     return $choices;
 }
 
 function mgm_preinscribe_user_in_edition($edition, $user, $courses, $ret) {
+	global $DB;
     $rcourses = array();
     foreach($courses as $course) {
         if($course) {
             $rcourses[] = $course;
         }
     }
-
     if(!count($rcourses)) {
-        delete_records('edicion_preinscripcion', 'edicionid', $edition, 'userid', $user);
+        $DB->delete_records('edicion_preinscripcion', 'edicionid', $edition, 'userid', $user);
         return ;
     }
-
     $strcourses = implode(',', $rcourses);
 
-    if(!$record = get_record('edicion_preinscripcion', 'edicionid', $edition, 'userid', $user)) {
+    if(!$record = $DB->get_record('edicion_preinscripcion', 'edicionid', $edition, 'userid', $user)) {
         // New record
         $record = new stdClass();
         $record -> edicionid = $edition;
         $record -> userid = $user;
         $record -> value = $strcourses;
         $record -> timemodified = time();
-        insert_record('edicion_preinscripcion', $record);
+        $DB->insert_record('edicion_preinscripcion', $record);
     } else {
         // Update record
         $record -> value = $strcourses;
         $record -> timemodified = time();
-        update_record('edicion_preinscripcion', $record);
+        $DB->update_record('edicion_preinscripcion', $record);
     }
 }
 
@@ -1134,19 +1125,19 @@ function mgm_preinscribe_user_in_edition($edition, $user, $courses, $ret) {
  * @param string $course
  */
 function mgm_inscribe_user_in_edition($edition, $user, $course, $released = false) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT * FROM ".$CFG->prefix."edicion_inscripcion
     		WHERE edicionid='".$edition."' AND userid='".$user."'";
 
-    if(!$record = get_record_sql($sql)) {
+    if(!$record = $DB->get_record_sql($sql)) {
         // New record
         $record = new stdClass();
         $record->edicionid = $edition;
         $record->userid = $user;
         $record->value = $course;
         $record->released = $released;
-        insert_record('edicion_inscripcion', $record);
+        $DB->insert_record('edicion_inscripcion', $record);
     } else {
         // Update record
         $record->edicionid = $edition;
@@ -1154,7 +1145,7 @@ function mgm_inscribe_user_in_edition($edition, $user, $course, $released = fals
         $record->value = $course;
         $record->released = $released;
         $record->timemodified = time();
-        update_record('edicion_inscripcion', $record);
+        $DB->update_record('edicion_inscripcion', $record);
     }
 }
 
@@ -1169,7 +1160,7 @@ function mgm_inscribe_user_in_edition($edition, $user, $course, $released = fals
  * @uses $USER
  */
 function mgm_massive_role_assign($course, $users, $timestart=0, $timeend=0, $enrol='mgm') {
-    global $USER, $CFG;
+    global $USER, $CFG, $DB;
 
     if (($timestart and $timeend) and ($timestart > $timeend)) {
         debugging('The end time can not be earlier than the start time');
@@ -1181,9 +1172,10 @@ function mgm_massive_role_assign($course, $users, $timestart=0, $timeend=0, $enr
     }
 
     foreach($users as $user) {
+    	global $DB;
         /// Check for existing entry
         if($user->id) {
-            $ra = get_record('role_assignments', 'roleid', $course->role->id, 'contextid', $course->context->id, 'userid', $user->id);
+            $ra = $DB->get_record('role_assignments', 'roleid', $course->role->id, 'contextid', $course->context->id, 'userid', $user->id);
         }
 
         if (empty($ra)) {
@@ -1200,7 +1192,7 @@ function mgm_massive_role_assign($course, $users, $timestart=0, $timeend=0, $enr
             $ra->timemodified = $timemodified;
             $ra->modifierid = empty($USER->id) ? 0 : $USER->id;
 
-            if (!$ra->id = insert_record('role_assignments', $ra)) {
+            if (!$ra->id = $DB->insert_record('role_assignments', $ra)) {
                return false;
             }
         } else {
@@ -1214,7 +1206,7 @@ function mgm_massive_role_assign($course, $users, $timestart=0, $timeend=0, $enr
             $ra->timemodified = $timemodified;
             $ra->modifierid = empty($USER->id) ? 0 : $USER->id;
 
-            if (!update_record('role_assignments', $ra)) {
+            if (!$DB->update_record('role_assignments', $ra)) {
                 return false;
             }
         }
@@ -1240,7 +1232,7 @@ function mgm_massive_role_assign($course, $users, $timestart=0, $timeend=0, $enr
 
     /// now handle metacourse role assignments if in course context
     if ($context->contextlevel == CONTEXT_COURSE) {
-        if ($parents = get_records('course_meta', 'child_course', $context->instanceid)) {
+        if ($parents = $DB->get_records('course_meta', 'child_course', $context->instanceid)) {
             foreach ($parents as $parent) {
                 sync_metacourse($parent->parent_course);
             }
@@ -1283,11 +1275,11 @@ function mgm_enrol_into_course($course, $users, $enrol) {
 }
 
 function mgm_enrol_edition_course($editionid, $courseid) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT userid FROM ".$CFG->prefix."edicion_inscripcion
     		WHERE edicionid='".$editionid."' AND value='".$courseid."'";
-    if($data = get_records_sql($sql)) {
+    if($data = $DB->get_records_sql($sql)) {
         $course = get_record('course', 'id', $courseid);
         if (!$role = get_default_course_role($course)) {
             error('Role doen\'t exists for course '.$course->shortname);
@@ -1303,7 +1295,7 @@ function mgm_enrol_edition_course($editionid, $courseid) {
                      FROM ".$CFG->prefix."user
                      WHERE id='".$row->userid."'";
 
-            if(!$user = get_record_sql($usql)) {
+            if(!$user = $DB->get_record_sql($usql)) {
                 continue;
             }
 
@@ -1317,7 +1309,7 @@ function mgm_enrol_edition_course($editionid, $courseid) {
 }
 
 function mgm_create_enrolment_groups($editionid, $courseid) {
-    global $CFG;
+    global $CFG, $DB;
 
     if(!$inscripcion = mgm_check_already_enroled($editionid, $courseid)) {
         trigger_error('Error, there is no inscription for the edition and course ids given');
@@ -1339,8 +1331,8 @@ function mgm_create_enrolment_groups($editionid, $courseid) {
         if(!array_key_exists($ncount, $groups)) {
             $groups[$ncount] = array();
         }
-        $user = get_record('user', 'id', $row->id);
-        if(!$user->ite_data = get_record('edicion_user', 'userid', $row->userid)) {
+        $user = $DB->get_record('user', 'id', $row->id);
+        if(!$user->ite_data = $DB->get_record('edicion_user', 'userid', $row->userid)) {
             if(count($groups[$ncount]) < $max) {
                 $groups[$ncount][] = $user;
             } else {
@@ -1406,24 +1398,23 @@ function mgm_create_enrolment_groups($editionid, $courseid) {
 }
 
 function mgm_check_already_enroled($editionid, $courseid) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT userid as id FROM " . $CFG -> prefix . "edicion_inscripcion
     		WHERE edicionid='" . $editionid . "' AND value='" . $courseid . "'";
-    return get_records_sql($sql);
+    return $DB->get_records_sql($sql);
 }
 
 function mgm_edition_get_solicitudes($edition, $course) {
-    global $CFG;
+    global $CFG, $DB;
 
     $ret = 0;
     $sql = "SELECT count(id) as count FROM " . $CFG -> prefix . "edicion_preinscripcion
     		WHERE edicionid='" . $edition -> id . "'
     		AND value IN (".$course->id.")";
-    if($record = get_record_sql($sql)) {
+    if($record = $DB->get_record_sql($sql)) {
        return $record->count;
     }
-
     return $ret;
 }
 
@@ -1573,11 +1564,11 @@ function mgm_get_user_preinscription_realcourses($editionid, $value) {
 }
 
 function mgm_user_preinscription_tmpdata($userid) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT u.firstname, u.lastname, eu.especialidades, eu.cc FROM " . $CFG -> prefix . "user AS u
             LEFT JOIN " . $CFG -> prefix . "edicion_user AS eu ON eu.userid=u.id WHERE u.id='" . $userid . "'";
-    if(!$user = get_record_sql($sql)) {
+    if(!$user = $DB->get_record_sql($sql)) {
         return null;
     }
     $tmpuser = new stdClass();
@@ -1939,13 +1930,13 @@ function mgm_order_by_date($x, $y) {
  * @param boolean $docheck
  */
 function mgm_get_edition_course_inscription_data($edition, $course, $docheck = true) {
-    global $CFG;
+    global $CFG, $DB;
 
     // Inscription data
     $sql = "SELECT * FROM ".$CFG->prefix."edicion_inscripcion
     		WHERE edicionid = '".$edition->id."' AND value='".$course->id."'
     		ORDER BY timemodified ASC";
-    if(!$inscripcion = get_records_sql($sql)) {
+    if(!$inscripcion = $DB->get_records_sql($sql)) {
         return ;
     }
 
@@ -1966,7 +1957,7 @@ function mgm_get_edition_course_inscription_data($edition, $course, $docheck = t
  * @param boolean $docheck
  */
 function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck = true) {
-    global $CFG;
+    global $CFG, $DB;
 
     // Preinscripcion date first
     $sql = "SELECT * FROM ".$CFG->prefix."edicion_preinscripcion
@@ -1975,18 +1966,18 @@ function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck 
     		WHERE edicionid='".$edition->id."' )
     		AND value REGEXP '^".$course->id."$|^".$course->id.",|,".$course->id.",|,".$course->id."$' ORDER BY timemodified ASC";
 
-    if(!$preinscripcion = get_records_sql($sql)) {
+    if(!$preinscripcion = $DB->get_records_sql($sql)) {
         return ;
     }
      $sql="select distinct value from ".$CFG->prefix."edicion_inscripcion where edicionid=".$edition->id;
-     	$course_with_inscription=get_records_sql($sql);
+     	$course_with_inscription = $DB->get_records_sql($sql);
     	if ($course_with_inscription){
     		$course_with_inscription=array_keys($course_with_inscription);
     	}else{
     		$course_with_inscription=array();
     	}
 	    foreach ($preinscripcion as $i=>$u){
-	    if ($a=get_record('edicion_descartes', 'edicionid', $edition->id,'userid', $u->userid, 'code', 4 )){//Eliminamos usuarios que han sido descartados por comunidad en algun otro curso de la edicion
+	    if ($a = $DB->get_record('edicion_descartes', 'edicionid', $edition->id,'userid', $u->userid, 'code', 4 )){//Eliminamos usuarios que han sido descartados por comunidad en algun otro curso de la edicion
 							unset($preinscripcion[$i]);
 							continue;
 				  }else{
@@ -2053,7 +2044,8 @@ function mgm_prepare_user_extend($euser){
  * @return string
  */
 function mgm_get_user_extend($userid) {
-    if($euser = get_record('edicion_user', 'userid', $userid)) {
+	global $DB;
+    if($euser = $DB->get_record('edicion_user', 'userid', $userid)) {
         return mgm_prepare_user_extend($euser);
     }
 
@@ -2074,26 +2066,27 @@ function mgm_get_user_extend($userid) {
  * @return user object which all field values
  */
 function mgm_get_user_complete($userid) {
-		$user=false;
-		if($user = get_record('user', 'id', $userid)) {
-      if($euser = get_record('edicion_user', 'userid', $userid)) { //base data
-      	unset($euser->id);
-        foreach(array_keys(get_object_vars($euser)) as $key){ //mgm user data
-        	$user->$key=$euser->$key;
-        }
-      }//mgm user data end
-      if ($puser=profile_user_record($userid)){//profile user data
+	global $DB;
+	$user=false;
+	if($user = $DB->get_record('user', 'id', $userid)) {
+    	if($euser = $DB->get_record('edicion_user', 'userid', $userid)) { //base data
+      		unset($euser->id);
+        	foreach(array_keys(get_object_vars($euser)) as $key){ //mgm user data
+        		$user->$key = $euser->$key;
+        	}
+      	}//mgm user data end
+      	if ($puser = profile_user_record($userid)){//profile user data
        		unset($puser->id);
        		foreach(array_keys(get_object_vars($puser)) as $key){
        			if (! array_key_exists($key, $user)){
-       				$user->$key=$puser->$key;
+       				$user->$key = $puser->$key;
        			}else{
        				$key2="profile_".$key;
-       				$user->$key2>=$puser->$key;
+       				$user->$key2 = $puser->$key;
        			}
        		}
-      }//profile user data end
-		}
+      	}//profile user data end
+	}
     return $user;
 }
 
@@ -2103,42 +2096,42 @@ function mgm_get_user_complete($userid) {
  * @return bool
  */
 function mgm_update_user_complete($user) {
-    if( get_record('user', 'id', $user->id)) {
-      update_record('user', $user);//user base data save
+	global $DB;
+    if( $DB->get_record('user', 'id', $user->id)) {
+    	$DB->update_record('user', $user);//user base data save
 			profile_save_data($user);// profile data save
-      if ($userext=get_record('edicion_user', 'userid', $user->id)) {// edicion_user data save
-      	$user -> userid = $user->id;
-        $user -> id = $userext->id;
-        update_record('edicion_user', $user);
-      }else{
-        $user->userid=$user -> id;
-        unset($user->id);
-        insert_record('edicion_user', $user);
-      }
-      return true;
+    	if ($userext = $DB->get_record('edicion_user', 'userid', $user->id)) {// edicion_user data save
+      		$user -> userid = $user->id;
+        	$user -> id = $userext->id;
+        	$DB->update_record('edicion_user', $user);
+    	}else{
+        	$user->userid = $user->id;
+        	unset($user->id);
+        	$DB->insert_record('edicion_user', $user);
+    	}
+      	return true;
     }
     return false;
 }
 function mgm_get_user_especialidades($userid) {
-    if($especialidades = get_record('edicion_user', 'userid', $userid)) {
+	global $DB;
+    if($especialidades = $DB->get_record('edicion_user', 'userid', $userid)) {
         $especs = array();
         foreach(explode("\n", $especialidades->especialidades) as $espec) {
             $especs[$espec] = mgm_translate_especialidad($espec);
         }
-
         return $especs;
     }
-
     return array();
 }
 
 function mgm_get_user_available_especialidades($userid, $codcuerpodocente=false) {
-    global $CFG;
+    global $CFG, $DB;
 
     $data = mgm_get_user_especialidades($userid);
     $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
     		WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
-    $especialidades = explode("\n",  get_record_sql($sql) -> value);
+    $especialidades = explode("\n",  $DB->get_record_sql($sql) -> value);
     $strdata = implode(',', $data);
     $filterespecialidades = array_filter($especialidades, create_function('$element', '$data = explode(",", "' . $strdata . '"); return (!in_array($element, $data));'));
     if ($codcuerpodocente){
@@ -2151,11 +2144,10 @@ function mgm_get_user_available_especialidades($userid, $codcuerpodocente=false)
     return $filterespecialidades;
 }
 function mgm_get_all_especialidades($codcuerpodocente=false) {
-	  global $CFG;
-
-	  $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
+	global $CFG, $DB;
+	$sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
     		WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
-    $especialidades = explode("\n",  get_record_sql($sql) -> value);
+    $especialidades = explode("\n",  $DB->get_record_sql($sql) -> value);
     if ($codcuerpodocente){
     	global $MGM_ITE_CUERPOS_ESPECS;
     	$a=array_intersect_key($especialidades, array_flip($MGM_ITE_CUERPOS_ESPECS[$codcuerpodocente]));
@@ -2164,8 +2156,6 @@ function mgm_get_all_especialidades($codcuerpodocente=false) {
     }
     asort($especialidades, SORT_STRING);
     return $especialidades;
-
-
 }
 
 
@@ -2180,7 +2170,6 @@ function mgm_check_user_cc($code, &$ret) {
         $ret = MGM_DATA_CC_ERROR;
         return '';
     }
-
     return $code;
 }
 
@@ -2191,25 +2180,22 @@ function mgm_check_user_cc($code, &$ret) {
  * @return string
  */
 function mgm_check_user_dni($userid, $dni, &$ret) {
-    global $CFG;
-
+    global $CFG, $DB;
     $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_user
     		WHERE dni='" . mysql_escape_string($dni) . "' AND userid!='" . $userid . "'";
-
-    if($odni = get_record_sql($sql)) {
+    if($odni = $DB->get_record_sql($sql)) {
         $ret = MGM_DATA_DNI_ERROR;
         return '';
     }
-
     if(!mgm_validate_cif($dni)) {
         $ret = MGM_DATA_DNI_INVALID;
         return '';
     }
-
     return $dni;
 }
 
 function mgm_set_userdata($userid, $data, $create=true) {
+	global $DB;
     $ret = MGM_DATA_NO_ERROR;
     $newdata = $data;
     $newdata -> cc = mgm_check_user_cc($data -> cc, $ret);
@@ -2220,15 +2206,15 @@ function mgm_set_userdata($userid, $data, $create=true) {
     }
     $newdata -> userid = $userid;
     if ($create){
-	    if(!record_exists('edicion_user', 'userid', $userid)) {
+	    if(!$DB->record_exists('edicion_user', 'userid', $userid)) {
 	        if(isset($data -> addsel)) {
 	            $newdata -> especialidades = implode("\n", $data -> aespecs);
 	        } else {
 	            $newdata -> espcialidades = "";
 	        }
-	        insert_record('edicion_user', $newdata);
+	        $DB->insert_record('edicion_user', $newdata);
 	    } else {
-	        $olddata = get_record('edicion_user', 'userid', $userid);
+	        $olddata = $DB->get_record('edicion_user', 'userid', $userid);
 	        $newdata -> id = $olddata -> id;
 	        if(isset($data -> addsel)) {
 	            $oldespec = explode("\n", $olddata -> especialidades);
@@ -2247,15 +2233,14 @@ function mgm_set_userdata($userid, $data, $create=true) {
 	        } else {
 	            $newdata -> especialidades = $olddata -> especialidades;
 	        }
-
-	        update_record('edicion_user', $newdata);
+	        $DB->update_record('edicion_user', $newdata);
 	    }
     }
-
     return $ret;
 }
 
 function mgm_set_userdata2($userid, $data, $create=true) {
+	global $DB;
     $ret = MGM_DATA_NO_ERROR;
     $newdata = $data;
     $newdata -> cc = mgm_check_user_cc($data -> cc, $ret);
@@ -2266,11 +2251,11 @@ function mgm_set_userdata2($userid, $data, $create=true) {
     }
     $newdata -> userid = $userid;
     if ($create){
-	    if(!$rec=get_record('edicion_user', 'userid', $userid)) {
-	        insert_record('edicion_user', $newdata);
+	    if(!$rec = $DB->get_record('edicion_user', 'userid', $userid)) {
+	        $DB->insert_record('edicion_user', $newdata);
 	    } else {
-	    	  $newdata->id=$rec->id;
-	        update_record('edicion_user', $newdata);
+	    	$newdata->id=$rec->id;
+	        $DB->update_record('edicion_user', $newdata);
 	    }
     }
     return $ret;
@@ -2327,17 +2312,19 @@ function mgm_is_cc_on_csv($cc) {
     return false;
 }
 function mgm_is_cc_on_db($cc) {
-	if($ccdata=get_record('edicion_centro','codigo', $cc)) {
-            return $cc;
-  }
-  return false;
+	global $DB;
+	if($ccdata = $DB->get_record('edicion_centro','codigo', $cc)) {
+    	return $cc;
+  	}
+  	return false;
 }
 
 function mgm_get_cc_type($cc, $sql=false) {
+	global $DB;
     if(!$cc) {
         return -1;
     }
-    if($ccdata=get_record('edicion_centro','codigo', $cc)) {
+    if($ccdata = $DB->get_record('edicion_centro','codigo', $cc)) {
     	return $ccdata->tipo;
     }
     return -1;
@@ -2349,12 +2336,13 @@ function mgm_get_cc_type($cc, $sql=false) {
  * @return boolean
  */
 function mgm_is_cc_valid($cc) {
-    if($ccdata=get_record('edicion_centro','codigo', $cc)) {
+	global $DB;
+    if($ccdata = $DB->get_record('edicion_centro','codigo', $cc)) {
         if($ccdata->tipo != MGM_PRIVATE_CENTER) {
             return true;
         }
     }
-		return false;
+	return false;
 }
 
 /**
@@ -2363,7 +2351,6 @@ function mgm_is_cc_valid($cc) {
  */
 function mgm_get_cc_data() {
     global $CFG, $CSV_CACHED_FILE;
-
     if(empty($CSV_CACHED_FILE)) {
         $csvdata = array();
         if(($gestor = fopen($CFG -> mgm_centros_file, "r")) !== FALSE) {
@@ -2385,12 +2372,13 @@ function mgm_get_cc_data() {
  * @param object $edition
  */
 function mgm_active_edition($edition) {
+	global $DB;
     if($aedition = mgm_get_active_edition()) {
         mgm_deactive_edition($aedition);
     }
 
     $edition -> active = 1;
-    update_record('edicion', $edition);
+    $DB->update_record('edicion', $edition);
 }
 
 /**
@@ -2398,8 +2386,9 @@ function mgm_active_edition($edition) {
  * @param unknown_type $edition
  */
 function mgm_deactive_edition($edition) {
+	global $DB;
     $edition -> active = 0;
-    update_record('edicion', $edition);
+    $DB->update_record('edicion', $edition);
 }
 
 /**
@@ -2408,36 +2397,36 @@ function mgm_deactive_edition($edition) {
  * @return bool true if not exits another
  *
  */
-function mgm_edition_check_uni_state($editionid, $state){
-  global $CFG;
+function mgm_edition_check_uni_state($editionid, $state){	
+  global $CFG, $DB;
 	$sql = "SELECT * FROM " . $CFG -> prefix . "edicion WHERE state='".$state."' AND id!=" . $editionid;
-  if($reg = get_record_sql($sql)) {
+  if($reg = $DB->get_record_sql($sql)) {
   	return false;
   }
   return true;
 }
 
 function mgm_edition_get_cursos_fin($editionid){
-  global $CFG;
+  global $CFG, $DB;
 	$sql = "select fechafin from ".$CFG->prefix."edicion_course where edicionid=".$editionid." and fechafin is not null order by fechafin desc";
-  if($reg = get_record_sql($sql)) {
+  if($reg = $DB->get_record_sql($sql)) {
   	return $reg->fechafin;
   }
   return false;
 }
 
 function mgm_edition_get_cursos_inicio($editionid){
-  global $CFG;
+  global $CFG, $DB;
 	$sql = "select fechainicio from ".$CFG->prefix."edicion_course where edicionid=".$editionid." and fechainicio is not null order by fechainicio asc";
-  if($reg = get_record_sql($sql)) {
+  if($reg = $DB->get_record_sql($sql)) {
   	return $reg->fechainicio;
   }
   return false;
 }
 
 function mgm_edition_check_state($editionid, $newstate) {
-	global $CFG;
-	if ($edition=get_record('edicion','id', $editionid)){
+	global $CFG, $DB;
+	if ($edition = $DB->get_record('edicion', array('id'=> $editionid))){
 		$oldstate=$edition->state;
 		switch ($newstate){
 			case 'borrador':
@@ -2451,10 +2440,10 @@ function mgm_edition_check_state($editionid, $newstate) {
 					return MGM_STATE_PM_ERROR;
 				break;
 			case 'matriculacion':
-		     if (time() < $edition->fin) {
-		     	  return MGM_STATE_MN_ERROR;
-        }
-        if (! $edition->active )
+		     	if (time() < $edition->fin) {
+		     		return MGM_STATE_MN_ERROR;
+        		}
+        		if (! $edition->active )
 					return MGM_STATE_MA_ERROR;
 				if (! mgm_edition_check_uni_state($editionid,'matriculacion'))
 					return MGM_STATE_MM_ERROR;
@@ -2502,27 +2491,25 @@ function mgm_edition_check_state($editionid, $newstate) {
  * @param string $user
  */
 function mgm_get_preinscription_timemodified($edition, $user) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT timemodified FROM " . $CFG -> prefix . "edicion_preinscripcion
     		WHERE edicionid = '" . $edition . "' AND userid = '" . $user . "'";
 
-    if(!$record = get_record_sql($sql)) {
+    if(!$record = $DB->get_record_sql($sql)) {
         return null;
     }
-
     return $record;
 }
 
 function mgm_is_borrador($edition, $course) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_inscripcion
             WHERE edicionid='" . $edition -> id . "' AND value='" . $course -> id . "' AND released='0'";
-    if($borrador = get_records_sql($sql)) {
+    if($borrador = $DB->get_records_sql($sql)) {
         return true;
     }
-
     return false;
 }
 
@@ -2531,19 +2518,20 @@ function mgm_is_inscription_active($id, $course) {
 }
 
 function mgm_rollback_borrador($editionid, $courseid) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "DELETE FROM " . $CFG -> prefix . "edicion_inscripcion
     		WHERE edicionid='" . $editionid . "' AND value='" . $courseid . "'
     		AND released='0'";
 
-    execute_sql($sql);
+    $DB->execute_sql($sql);
     //eliminar los descartes
-    delete_records('edicion_descartes', 'edicionid', $editionid, 'courseid', $courseid);
+    $DB->delete_records('edicion_descartes', 'edicionid', $editionid, 'courseid', $courseid);
 }
 
 function mgm_edition_set_user_address($userid, $address) {
-    if(!$euser = get_record('edicion_user', 'userid', $userid)) {
+	global $DB;
+    if(!$euser = $DB->get_record('edicion_user', 'userid', $userid)) {
         error('User doesn\'t exists!');
     } else {
         if(!empty($addres)) {
@@ -2557,7 +2545,7 @@ function mgm_edition_set_user_address($userid, $address) {
 }
 
 function mgm_get_edition_out($edition) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT COUNT(id) AS count FROM " . $CFG -> prefix . "edicion_preinscripcion
     		WHERE edicionid='" . $edition -> id . "' AND userid
@@ -2565,23 +2553,21 @@ function mgm_get_edition_out($edition) {
     			 WHERE edicionid='" . $edition -> id . "' ) AND userid
     		NOT IN ( SELECT userid FROM " . $CFG -> prefix . "edicion_inscripcion
     				 WHERE edicionid='" . $edition -> id . "' )";
-    if(!$count = get_record_sql($sql)) {
+    if(!$count = $DB->get_record_sql($sql)) {
         return 0;
     }
-
     return $count -> count;
 }
 
 function mgm_get_user_inscription_by_edition($user, $edition) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_inscripcion
     		WHERE edicionid = '" . $edition -> id . "' AND userid='" . $user -> id . "'
     		AND released!='0'";
-    if(!$inscripcion = get_record_sql($sql)) {
+    if(!$inscripcion = $DB->get_record_sql($sql)) {
         return false;
     }
-
     return $inscripcion;
 }
 
@@ -2591,11 +2577,11 @@ function mgm_get_user_inscription_by_edition($user, $edition) {
  * @return mixed
  */
 function mgm_get_certification_scala() {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_ite
     		WHERE type = " . MGM_ITE_SCALA . "";
-    return get_record_sql($sql);
+    return $DB->get_record_sql($sql);
 }
 
 /**
@@ -2604,18 +2590,17 @@ function mgm_get_certification_scala() {
  * @return mixed
  */
 function mgm_get_certification_roles() {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
             WHERE type = " . MGM_ITE_ROLE . "";
-    if($role = get_record_sql($sql)) {
+    if($role = $DB->get_record_sql($sql)) {
         $roles = array('coordinador' => 0, 'tutor' => 0, 'estudiante' => 0);
 
         foreach(explode(",", $role->value) as $value) {
             $tmpvalue = explode(":", $value);
             $roles[$tmpvalue[0]] = $tmpvalue[1];
         }
-
         return $roles;
     } else {
         return false;
@@ -2628,15 +2613,16 @@ function mgm_get_certification_roles() {
  * @param string $scala
  */
 function mgm_set_certification_scala($scala) {
+	global $DB;
     if(!$nscala = mgm_get_certification_scala()) {
         $nscala = new stdClass();
         $nscala -> type = MGM_ITE_SCALA;
         $nscala -> name = 'Scala';
         $nscala -> value = $scala;
-        insert_record('edicion_ite', $nscala);
+        $DB->insert_record('edicion_ite', $nscala);
     } else {
         $nscala -> value = $scala;
-        update_record('edicion_ite', $nscala);
+        $DB->update_record('edicion_ite', $nscala);
     }
 }
 
@@ -2646,6 +2632,7 @@ function mgm_set_certification_scala($scala) {
  * @param string $roles
  */
 function mgm_set_certification_roles($roles) {
+	global $DB;
     $troles = "";
     $x = 1;
     foreach($roles as $k => $v) {
@@ -2663,12 +2650,12 @@ function mgm_set_certification_roles($roles) {
         $nroles -> type = MGM_ITE_ROLE;
         $nroles -> name = 'Roles';
         $nroles -> value = $troles;
-        insert_record('edicion_ite', $nroles);
+        $DB->insert_record('edicion_ite', $nroles);
     } else {
         // Update Record
         $nroles = get_record('edicion_ite', 'type', MGM_ITE_ROLE);
         $nroles -> value = $troles;
-        update_record('edicion_ite', $nroles);
+        $DB->update_record('edicion_ite', $nroles);
     }
 }
 
@@ -2678,34 +2665,35 @@ function mgm_set_certification_roles($roles) {
  * @param string $reporttype
  */
 function mgm_set_report($reportid, $reporttype) {
+	global $DB;
     if(!$nscala = mgm_get_certification_scala()) {
         $report = new stdClass();
         $report -> type = MGM_ITE_REPORT;
         $report -> name = $reporttype;
         $report -> value = $reportid;
-        insert_record('edicion_ite', $report);
+        $DB->insert_record('edicion_ite', $report);
     } else {
         $report -> value = $reportid;
         $report -> name = $reporttype;
-        update_record('edicion_ite', $report);
+        $DB->update_record('edicion_ite', $report);
     }
 }
 function mgm_get_reports() {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_ite
     		WHERE type = " . MGM_ITE_REPORT . "";
-    return get_records_sql($sql);
+    return $DB->get_records_sql($sql);
 }
 
 function mgm_get_courses($course) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT id, idnumber, fullname FROM " . $CFG -> prefix . "course
     		WHERE id !='" . $course -> id . "'
     		AND idnumber != '' GROUP BY idnumber";
 
-    if(!$data = get_records_sql($sql)) {
+    if(!$data = $DB->get_records_sql($sql)) {
         return array();
     }
 
@@ -2713,33 +2701,33 @@ function mgm_get_courses($course) {
 }
 
 function mgm_check_cert_history($userid, $courses, $dni=False){
-	global $CFG;
+	global $CFG, $DB;
 	$ret=array(True, '', 0);
 	$rcourses = array();
-  foreach($courses as $course) {
-  	if($course) {
-    	$rcourses[] = $course;
-    }
-  }
-  if(!count($rcourses)) {
-        return  $ret;
-  }
-  $strcourses = implode(',', $rcourses);
+	foreach($courses as $course) {
+  		if($course) {
+    		$rcourses[] = $course;
+    	}
+  	}
+	if(!count($rcourses)) {
+    	return  $ret;
+  	}
+	$strcourses = implode(',', $rcourses);
 	if ($euser = mgm_get_user_extend($userid)){
-		  $consulta='SELECT id, idnumber, fullname FROM  '. $CFG -> prefix .'course where  id in ('.$strcourses.')';
-		  $course_objs=get_records_sql($consulta);
-		  if ($dni){
-		  	$euser->dni=$dni;
-		  }
-			foreach($course_objs as $course){
-				if (isset($course->idnumber) && isset($euser->dni) && $euser->dni != ''){
-				  if (record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course->idnumber, 'confirm', 1)){
-				  	$ret[0]=false;
-				  	$ret[1]=$ret[1]. get_string('coursecertfied', 'mgm', $course->fullname). '<br/>';
-				  	$ret[2]=$course->id;
-				  }
+		$consulta='SELECT id, idnumber, fullname FROM  '. $CFG -> prefix .'course where  id in ('.$strcourses.')';
+		$course_objs = $DB->get_records_sql($consulta);
+		if ($dni){
+			$euser->dni=$dni;
+		}
+		foreach($course_objs as $course){
+			if (isset($course->idnumber) && isset($euser->dni) && $euser->dni != ''){
+				if ($DB->record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course->idnumber, 'confirm', 1)){
+					$ret[0]=false;
+					$ret[1]=$ret[1]. get_string('coursecertfied', 'mgm', $course->fullname). '<br/>';
+				 	$ret[2]=$course->id;
 				}
 			}
+		}
 	}
 	return $ret;
 }
@@ -2753,7 +2741,7 @@ function mgm_check_cert_history($userid, $courses, $dni=False){
  * @return boolean
  */
 function mgm_check_course_dependencies($edition, $course, $user, $dni=False) {
-    global $CFG;
+    global $CFG, $DB;
 
     if(!$criteria = mgm_get_edition_course_criteria($edition -> id, $course -> id)) {
         return true;
@@ -2768,12 +2756,11 @@ function mgm_check_course_dependencies($edition, $course, $user, $dni=False) {
         return true;
     }
 		if ($euser = mgm_get_user_extend($user->id)){
-			if ($course2=get_record('course', id, $criteria->dlist)){
-
+			if ($course2 = $DB->get_record('course', id, $criteria->dlist)){
 				if ($dni){
 					$euser->dni=$dni;
 				}
-				if (record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course2->idnumber, 'confirm', 1) && $euser->dni != ''){
+				if ($DB->record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course2->idnumber, 'confirm', 1) && $euser->dni != ''){
 					return true;
 				}
 			}
@@ -2788,7 +2775,7 @@ function mgm_check_course_dependencies($edition, $course, $user, $dni=False) {
  * @return object
  */
 function mgm_get_certification_task($course) {
-    global $CFG;
+    global $CFG, $DB;
 
     $scala = mgm_get_certification_scala();
 
@@ -2796,7 +2783,7 @@ function mgm_get_certification_task($course) {
     		WHERE scaleid ='".$scala->value."'
     		AND courseid ='".$course."'";
 
-    return get_record_sql($sql);
+    return $DB->get_record_sql($sql);
 }
 
 /**
@@ -2807,8 +2794,9 @@ function mgm_get_certification_task($course) {
  * @return object
  */
 function mgm_get_grade($task, $user) {
+	global $DB;
     $taskid = (is_object($task)) ? $task->id : $task;
-    return get_record('grade_grades', 'itemid', $taskid, 'userid', $user->id);
+    return $DB->get_record('grade_grades', 'itemid', $taskid, 'userid', $user->id);
 }
 
 /**
@@ -2853,17 +2841,18 @@ function mgm_get_check_index($criteria) {
  * @return bool
  */
 function mgm_set_edicion_descartes($editionid, $courseid, $states){
-	$ret=true;
-	delete_records('edicion_descartes', 'edicionid', $editionid, 'courseid', $courseid);
+	global $DB;
+	$ret = true;
+	$DB->delete_records('edicion_descartes', 'edicionid', $editionid, 'courseid', $courseid);
 	foreach($states as $userid=>$code){
 		$reg=new stdClass();
 		$reg->edicionid=$editionid;
 		$reg->courseid=$courseid;
 		$reg->userid=$userid;
 		$reg->code=$code;
-		$d=insert_record('edicion_descartes', $reg);
+		$d = $DB->insert_record('edicion_descartes', $reg);
 		if (!$d){
-			$ret=false;
+			$ret = false;
 		}
 	}
 	return $ret;
@@ -2877,9 +2866,9 @@ function mgm_set_edicion_descartes($editionid, $courseid, $states){
  * @return array which key=course and value=code
  */
 function mgm_get_edicion_descartes($editionid, $userid){
-	global $CFG;
+	global $CFG, $DB;
 	$sql="select * from ".$CFG->prefix."edicion_descartes where edicionid=".$editionid." and userid=" .$userid;
-	if ($regs=get_records_sql($sql)){
+	if ($regs = $DB->get_records_sql($sql)){
 		$dev=array();
 		foreach ($regs as $reg){
 			$dev[$reg->courseid]=$reg->code;
@@ -2897,21 +2886,22 @@ function mgm_get_edicion_descartes($editionid, $userid){
  * @return object
  */
 function mgm_get_cert_history($userid) {
+	global $DB;
     if(!$userid) {
         return false;
     }
-
     return get_records('edicion_cert_history', 'userid', $userid);
 }
 
 function mgm_get_cert_history_str($userid) {
-		$str='';
-   		foreach(mgm_get_cert_history($userid) as $cert){
-   			if ($course=get_record('course', 'id', $cert->courseid)){
-   				$str=$str.$course->fullname.'(reg:'.$cert->numregistro .', confirm: '.$cert->confirm.")\n";
-   			}
+	global $DB;
+	$str='';
+   	foreach(mgm_get_cert_history($userid) as $cert){
+   		if ($course = $DB->get_record('course', 'id', $cert->courseid)){
+   			$str=$str.$course->fullname.'(reg:'.$cert->numregistro .', confirm: '.$cert->confirm.")\n";
    		}
-   		return $str;
+   	}
+   	return $str;
 }
 
 /**
@@ -2922,11 +2912,12 @@ function mgm_get_cert_history_str($userid) {
  * @return boolean
  */
 function mgm_is_course_certified($userid, $courseid) {
+	global $DB;
     if(!$userid || !$courseid) {
         return false;
     }
 
-    if(!$cert = get_record('edicion_cert_history', 'userid', $userid, 'courseid', $courseid)) {
+    if(!$cert = $DB->get_record('edicion_cert_history', 'userid', $userid, 'courseid', $courseid)) {
         return false;
     } else {
         return true;
@@ -2943,7 +2934,7 @@ function mgm_is_course_certified($userid, $courseid) {
  * @return boolean
  */
 function mgm_certificate_course($userid, $courseid, $edition, $roleid = 0, $tipodocumento=false, $numdocumento=false) {
-    global $CFG;
+    global $CFG, $DB;
 
     if(!$userid || !$courseid || !$edition || !$roleid) {
         return false;
@@ -2958,7 +2949,7 @@ function mgm_certificate_course($userid, $courseid, $edition, $roleid = 0, $tipo
             AND courseid=" . $courseid . "
             AND edicionid=" . $edition -> id;
 
-    if(!$data = get_record_sql($sql)) {
+    if(!$data = $DB->get_record_sql($sql)) {
         $data = new stdClass();
         $data -> userid = $userid;
         $data -> courseid = $courseid;
@@ -2973,11 +2964,11 @@ function mgm_certificate_course($userid, $courseid, $edition, $roleid = 0, $tipo
 
         $data -> confirm = true;
 
-        return insert_record('edicion_cert_history', $data);
+        return $DB->insert_record('edicion_cert_history', $data);
     }
 
     $data -> confirm = true;
-    return update_record('edicion_cert_history', $data);
+    return $DB->update_record('edicion_cert_history', $data);
 }
 
 /**
@@ -2987,6 +2978,7 @@ function mgm_certificate_course($userid, $courseid, $edition, $roleid = 0, $tipo
  * @return boolean
  */
 function mgm_certificate_edition($edition) {
+	global $DB;
     if(!$edition) {
         return false;
     }
@@ -3000,7 +2992,7 @@ function mgm_certificate_edition($edition) {
 
         $course_participants = array();
         foreach($participants as $participant) {
-            if(!mgm_user_passed_course(get_record('user', 'id', $participant -> userid), $course)) {
+            if(!mgm_user_passed_course($DB->get_record('user', 'id', $participant -> userid), $course)) {
                 continue ;
             }
 
@@ -3090,7 +3082,7 @@ function mgm_get_pass_courses($editionid, $userid) {
 }
 
 function mgm_get_course_participants($course, $real = false) {
-    global $CFG;
+    global $CFG, $DB;
 
     if(!$course) {
         return false;
@@ -3139,7 +3131,7 @@ function mgm_get_course_participants($course, $real = false) {
             "ON (u.id=ctx.instanceid AND ctx.contextlevel=".CONTEXT_USER.") ".
             "JOIN ".$CFG->prefix."role_assignments r ".
             "ON u.id=r.userid ".
-    				"LEFT JOIN ". $CFG->prefix ."edicion_user eu ON u.id=eu.userid ";
+    		"LEFT JOIN ". $CFG->prefix ."edicion_user eu ON u.id=eu.userid ";
 
     // we are looking for all users with this role assigned in this context or higher
     if($usercontexts = get_parent_contexts($context)) {
@@ -3154,7 +3146,7 @@ function mgm_get_course_participants($course, $real = false) {
     else
         $where = "WHERE (r.contextid = " . $context -> id . ") " . "AND u.deleted = 0 " . "AND u.username != 'guest' " . "AND r.roleid NOT IN (" . implode(',', $adminroles) . ")";
 
-    return get_records_sql($select . $from . $where);
+    return $DB->get_records_sql($select . $from . $where);
 }
 
 /**
@@ -3299,12 +3291,12 @@ function mgm_update_especs() {
     global $MGM_ITE_ESPECS;
 		$sql = "SELECT id FROM " . $CFG -> prefix . "edicion_ite
             WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
-    if($especs=get_record_sql($sql)) {
+    if($especs = $DB->get_record_sql($sql)) {
         //Data exist. Just update it
         $especs -> type = MGM_ITE_ESPECIALIDADES;
         $especs -> name = 'Especialidades';
         $especs -> value = implode("\n", $MGM_ITE_ESPECS);
-        $dev=$DB->update_record('edicion_ite', $especs);
+        $dev = $DB->update_record('edicion_ite', $especs);
     }
 		if ($dev){
 			return true;
@@ -3339,7 +3331,7 @@ function mgm_get_elapsed($start, $end) {
 }
 
 function mgm_get_usuarios_no_inscritos($edicion, $search='', $page=0, $recordsperpage=30) {
-    global $CFG;
+    global $CFG, $DB;
 
     $LIKE = sql_ilike();
     $fullname = sql_concat("a.firstname", "' '", "a.lastname");
@@ -3358,7 +3350,7 @@ function mgm_get_usuarios_no_inscritos($edicion, $search='', $page=0, $recordspe
         $sql .= " AND ( " . $fullname . " " . $LIKE . " '%" . $search . "%' OR a.email " . $LIKE . " '%" . $search . "%')";
     }
 
-    $users = get_records_sql($sql, $page * $recordsperpage, $recordsperpage);
+    $users = $DB->get_records_sql($sql, $page * $recordsperpage, $recordsperpage);
 
     $sql = "SELECT COUNT(p.id) as userscount FROM " . $CFG -> prefix . "edicion_preinscripcion
             AS p LEFT JOIN " . $CFG -> prefix . "user AS a ON ( a.id = p.userid )
@@ -3371,18 +3363,18 @@ function mgm_get_usuarios_no_inscritos($edicion, $search='', $page=0, $recordspe
         $sql .= " AND ( " . $fullname . " " . $LIKE . " '%" . $search . "%' OR a.email " . $LIKE . " '%" . $search . "%' )";
     }
 
-    $users_count = get_record_sql($sql);
+    $users_count = $DB->get_record_sql($sql);
 
     return array('users' => $users, 'userscount' => $users_count -> userscount);
 }
 
 function mgm_courses_from_user_choices($choices) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql2 = "SELECT id, fullname FROM " . $CFG -> prefix . "course
              WHERE id IN (" . $choices . ")";
 
-    return get_records_sql($sql2);
+    return $DB->get_records_sql($sql2);
 }
 
 function mgm_get_edition_payment_data($edition, &$data) {
@@ -3481,6 +3473,7 @@ function mgm_get_course_tutor_payment($course) {
 }
 
 function mgm_get_course_coordinador_payment($course) {
+	global $DB;
     if (!$tutors = mgm_get_course_tutors($course)) {
         return array();
     }
@@ -3493,7 +3486,7 @@ function mgm_get_course_coordinador_payment($course) {
     $coord = mgm_get_course_coordinators($course);
     return array(
         'user' => $coord,
-        'edicion_user' => get_record('edicion_user', 'userid', $coord->id),
+        'edicion_user' => $DB->get_record('edicion_user', 'userid', $coord->id),
         'total_amount' => (($criteria->duration+1) * $amount_per_tutor) + $criteria->prevlab,
         'tutors' => $tutors,
         'amount_per_tutor' => $amount_per_tutor,
@@ -3517,18 +3510,18 @@ function mgm_get_tramo_amount($criteria, $num_tutors) {
 }
 
 function mgm_get_course_tasks($courseid) {
-    global $CFG;
+    global $CFG, $DB;
 
     $sql = "SELECT * FROM ".$CFG->prefix."grade_items
             WHERE courseid=".$courseid."
             AND itemtype !='course' ORDER by sortorder";
 
-    return get_records_sql($sql);
+    return $DB->get_records_sql($sql);
 }
 
 function mgm_get_course_ecuador($courseid) {
-		global $CFG;
-		$dev=null;
+	global $CFG;
+	$dev=null;
     $edition = mgm_get_course_edition($courseid);
     $criteria = mgm_get_edition_course_criteria($edition->id, $courseid);
     if ($criteria->ecuadortask != MGM_ECUADOR_DEFAULT) {
@@ -3537,15 +3530,15 @@ function mgm_get_course_ecuador($courseid) {
     	$sql = "SELECT * FROM ".$CFG->prefix."grade_items
             WHERE courseid=".$courseid."
             AND itemtype !='course' and itemname like 'ec-%' ORDER by sortorder";
-    	$dev= array_pop(get_records_sql($sql));
-			if (! $dev){
+    	$dev= array_pop($DB->get_records_sql($sql));
+		if (! $dev){
 	    	$tasks = mgm_get_course_tasks($courseid);
 	    	$x = 1;
 	    	foreach ($tasks as $task) {
-	       	 if ($x == round(count($tasks) / 2)) {
-	            return $task;
-	        	}
-	        	$x++;
+	    		if ($x == round(count($tasks) / 2)) {
+	    			return $task;
+	    		}
+	    		$x++;
 	    	}
 	    }
     }
@@ -3553,21 +3546,20 @@ function mgm_get_course_ecuador($courseid) {
 }
 
 function mgm_get_course_first_task($courseid) {
-    global $CFG;
+    global $CFG, $DB;
 		$dev=false;
     $sql = "SELECT * FROM ".$CFG->prefix."grade_items
             WHERE courseid=".$courseid."
             AND itemtype !='course' and itemname like 'presentac%' ORDER BY sortorder LIMIT 1";
-    if ($reg=get_records_sql($sql)){
-    	$dev=array_pop($reg);
+    if ($reg = $DB->get_records_sql($sql)){
+    	$dev = array_pop($reg);
     }else{
     	$sql = "SELECT * FROM ".$CFG->prefix."grade_items
             WHERE courseid=".$courseid."
             AND itemtype !='course' ORDER BY sortorder LIMIT 1";
-			if ($reg=get_records_sql($sql))
-    		$dev=array_pop($reg);
+			if ($reg = $DB->get_records_sql($sql))
+    		$dev = array_pop($reg);
     }
-
     return $dev;
 }
 
@@ -3647,7 +3639,7 @@ function mgm_get_course_coordinators($course) {
 }
 
 function mgm_get_course_roles_on_demand($course, $role) {
-    global $CFG;
+    global $CFG, $DB;
 
     if(!$course) {
         return false;
@@ -3667,62 +3659,66 @@ function mgm_get_course_roles_on_demand($course, $role) {
             AND u.deleted = 0  AND r.roleid=".$roles[$role]." AND (ul.courseid=".$course->id." OR ul.courseid IS NULL)
             AND u.username != 'guest'";
 
-    return ($role != 'coordinador') ? get_records_sql($sql) : get_record_sql($sql);
+    return ($role != 'coordinador') ? $DB->get_records_sql($sql) : $DB->get_record_sql($sql);
 }
 
 function mgm_get_user_dni($userid) {
-    if(!$user = get_record('edicion_user', 'userid', $userid)) {
+	global $DB;
+    if(!$user = $DB->get_record('edicion_user', 'userid', $userid)) {
         return 'NOT SET';
     }
 
     return ($user->dni != '') ? $user->dni : 'NOT SET';
 }
 function mgm_get_userid_from_dni($numdocumento) {
-	  if ($field=get_record('user_info_field','shortname', 'nifniepasaporte')){
-	  	$sql='SELECT u.id, u.idnumber, eu.dni, uid.data  FROM mdl_edicion_user eu, mdl_user u, mdl_user_info_data uid where eu.userid=u.id  and uid.userid=u.id and uid.fieldid='.$field->id;
-	  	$sql=$sql . ' and ( UPPER(eu.dni) = '.strtoupper($numdocumento);
-	  	$sql=$sql . ' or UPPER(uid.data) = '.strtoupper($numdocumento);
-	  	$sql=$sql . ' or UPPER(u.idnumber) = '.strtoupper($numdocumento) . ' )';
-	  }else{
-	    $sql='SELECT u.id, u.idnumber, eu.dni FROM mdl_edicion_user eu, mdl_user u where eu.userid=u.id';
-	    $sql=$sql . ' and ( UPPER(eu.dni) = '.strtoupper($numdocumento);
-	  	$sql=$sql . ' or UPPER(u.idnumber) = '.strtoupper($numdocumento) . ' )';
-	  }
-	  if ($obj=get_record_sql($sql)){
-	  	return (int)$obj->id;
-	  }else{
-	  	return false;
-	  }
+	global $DB;
+	if ($field = $DB->get_record('user_info_field','shortname', 'nifniepasaporte')){
+		$sql='SELECT u.id, u.idnumber, eu.dni, uid.data  FROM mdl_edicion_user eu, mdl_user u, mdl_user_info_data uid where eu.userid=u.id  and uid.userid=u.id and uid.fieldid='.$field->id;
+		$sql=$sql . ' and ( UPPER(eu.dni) = '.strtoupper($numdocumento);
+		$sql=$sql . ' or UPPER(uid.data) = '.strtoupper($numdocumento);
+		$sql=$sql . ' or UPPER(u.idnumber) = '.strtoupper($numdocumento) . ' )';
+	}else{
+		$sql='SELECT u.id, u.idnumber, eu.dni FROM mdl_edicion_user eu, mdl_user u where eu.userid=u.id';
+		$sql=$sql . ' and ( UPPER(eu.dni) = '.strtoupper($numdocumento);
+		$sql=$sql . ' or UPPER(u.idnumber) = '.strtoupper($numdocumento) . ' )';
+	}
+	if ($obj = $DB->get_record_sql($sql)){
+		return (int)$obj->id;
+	}else{
+		return false;
+	}
 }
 
 function mgm_set_cert_history($reg){
-	$hr=get_record('edicion_cert_history', 'numdocumento', $reg->numdocumento, 'courseid', $reg->courseid);
+	global $DB;
+	$hr = $DB->get_record('edicion_cert_history', 'numdocumento', $reg->numdocumento, 'courseid', $reg->courseid);
 	if ($hr && $hr->confirm==1){
 		return array(false, 'Documento: '.$reg->numdocumento.', Curso '. $reg->courseid.' NO ACTION <br/>');
 	}else if ($hr && $hr->confirm==0){
 		$reg->id=$hr->id;
-		$dev=update_record('edicion_cert_history',$reg);
+		$dev = $DB->update_record('edicion_cert_history',$reg);
 		return array(true, 'Documento: '.$reg->numdocumento.', Curso '. $reg->courseid.' U <br/>');
 	}else{
-		$dev=insert_record('edicion_cert_history',$reg);
+		$dev = $DB->insert_record('edicion_cert_history',$reg);
 		return array(true, 'Documento: '.$reg->numdocumento.', Curso '. $reg->courseid.' C <br/>');;
 	}
 }
 
 function mgm_set_centro($reg){
-	if ($oldreg=get_record('edicion_centro', 'codigo', $reg->codigo)){
+	global $DB;
+	if ($oldreg = $DB->get_record('edicion_centro', 'codigo', $reg->codigo)){
 		$reg->id=$oldreg->id;
-		update_record('edicion_centro',$reg);
+		$DB->update_record('edicion_centro',$reg);
 		return array(false, 'Centro: '.$reg->codigo.' UPDATE<br/>');
 	}else {
-		$dev=insert_record('edicion_centro',$reg);
+		$dev = $DB->insert_record('edicion_centro',$reg);
 		return array(true, 'Centro: '.$reg->codigo.' ADD<br/>');
 	}
 }
 
 
 function mgm_parse_msg($msg, $userid, $editionid){
-	   global $CFG;
+	 global $CFG, $DB;
      $arol='5';
      $sql="
      SELECT u.username usuario, u.firstname nombre,u.lastname apellidos, eu.dni dni, eu.cc, u.email, c.fullname as curso, ect.dgenerica, ect.despecifica, ect.direccion, ect.cp , ect.localidad, ect.provincia, ect.pais, ect.telefono
@@ -3730,7 +3726,7 @@ function mgm_parse_msg($msg, $userid, $editionid){
      mdl_edicion_course ec left join mdl_course c on ec.courseid=c.id , mdl_role_assignments AS ra INNER JOIN mdl_context AS context ON ra.contextid=context.id
      where context.contextlevel = 50 AND ra.roleid=".$arol." AND u.id=ra.userid AND context.instanceid=ec.courseid AND u.id=".$userid." AND ec.edicionid=". $editionid;
      $sql=str_replace("prefix_", $CFG->prefix, $sql);
-     if($reg=get_record_sql($sql)){
+     if($reg = $DB->get_record_sql($sql)){
        $fields=array('usuario', 'nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
        foreach($fields as $field){
      	   $msg=str_replace('#'.$field, $reg->$field, $msg);
@@ -3740,7 +3736,7 @@ function mgm_parse_msg($msg, $userid, $editionid){
 }
 
 function mgm_parse_letter($data, $userid, $editionid){
-	   global $CFG;
+	   global $CFG, $DB;
      $arol='5';
      $sql="
      SELECT u.username usuario, u.firstname nombre,u.lastname apellidos, eu.dni dni, eu.cc, u.email, c.fullname as curso, ect.dgenerica, ect.despecifica, ect.direccion, ect.cp , ect.localidad, ect.provincia, ect.pais, ect.telefono
@@ -3748,13 +3744,13 @@ function mgm_parse_letter($data, $userid, $editionid){
      mdl_edicion_course ec left join mdl_course c on ec.courseid=c.id , mdl_role_assignments AS ra INNER JOIN mdl_context AS context ON ra.contextid=context.id
      where context.contextlevel = 50 AND ra.roleid=".$arol." AND u.id=ra.userid AND context.instanceid=ec.courseid AND u.id=".$userid." AND ec.edicionid=". $editionid;
      $sql=str_replace("prefix_", $CFG->prefix, $sql);
-     if($reg=get_record_sql($sql)){
+     if($reg = $DB->get_record_sql($sql)){
      	$letter=new stdClass();
-       $fields=array('usuario', 'nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
-       foreach($fields as $field){
-     	   $data->letterhead=str_replace('#'.$field, $reg->$field, $data->letterhead);
-     	   $data->letterbody=str_replace('#'.$field, $reg->$field, $data->letterbody);
-     	   $data->letterfoot=str_replace('#'.$field, $reg->$field, $data->letterfoot);
+     	$fields=array('usuario', 'nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
+     	foreach($fields as $field){
+     		$data->letterhead=str_replace('#'.$field, $reg->$field, $data->letterhead);
+     		$data->letterbody=str_replace('#'.$field, $reg->$field, $data->letterbody);
+     		$data->letterfoot=str_replace('#'.$field, $reg->$field, $data->letterfoot);
        }
        return $data;
      }
@@ -4043,17 +4039,19 @@ class Curso {
     }
 
     function aprobado($usuario) {
+    	global $DB;
         if(!$ctask = mgm_get_certification_task($this -> data -> id))
             return false;
-        if(!$grade = get_record('grade_grades', 'itemid', $ctask -> id, 'userid', $usuario -> data -> userid))
+        if(!$grade = $DB->get_record('grade_grades', 'itemid', $ctask -> id, 'userid', $usuario -> data -> userid))
             return false;
         return $grade -> finalgrade == $grade -> rawgrademax;
     }
 
     function getTareas() {
+    	global $DB;
         if($this -> tareas)
             return $this -> tareas;
-        if($tareas_data = get_records("feedback", 'course', $this -> data -> id)) {
+        if($tareas_data = $DB->get_records("feedback", 'course', $this -> data -> id)) {
             foreach($tareas_data as $tarea_data)
                 $this -> tareas[] = new Tarea($tarea_data, $this);
             return $this -> tareas;
@@ -4082,34 +4080,36 @@ class Usuario {
     }
 
     function set_dbdata($userid){
-    	$data = get_record('edicion_user', 'userid', $userid);
+    	global $DB;
+    	$data = $DB->get_record('edicion_user', 'userid', $userid);
     	if (!$data){
     		$data=new stdClass();
     		$data->dni=null;
     	}
     	if (!$data->dni){
     		$puser=profile_user_record($userid);
-    		$user = get_record('user', 'id', $userid);
-      	if ($puser->nifniepasaporte){
-      		$data->dni=$puser->nifniepasaporte;
-      	}else if ($user->idnumber){
-      		$data->dni=$user->idnumber;
-      	}
-      	if (mgm_validate_cif($data->dni)){
-      		$data->tipoid='N';
-      	}else{
-      		$data->tipoid='P';
-      	}
+    		$user = $DB->get_record('user', 'id', $userid);
+      		if ($puser->nifniepasaporte){
+      			$data->dni=$puser->nifniepasaporte;
+      		}else if ($user->idnumber){
+      			$data->dni=$user->idnumber;
+      		}
+      		if (mgm_validate_cif($data->dni)){
+      			$data->tipoid='N';
+      		}else{
+      			$data->tipoid='P';
+      		}
     	}
     	$this -> dbdata=$data;
     }
 
     function Usuario($data, $curso, $show=false, $filter_apto=True) {
-    	  if($show){
-    	  	foreach($show as $k=>$s){
+    	global $DB;
+    	if($show){
+    		foreach($show as $k=>$s){
     	  		$this->show[$k]=$s;
     	  	}
-    	  }
+    	}
         $this -> data = $data;
         $this -> curso = $curso;
         $this -> apto=$this->curso->aprobado($this);
@@ -4205,7 +4205,7 @@ class Usuario {
             $this -> edatap['codcentro'] = $this -> dbdata -> cc;
             #Obligatorio
         }
-        $userdata = get_record('user', 'id', $data -> userid);
+        $userdata = $DB->get_record('user', 'id', $data -> userid);
         $apellidos = explode(' ',trim($userdata -> lastname), 2);
         if(count($apellidos) > 0)
             $this -> edatap['apellido1'] = $this->format_text(mb_strtoupper($apellidos[0], 'utf-8'));
@@ -4266,9 +4266,10 @@ class Tarea {
     var $course;
 
     function Tarea($data, $course) {
+    	global $DB;
         $this -> data = $data;
-        $module = get_record('modules', 'name', 'feedback');
-        $this -> instancia = get_record('course_modules', 'course', $course -> data -> id, 'instance', $data -> id, 'module', $module -> id);
+        $module = $DB->get_record('modules', 'name', 'feedback');
+        $this -> instancia = $DB->get_record('course_modules', 'course', $course -> data -> id, 'instance', $data -> id, 'module', $module -> id);
         $this -> course = $course;
     }
 
@@ -4277,7 +4278,8 @@ class Tarea {
     }
 
     function completada($usuario) {
-        if(get_record('feedback_completed', 'feedback', $this -> data -> id, 'userid', $usuario -> data -> userid))
+    	global $DB;
+        if($DB->get_record('feedback_completed', 'feedback', $this -> data -> id, 'userid', $usuario -> data -> userid))
             return true;
         else
             return false;
@@ -4369,16 +4371,16 @@ class EmisionDatos {
         if($cursos)
             $i=0;
             foreach($cursos as $curso) {
-								$i++;
-								$actual=$inicio-(int)time();
+				$i++;
+				$actual=$inicio-(int)time();
                 if(!$cabecera_actividades) {
                     fwrite($factividades, '"'. implode('"'. $this -> separador_campo .'"', array_keys($curso -> edata)) . '"'."\n");
                     $cabecera_actividades = True;
                 }
                 if($curso -> incidencias)
-                    $ret -> incidencias = array_merge($ret -> incidencias, $curso -> incidencias);
+                	$ret -> incidencias = array_merge($ret -> incidencias, $curso -> incidencias);
                 else
-                		fwrite($factividades, implode($this -> separador_campo, $curso -> edata) . "\n");
+              		fwrite($factividades, implode($this -> separador_campo, $curso -> edata) . "\n");
                 $participantes = $curso -> getParticipantes($this->filter_aptos);
 //                $memory=memory_get_usage();
 //                print $i.'-'.$curso->data->fullname . '-' . $curso->participantes.' - Mem: '.$memory/(1024*1024).' Tiempo: '.$actual. '<br/>';
@@ -4388,15 +4390,15 @@ class EmisionDatos {
                         $cabecera_participantes = True;
                     }
                     if($participante -> incidencias){
-                    	  $tmp_inc=array();
+                    	$tmp_inc=array();
                         foreach($participante -> incidencias as $incidencia){
                         	if ($this->show[$incidencia[0]])
-                        	  $tmp_inc[]=$incidencia[1];
+                        		$tmp_inc[]=$incidencia[1];
                         }
                         if ($tmp_inc){
                         	$ret -> incidencias = array_merge($ret -> incidencias, $tmp_inc);
                         }
-                		}
+                	}
                     else{
                     	  $c1=in_array($participante -> tipoparticipante, array('C', 'T')) || $aprobado = $participante->apto;
                     	  $c2=!$aprobado && $participante -> edata['codtipoparticipante'] && $this->show['noapto'];
@@ -4470,14 +4472,14 @@ class JoinUsers{
 
 		function addDiff(){
 			if (!isset($this->user_diff)){
-         if (isset($this->user_orig) and isset($this->user_dest)){
-         	  $this->user_diff=new stdClass();
-         	  $rkeys=array();
-         	  $keys_orig=array_keys(get_object_vars($this->user_orig));
-         	  $keys_dest=array_keys(get_object_vars($this->user_dest));
-         	  $keys=array_unique(array_merge($keys_orig, $keys_dest));
-         	  $keys=$this->removeRKeys($keys);
-         		foreach($keys as $key){
+         		if (isset($this->user_orig) and isset($this->user_dest)){
+         			$this->user_diff=new stdClass();
+         	  		$rkeys=array();
+         	  		$keys_orig=array_keys(get_object_vars($this->user_orig));
+         	  		$keys_dest=array_keys(get_object_vars($this->user_dest));
+         	  		$keys=array_unique(array_merge($keys_orig, $keys_dest));
+         	  		$keys=$this->removeRKeys($keys);
+         			foreach($keys as $key){
          				if ($this->user_orig->$key != $this->user_dest->$key){
          					$this->user_diff->$key->orig=$this->user_orig->$key;
          					$this->user_diff->$key->dest=$this->user_dest->$key;
@@ -4487,8 +4489,8 @@ class JoinUsers{
          					  $this->user_diff->$key->v=2;
          					}
          				}
+         			}
          		}
-         }
 			}
 		}
 		function setDiffField($key, $value=2){
@@ -4528,10 +4530,11 @@ class JoinUsers{
 		}
 
 		function updateCertDest(){
-			if ($cert_orig=mgm_get_cert_history($this->user_orig->id)){
+			global $DB;
+			if ($cert_orig = mgm_get_cert_history($this->user_orig->id)){
 				foreach  ($cert_orig as $cert){
 					$cert->userid=$this->user_dest->id;
-					update_record($cert);
+					$DB->update_record($cert);
 				}
 			}
 			return true;
@@ -4547,16 +4550,15 @@ class JoinUsers{
 						//actualizar cursos certificados
 						$this->updateCertDest();
 						//eliminar usurio origen
-						if ($user=get_record('user', 'id', $this->user_orig->id)){
-							$ret=delete_user($user);
+						if ($user = get_record('user', 'id', $this->user_orig->id)){
+							$ret = delete_user($user);
 							//borrar user
 						}
-					  //borrar edicion_user
+					  	//borrar edicion_user
 						if (record_exists('edicion_user', 'userid', $this->user_orig->id)){
-							$ret=delete_records('edicion_user', 'userid', $this->user_orig->id);
+							$ret = $DB->delete_records('edicion_user', 'userid', $this->user_orig->id);
 						}
 						//borrar user
-
 						return true;
 				}
 			  return false;
@@ -4568,12 +4570,12 @@ class JoinUsers{
 		}
 
 		function setUserId($userid, $type='orig'){
-			$type=strtolower($type);
+			$type = strtolower($type);
 			if ($type == 'orig' or $type == 'dest'){
 				$usertype='user_' .$type;
 				if ($user=mgm_get_user_complete($userid)){
-			  	$this->$usertype=$user;
-			  	return true;
+			  		$this->$usertype=$user;
+			  		return true;
 				}
 				return false;
 			}
@@ -4670,6 +4672,7 @@ class JoinUsers{
 		}
 
 		function getCertTable(){
+			global $DB;
 			$cert_orig=mgm_get_cert_history($this->user_orig->id);
 			$cert_dest=mgm_get_cert_history($this->user_dest->id);
 			$table=new stdClass();
@@ -4687,13 +4690,13 @@ class JoinUsers{
 		  		$orig=array_pop($cert_orig);
 		  		$dest=array_pop($cert_dest);
 		    	if (! is_null($orig)){
-		    		$course=get_record('course', 'id', $orig->courseid);
+		    		$course = $DB->get_record('course', 'id', $orig->courseid);
 		  			$origs='Curso: ' . $course->fullname .', numreg: '. $orig->numregistro . ' confirm: ' . $orig->confirm;
 		  		}else{
 		  			$orig='';
 		  		}
 		  		if (! is_null($dest)){
-		  			$course=get_record('course', 'id', $dest->courseid);
+		  			$course = $DB->get_record('course', 'id', $dest->courseid);
 		  			$dests='Curso: ' . $course->fullname .', numreg: '. $dest->numregistro . ' confirm: ' . $dest->confirm;
 		  		}else{
 		  			$dest='';
@@ -4706,15 +4709,14 @@ class JoinUsers{
 
 		function displayDiffForm($table){
 			print '<form action="join_users_act.php" method="POST">';
-    	print_table($table);
-    	print '<input type="hidden" value="1" name="confirm">
-    	<input type="hidden" value="'.sesskey().'" name="sesskey">
-    	<input type="submit" name="submit_yes" id="Submit_btn1" value="'.get_string('next').'">
-    	</form>
-    	<form action="join_users.php" method="GET">
-    	<input type="submit" name="submit_no" id="Submit_btn2" value="'.get_string('cancel').'">
-    	</form>';
-
+    		print_table($table);
+    		print '<input type="hidden" value="1" name="confirm">
+    		<input type="hidden" value="'.sesskey().'" name="sesskey">
+    		<input type="submit" name="submit_yes" id="Submit_btn1" value="'.get_string('next').'">
+    		</form>
+    		<form action="join_users.php" method="GET">
+    		<input type="submit" name="submit_no" id="Submit_btn2" value="'.get_string('cancel').'">
+    		</form>';
 		}
 
 		function getCertificateRow(){}
@@ -4735,17 +4737,17 @@ class ImportData{
 
 		function setFile($file){
 			if (file_exists($file)){
-   			$this->filename=$file;
-   			return true;
+   				$this->filename=$file;
+   				return true;
 			}
-   		return false;
+   			return false;
 		}
 
 		function getTables(){
 			$dev=false;
 			if ($this->filename){
-        $cmd=$this->cmdPath."mdb-tables ".$this->filename;
-      	$dev=system($cmd, $ret);
+        		$cmd=$this->cmdPath."mdb-tables ".$this->filename;
+      			$dev=system($cmd, $ret);
 			}
 			if ($ret!=0){
 				$dev=false;
@@ -4760,10 +4762,9 @@ class ImportData{
 		function getDataTableHandle($table){
 			$dev=false;
 			if ($this->filename){
-        $cmd=$this->cmdPath."mdb-export ".$this->filename. ' ' . $table;
-      	$dev=popen($cmd, "r");
+        		$cmd=$this->cmdPath."mdb-export ".$this->filename. ' ' . $table;
+      			$dev=popen($cmd, "r");
 			}
-
 			return $dev;
 		}
 
@@ -4772,7 +4773,7 @@ class ImportData{
 	  	if ($tables && array_search('PARTICIPANTES', $tables)!== FALSE){
 				$handle=$this->getDataTableHandle('PARTICIPANTES');
 				if($handle){
-					$head=fgetcsv($handle, 0, ",", '"', '\\');
+					$head = fgetcsv($handle, 0, ",", '"', '\\');
 	  		  while (($reg = fgetcsv($handle, 0, ",", '"', '\\')) !== FALSE) {
 			    	$cert_reg=new stdClass();
 			    	$cert_reg->userid=0;
@@ -4801,7 +4802,6 @@ class ImportData{
 	  		$dev=array(1, 'No se ha encontrado la tabla participantes.');
 	  	}
 	  	return false;
-
 
 	  }
 

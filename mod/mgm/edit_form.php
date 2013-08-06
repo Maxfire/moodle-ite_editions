@@ -57,7 +57,7 @@ class mod_mgm_edit_form extends moodleform {
         'borrador'=>get_string('borrador', 'mgm'),
         'preinscripcion'=>get_string('preinscripcion', 'mgm'),
         'matriculacion'=>get_string('matriculacion', 'mgm'),
-        'en curso'=>get_string('en curso', 'mgm'),
+        'en curso'=>get_string('en_curso', 'mgm'),
         'gestion'=>get_string('gestion', 'mgm'),
         'finalizada'=>get_string('finalizada', 'mgm'));
         $mform->addElement('select', 'state', get_string('state', 'mgm'), $statelist);
@@ -73,8 +73,8 @@ class mod_mgm_edit_form extends moodleform {
             $themes += get_list_of_themes();
             $mform->addElement('select', 'theme', get_string('forcetheme'), $themes);
         }
-        $mform->setHelpButton('description', array('writing', 'richtext'), false, 'editorhelpbutton');
-
+//         $mform->setHelpButton('description', array('writing', 'richtext'), false, 'editorhelpbutton');
+        $mform->addHelpButton('description', 'writing');
 
 
         $iniciogrp = array();
@@ -115,13 +115,15 @@ class mod_mgm_edit_form extends moodleform {
         $courses[1]->setMultiple(true);
 
         $grp =& $mform->addElement('group', 'coursesgrp', get_string('courses'), $courses, ' ', false);
-        $grp->setHelpButton(array('lists', get_string('courses'), 'mgm'));
+//         $grp->setHelpButton(array('lists', get_string('courses'), 'mgm'));
+        $mform->addHelpButton('coursesgrp', 'lists', 'mgm');
 
         $objs = array();
         $objs[] =& $mform->createElement('submit', 'addsel', get_string('addsel', 'mgm'));
         $objs[] =& $mform->createElement('submit', 'removesel', get_string('removesel', 'mgm'));
         $grp =& $mform->addElement('group', 'buttonsgrp', get_string('selectedlist', 'mgm'), $objs, array(' ', '<br />'), false);
-        $grp->setHelpButton(array('selectedlist', get_string('selectedlist', 'mgm'), 'mgm'));
+//         $grp->setHelpButton(array('selectedlist', get_string('selectedlist', 'mgm'), 'mgm'));
+        $mform->addHelpButton('buttonsgrp', 'selectedlist', 'mgm');
 
         if (isset($edition->id)) {
             $mform->addElement('hidden', 'id', 0);
@@ -136,15 +138,15 @@ class mod_mgm_edit_form extends moodleform {
         $this->add_action_buttons(true, $strsubmit);
     }
 
-		function validation($data, $files) {
-        global $CFG, $USER;
+	function validation($data, $files) {
+        global $CFG, $USER, $DB;
         require_once($CFG->dirroot."/mod/mgm/locallib.php");
         $errors = parent::validation($data, $files);
         $data = (object)$data;
 
         // validate cc
         if (isset($data->id)){
-        	$edition = get_record('edicion', 'id', $data->id);
+        	$edition = $DB->get_record('edicion', array('id'=> $data->id));
 	        $code= mgm_edition_check_state($data->id, $data->state);
 	        if ($edition->state=='finalizada')
 	          print 'No se puede modificar una edicion finalizada';

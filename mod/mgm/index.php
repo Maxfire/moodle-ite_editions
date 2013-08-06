@@ -27,6 +27,11 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 
+$systemcontext = context_system::instance();
+$PAGE->set_url('/mgm/index.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
+
 $editionedit = optional_param('editionedit', -1, PARAM_BOOL);
 
 if ($CFG->forcelogin) {
@@ -117,7 +122,9 @@ $editiontable->align = array('left', 'left', 'left', 'left', 'center', 'center',
 
 print_edition_edit_header();
 // Output the page
-print_heading($strediciones);
+echo $OUTPUT->heading($strediciones);
+//echo $OUTPUT->table($editiontable);
+//echo html_writer::table($editiontable);
 print_table($editiontable);
 
 echo '<div class="mod-mgm buttons">';
