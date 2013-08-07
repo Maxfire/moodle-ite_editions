@@ -107,7 +107,7 @@ if ($mform->is_cancelled()) {
                 mgm_remove_course($edition, $courseid);
             }
         }
-        if ($reg=get_record('edicion', array('id'=> $data->id)) && $reg->state=='finalizada'){
+        if ($reg = $DB->get_record('edicion', array('id'=> $data->id)) && $reg->state=='finalizada'){
         	error(get_string('state_ed_error5', 'mgm'));//no se puede modificar una edicion finalizada
         }else{
         	mgm_update_edition($newedition);

@@ -24,9 +24,9 @@
  * @copyright  2010 Oscar Campos <oscar.campos@open-phoenix.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+$basedir = dirname(dirname(dirname(__FILE__)));
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(dirname(dirname(__FILE__))).'/lib/adodb/adodb-csvlib.inc.php');
+//require_once(dirname(dirname(dirname(__FILE__))).'/lib/adodb/adodb-csvlib.inc.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/course_edit_form.php');
 
@@ -36,21 +36,25 @@ require_capability('mod/mgm:editedicion', get_context_instance(CONTEXT_SYSTEM));
 $id = optional_param('id', 0, PARAM_INT);    // Criteria id
 $courseid = optional_param('courseid', 0, PARAM_INT);
 $edicionid = optional_param('edicionid', 0, PARAM_INT);
+$systemcontext = context_system::instance();
+$PAGE->set_url('/mgm/courses.php', array('id' => $id, 'courseid'=>$courseid, 'edicionid' => $edicionid ) );
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
 
 if ($courseid) {
-    if (!$course = get_record('course', 'id', $courseid)) {
+    if (!$course = $DB->get_record('course', array('id'=> $courseid))) {
         error('Course not known');
     }
 }
 
 if ($edicionid) {
-    if (!$edition = get_record('edicion', 'id', $edicionid)) {
+    if (!$edition = $DB->get_record('edicion', array('id'=> $edicionid))) {
         error('Edicion not known');
     }
 }
 
 if ($id) {
-    if (!$criteria = get_record('edicion_criterios', 'id', $id)) {
+    if (!$criteria = $DB->get_record('edicion_criterios', array('id'=> $id))) {
         error('Criteria not known!');
     }
 }
@@ -60,12 +64,12 @@ if (isset($course) && isset($edition)) {
     $allespecs = mgm_get_course_available_especialidades($course->id, $edition->id);
 } else {
     print_edition_edit_header();
-    print_heading(get_string('edicioncriteria', 'mgm'));
+    echo $OUTPUT->heading(get_string('edicioncriteria', 'mgm'));
     echo skip_main_destination();
-    print_box_start('edicionesbox');
+    echo $OUTPUT->box_start('edicionesbox');    
     mgm_print_ediciones_list();
-    print_box_end();
-    admin_externalpage_print_footer();
+    echo $OUTPUT->box_end();
+    echo $OUTPUT->footer();    
     die();
 }
 
@@ -115,7 +119,7 @@ if ($mform->is_cancelled()) {
 
 // Print the form
 print_edition_edit_header();
-print_heading(get_string('edicioncriteria', 'mgm').' - '.$course->fullname);
+echo $OUTPUT->heading(get_string('edicioncriteria', 'mgm').' - '.$course->fullname);
 echo skip_main_destination();
 $mform->display();
 ?>
@@ -131,12 +135,11 @@ var dlist = document.getElementById('id_dpendsgroup_dlist');
 ?>
 </script>
 <?php
-admin_externalpage_print_footer();
-
+echo $OUTPUT->footer();
 function print_edition_edit_header() {
-    global $CFG;
+    global $CFG, $OUTPUT;
     require_once($CFG->libdir.'/adminlib.php');
 
-    admin_externalpage_setup('edicionescoursemgmt');
-    admin_externalpage_print_header();
+    admin_externalpage_setup('edicionescoursemgmt');    
+    echo $OUTPUT->header();
 }

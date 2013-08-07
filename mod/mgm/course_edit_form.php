@@ -170,7 +170,8 @@ class mgm_course_edit_form extends moodleform {
         $comunidades = $COMUNIDADES;
 
         $mform->addElement('select', 'comunidad', get_string('comunidad_exclude', 'mgm'), $comunidades);
-        $mform->setHelpButton('comunidad', array('comunidad', 'Ayuda sobre la comunidad', 'mgm'));
+        //$mform->setHelpButton('comunidad', array('comunidad', 'Ayuda sobre la comunidad', 'mgm'));
+        $mform->addHelpButton('comunidad', 'comunidad', 'mgm');
 
         $achoices = $schoices = array();
         $aespecs = & $this->_customdata->aespecs;

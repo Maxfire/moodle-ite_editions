@@ -125,9 +125,10 @@ print_edition_edit_header();
 echo $OUTPUT->heading($strediciones);
 //echo $OUTPUT->table($editiontable);
 //echo html_writer::table($editiontable);
+$editiontable->class="boxaligncenter";
 print_table($editiontable);
 
-echo '<div class="mod-mgm buttons">';
+echo '<div class="mod-mgm buttons boxaligncenter">';
 // Print button for creating new editions
 if (mgm_can_do_create()) {
     //print_single_button('edicionedit.php', '', $straddedicion, 'get');

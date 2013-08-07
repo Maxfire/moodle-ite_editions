@@ -263,7 +263,7 @@ function mgm_count_courses($edition) {
 
 function mgm_get_edition_course($editionid, $courseid) {
 	global $DB;
-    return $DB->get_record('edicion_course', 'edicionid', $editionid, 'courseid', $courseid);
+    return $DB->get_record('edicion_course', array('edicionid'=> $editionid, 'courseid'=> $courseid));
 }
 
 /**
@@ -335,12 +335,12 @@ function mgm_get_edition_menu($edition) {
 }
 
 function mgm_print_ediciones_list() {
-    global $CFG, $DB;
+    global $CFG, $DB, $OUTPUT;
 
     $editions = $DB->get_records('edicion');
 
-    $editionimage = '<img src="' . $CFG -> pixpath . '/i/db.gif" alt="" />';
-    $courseimage = '<img src="' . $CFG -> pixpath . '/i/course.gif" alt="" />';
+    $editionimage = '<img src="' . $OUTPUT->pix_url('/i/db') .'" alt="" />';
+    $courseimage = '<img src="' . $OUTPUT->pix_url('/i/course') .'" alt="" />';
     $table = '<table class="mod-mgm editionlist">';
     foreach($editions as $edition) {
         $table .= '<tr>';
@@ -489,10 +489,11 @@ function mgm_get_edition_available_courses($edition) {
 function mgm_add_course($edition, $courseid) {
     global $DB;
 
-    if(!record_exists('edicion_course', 'edicionid', $edition -> id, 'courseid', $courseid)) {
+    if(!$DB->record_exists('edicion_course', array('edicionid'=> $edition -> id,'courseid'=> $courseid))) {
         $row = new stdClass();
         $row -> edicionid = $edition -> id;
         $row -> courseid = $courseid;
+        $row -> codactividad = "0";
 
         return $DB->insert_record('edicion_course', $row);
     }
@@ -503,7 +504,7 @@ function mgm_add_course($edition, $courseid) {
 function mgm_remove_course($edition, $courseid) {
 	global $DB;
     if($row = mgm_get_edition_course($edition -> id, $courseid)) {
-        $DB->delete_records('edicion_course', 'id', $row -> id);
+        $DB->delete_records('edicion_course', array('id'=> $row -> id));
         return true;
     }
     return false;
@@ -711,7 +712,7 @@ function mgm_set_edition_course_criteria($data) {
     $criteria -> type = MGM_CRITERIA_PLAZAS;
     $criteria -> value = $data -> plazas;
     if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-        insert_record('edicion_criterios', $criteria);
+        $DB->insert_record('edicion_criterios', $criteria);
     } else {
         $criteria -> id = $criteriaid -> id;
         $DB->update_record('edicion_criterios', $criteria);
@@ -839,7 +840,7 @@ function mgm_set_edition_course_criteria($data) {
             if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
                 continue ;
             } else {
-                $DB->delete_records('edicion_criterios', 'id', $criteriaid -> id);
+                $DB->delete_records('edicion_criterios', array('id'=> $criteriaid -> id));
             }
         }
     }
@@ -3289,9 +3290,9 @@ function mgm_create_especs() {
 function mgm_update_especs() {
     global $CFG, $DB;
     global $MGM_ITE_ESPECS;
-		$sql = "SELECT id FROM " . $CFG -> prefix . "edicion_ite
-            WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
-    if($especs = $DB->get_record_sql($sql)) {
+		$sql = "SELECT id FROM {edicion_ite}
+            WHERE type = ?";
+    if($especs = $DB->get_record_sql($sql, array(MGM_ITE_ESPECIALIDADES))) {
         //Data exist. Just update it
         $especs -> type = MGM_ITE_ESPECIALIDADES;
         $especs -> name = 'Especialidades';

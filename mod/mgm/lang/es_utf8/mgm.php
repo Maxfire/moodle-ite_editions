@@ -66,6 +66,7 @@ $string['certondraft'] = 'Borrador de certificación de la edición generado';
 $string['certonvalidate'] = 'Borrador de certificación de la edición validado';
 $string['comunidad'] = 'Comunidad Autónoma';
 $string['comunidad_exclude'] = 'Comunidad Autónoma (Excluir)';
+$string['comunidad_help'] = 'Los usuarios cuyo Centro desde el que se matriculan, pertenezcan a la Comunidad Autonoma seleccionada, serán excluidos de este Curso y de los demas cursos que queden por procesar.';
 $string['certvalidatesure'] = '¿Seguro que desea validar el borrador de certificación de la edición?';
 $string['createcriteria'] = 'Crear nuevos criterios';
 $string['createedition'] = 'Crear nueva edición';
