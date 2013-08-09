@@ -40,7 +40,7 @@ class plugin_cmat extends plugin_base{
 
 	function execute($finalelements, $data){
 
-		$filter_cmat = optional_param('filter_cmat');
+		$filter_cmat = optional_param('filter_cmat', '', PARAM_TEXT);
 		if(!$filter_cmat)
 			return $finalelements;
 
@@ -60,7 +60,7 @@ class plugin_cmat extends plugin_base{
 	function print_filter(&$mform){
 		global $CFG;
 
-		$filter_cmat = optional_param('filter_cmat');
+		$filter_cmat = optional_param('filter_cmat', '', PARAM_TEXT);
 
 		$reportclassname = 'report_'.$this->report->type;
 		$reportclass = new $reportclassname($this->report);

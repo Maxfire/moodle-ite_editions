@@ -40,7 +40,7 @@ class plugin_sexo extends plugin_base{
 
 	function execute($finalelements, $data){
 
-		$filter_sexo = optional_param('filter_sexo');
+		$filter_sexo = optional_param('filter_sexo', '',PARAM_ALPHA);
 		if(!$filter_sexo)
 			return $finalelements;
 
@@ -60,7 +60,7 @@ class plugin_sexo extends plugin_base{
 	function print_filter(&$mform){
 		global $CFG, $CUERPOS_DOCENTES;
 
-		$filter_sexo = optional_param('filter_sexo');
+		$filter_sexo = optional_param('filter_sexo', '',PARAM_ALPHA);
 
 		$reportclassname = 'report_'.$this->report->type;
 		$reportclass = new $reportclassname($this->report);

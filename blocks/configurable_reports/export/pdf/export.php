@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/** Configurable Reports
+/** Export pdf component for configurable report
   * A Moodle block for creating customizable reports
   * @package blocks
   * @author: Juan leyva <http://www.twitter.com/jleyvadelgado>
@@ -23,7 +23,7 @@
   */
 
 function export_report($report, $filtercourseid=false, $reportname=false, $admin=false, $filtergroupid){
-	global $CFG;
+	global $CFG, $DB;
   require_once($CFG->dirroot.'/mod/mgm/oppdflib.class.php');
   require_once($CFG->dirroot.'/mod/mgm/reports/acta.class.php');
   require_once($CFG->dirroot."/mod/mgm/locallib.php");
@@ -57,29 +57,29 @@ function export_report($report, $filtercourseid=false, $reportname=false, $admin
     	$edicionname='--';
     	$fechas='';
     	if ($filtercourseid){
-    		$course=get_record('course', 'id', $filtercourseid);
+    		$course = $DB->get_record('course', array('id'=> $filtercourseid));
     		if ($course){
-    			$coursename=$course->fullname;
-    			$course_extend=get_record('edicion_course', 'courseid', $filtercourseid);
+    			$coursename = $course->fullname;
+    			$course_extend = $DB->get_record('edicion_course', array('courseid'=> $filtercourseid));
     			if ($course_extend){
     				$fechas="\nFecha: " . date('d/m/Y', $course_extend->fechainicio) . " - " . date('d/m/Y', $course_extend->fechafin);
     			}
     		}
-    		$edition=mgm_get_course_edition($filtercourseid);
+    		$edition = mgm_get_course_edition($filtercourseid);
     		if ($edition){
-    			$edicionname=$edition->name;
+    			$edicionname = $edition->name;
     		}
     	}
 			if ($admin){
-				$groupid=trim($filtergroupid, '()');
-				$roles=mgm_get_certification_roles();
+				$groupid = trim($filtergroupid, '()');
+				$roles = mgm_get_certification_roles();
 				$roleid=$roles['tutor'];
-				$sql="SELECT ra.userid FROM ". $CFG -> prefix . "role_assignments ra left join ". $CFG -> prefix . "groups_members gm on (ra.userid=gm.userid)
-				where contextid IN (SELECT id FROM ". $CFG -> prefix . "context m where contextlevel=50 and instanceid=".$filtercourseid.")
-				and groupid=".$groupid." and roleid=". $roleid ;
-				if ($tutorid=get_record_sql($sql)){
-					$t=get_record('user', 'id', $tutorid->userid);
-					$tutor=$t->lastname . ', ' . $t->firstname;
+				$sql="SELECT ra.userid FROM {role_assignments} ra left join {groups_members} gm on (ra.userid=gm.userid)
+				where contextid IN (SELECT id FROM {context} m where contextlevel=50 and instanceid = ?
+				and groupid = ? and roleid = ?";
+				if ($tutorid = get_record_sql($sql, array($filtercourseid, $groupid,$roleid))){
+					$t = $DB->get_record('user', array('id'=> $tutorid->userid));
+					$tutor = $t->lastname . ', ' . $t->firstname;
 				}else{
 					$tutor='Desconocido';
 				}
@@ -90,7 +90,7 @@ function export_report($report, $filtercourseid=false, $reportname=false, $admin
 
 			}
 			else{
-       $tutor=$username;
+       			$tutor=$username;
 			}
 			$alumnos=$rkey+1;
 			$cabecera2="Edición: " .$edicionname ."\nCurso: ". $coursename ."\nTutor/a: " . $tutor. $fechas . "   Alumnos: $alumnos";

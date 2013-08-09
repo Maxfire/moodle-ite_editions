@@ -39,7 +39,7 @@ class plugin_ccdocente extends plugin_base{
 	}
 
 	function execute($finalelements, $data){
-		$filter_ccdocente = optional_param('filter_ccdocente', "-1");
+		$filter_ccdocente = optional_param('filter_ccdocente', "-1", PARAM_TEXT);
 		if($filter_ccdocente=="-1")
 			return $finalelements;
 
@@ -59,7 +59,7 @@ class plugin_ccdocente extends plugin_base{
 	function print_filter(&$mform){
 		global $CFG, $CUERPOS_DOCENTES;
 
-		$filter_ccdocente = optional_param('filter_ccdocente');
+		$filter_ccdocente = optional_param('filter_ccdocente', "-1", PARAM_TEXT);
 
 		$reportclassname = 'report_'.$this->report->type;
 		$reportclass = new $reportclassname($this->report);

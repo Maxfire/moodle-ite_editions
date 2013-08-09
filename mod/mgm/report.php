@@ -36,7 +36,7 @@ if (!isloggedin() or isguestuser()) {
     error('You need to be logged into the platform!');
 }
 $params='?id=';
-$reporttype = required_param('report_type');
+$reporttype = required_param('report_type', PARAM_ALPHANUM);
 $courseid = optional_param('courseid', 0, PARAM_INT);
 $filter_editions=optional_param('filter_editions', 0, PARAM_INT);
 $filter_courses=optional_param('filter_courses', 0, PARAM_INT);
@@ -52,7 +52,7 @@ if ($reporttype){
 if ($id){
 	$params=$params.$id;
 }else{
-  error(get_string('unknowreport', 'mgm'));
+  print_error('unknowreport', 'mgm');
 }
 if ($courseid){
 	$params=$params."&courseid=". $courseid;

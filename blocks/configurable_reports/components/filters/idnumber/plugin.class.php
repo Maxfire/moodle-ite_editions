@@ -40,7 +40,7 @@ class plugin_idnumber extends plugin_base{
 
 	function execute($finalelements, $data){
 
-		$filter_idnumber = optional_param('filter_idnumber');
+		$filter_idnumber = optional_param('filter_idnumber', '', PARAM_TEXT);
 		if(!$filter_idnumber)
 			return $finalelements;
 
@@ -60,7 +60,7 @@ class plugin_idnumber extends plugin_base{
 	function print_filter(&$mform){
 		global $CFG;
 
-		$filter_idnumber = optional_param('filter_idnumber');
+		$filter_idnumber = optional_param('filter_idnumber', '', PARAM_TEXT);
 
 		$reportclassname = 'report_'.$this->report->type;
 		$reportclass = new $reportclassname($this->report);

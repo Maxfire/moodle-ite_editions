@@ -38,7 +38,7 @@ class plugin_groups extends plugin_base{
 	}
 
 	function execute($finalelements, $data){
-		$filter_groups = optional_param('filter_groups');
+		$filter_groups = optional_param('filter_groups', 0, PARAM_INT);
 		if(!$filter_groups)
 			return $finalelements;
 
@@ -56,10 +56,10 @@ class plugin_groups extends plugin_base{
 	}
 
 	function print_filter(&$mform){
-		global $CFG;
+		global $CFG, $DB;
 
-		$filter_groups = optional_param('filter_groups');
-		$filter_courses = optional_param('filter_courses',0,PARAM_INT);
+		$filter_groups = optional_param('filter_groups', 0, PARAM_INT);
+		$filter_courses = optional_param('filter_courses', 0, PARAM_INT);
 
 		$reportclassname = 'report_'.$this->report->type;
 		$reportclass = new $reportclassname($this->report);
@@ -72,17 +72,17 @@ class plugin_groups extends plugin_base{
 		}
 		else{
 			if ($filter_courses != 0){
-				$sql="select id from ".$CFG->prefix."groups where courseid=".$filter_courses;
-				$grouplist= array_keys(get_records_sql($sql));
+				$sql="select id from {groups where courseid = ?";
+				$grouplist= array_keys($DB->get_records_sql($sql, array($filter_courses)));
 			}else
-				$grouplist = array_keys(get_records('groups'));
+				$grouplist = array_keys($DB->get_records('groups'));
 		}
 
 		$groupoptions = array();
 		$groupoptions[0] = get_string('choose');
 
 		if(!empty($grouplist)){
-			$groups = get_records_select('groups','id in ('.(implode(',',$grouplist)).')');
+			$groups = $DB->get_records_select('groups','id in ('.(implode(',',$grouplist)).')');
 
 			foreach($groups as $c){
 				$groupoptions['('.$c->id.')'] = format_string($c->name);
@@ -90,7 +90,7 @@ class plugin_groups extends plugin_base{
 		}
 
 		$mform->addElement('select', 'filter_groups', get_string('groups', 'mgm'), $groupoptions);
-		$mform->setType('filter_groups', PARAM_CLEAN);
+		$mform->setType('filter_groups', PARAM_INT);
 
 	}
 

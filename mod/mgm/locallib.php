@@ -2589,9 +2589,9 @@ function mgm_get_certification_scala() {
 function mgm_get_certification_roles() {
     global $CFG, $DB;
 
-    $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
-            WHERE type = " . MGM_ITE_ROLE . "";
-    if($role = $DB->get_record_sql($sql)) {
+    $sql = "SELECT value FROM {edicion_ite}
+            WHERE type = ? ";
+    if($role = $DB->get_record_sql($sql, array(MGM_ITE_ROLE))) {
         $roles = array('coordinador' => 0, 'tutor' => 0, 'estudiante' => 0);
 
         foreach(explode(",", $role->value) as $value) {
@@ -2678,9 +2678,9 @@ function mgm_set_report($reportid, $reporttype) {
 function mgm_get_reports() {
     global $CFG, $DB;
 
-    $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_ite
-    		WHERE type = " . MGM_ITE_REPORT . "";
-    return $DB->get_records_sql($sql);
+    $sql = "SELECT * FROM {edicion_ite}
+    		WHERE type = ? ";
+    return $DB->get_records_sql($sql, array(MGM_ITE_REPORT));
 }
 
 function mgm_get_courses($course) {

@@ -51,7 +51,6 @@ class report_form extends moodleform {
 		$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
         $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));
         $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
-
     }
 }
 
@@ -59,7 +58,7 @@ class user_filter extends moodleform {
 	var $_filters;
 
   function definition() {
-  			global $CFG;
+  		global $CFG;
         $mform =& $this->_form;
         $this->filters=array();
         $filter_edition = optional_param('edition',-1,PARAM_INT);

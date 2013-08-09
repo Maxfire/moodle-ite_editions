@@ -40,7 +40,7 @@ class plugin_dgenerica extends plugin_base{
 
 	function execute($finalelements, $data){
 
-		$filter_dgenerica = optional_param('filter_dgenerica');
+		$filter_dgenerica = optional_param('filter_dgenerica', '', PARAM_TEXT);
 		if(!$filter_dgenerica)
 			return $finalelements;
 
@@ -58,9 +58,9 @@ class plugin_dgenerica extends plugin_base{
 	}
 
 	function print_filter(&$mform){
-		global $CFG;
+		global $CFG, $DB;
 
-		$filter_dgenerica = optional_param('filter_dgenerica');
+		$filter_dgenerica = optional_param('filter_dgenerica', '',PARAM_TEXT);
 
 		$reportclassname = 'report_'.$this->report->type;
 		$reportclass = new $reportclassname($this->report);
@@ -72,8 +72,8 @@ class plugin_dgenerica extends plugin_base{
 			$dgenericalist = $reportclass->elements_by_conditions($conditions);
 		}
 		else{
-			$sql="select distinct dgenerica from ".$CFG->prefix."edicion_centro order by dgenerica";
-			$dgenericalist = array_keys(get_records_sql($sql));
+			$sql="select distinct dgenerica from {edicion_centro} order by dgenerica";
+			$dgenericalist = array_keys($DB->get_records_sql($sql));
 		}
 
 		$dgenericaoptions = array();

@@ -57,7 +57,7 @@ class plugin_editions extends plugin_base{
 	}
 
 	function print_filter(&$mform){
-		global $CFG;
+		global $CFG, $DB;
 
 		$filter_editions = optional_param('filter_editions',0,PARAM_INT);
 
@@ -71,14 +71,14 @@ class plugin_editions extends plugin_base{
 			$editionlist = $reportclass->elements_by_conditions($conditions);
 		}
 		else{
-			$editionlist = array_keys(get_records('edicion'));
+			$editionlist = array_keys($DB->get_records('edicion'));
 		}
 
 		$editionoptions = array();
 		$editionoptions[0] = get_string('choose');
 
 		if(!empty($editionlist)){
-			$editions = get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
+			$editions = $DB->get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
 
 			foreach($editions as $c){
 				$editionoptions[$c->id] = format_string($c->name);

@@ -40,7 +40,7 @@ class plugin_cc extends plugin_base{
 
 	function execute($finalelements, $data){
 
-		$filter_cc = optional_param('filter_cc');
+		$filter_cc = optional_param('filter_cc', '', PARAM_TEXT);
 		if(!$filter_cc)
 			return $finalelements;
 
@@ -60,7 +60,7 @@ class plugin_cc extends plugin_base{
 	function print_filter(&$mform){
 		global $CFG;
 
-		$filter_cc = optional_param('filter_cc');
+		$filter_cc = optional_param('filter_cc', 0, PARAM_TEXT);
 
 		$reportclassname = 'report_'.$this->report->type;
 		$reportclass = new $reportclassname($this->report);

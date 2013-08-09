@@ -40,7 +40,7 @@ class plugin_certificado extends plugin_base{
 
 	function execute($finalelements, $data){
 
-		$filter_certificado = optional_param('filter_certificado');
+		$filter_certificado = optional_param('filter_certificado', 0, PARAM_INT);
 		if(!$filter_certificado)
 			return $finalelements;
 
@@ -63,7 +63,7 @@ class plugin_certificado extends plugin_base{
 	function print_filter(&$mform){
 		global $CFG;
 
-		$filter_certificado = optional_param('filter_certificado');
+		$filter_certificado = optional_param('filter_certificado', 0, PARAM_INT);
 
 		$reportclassname = 'report_'.$this->report->type;
 		$reportclass = new $reportclassname($this->report);

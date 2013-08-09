@@ -40,6 +40,7 @@ $string['enablejsordering'] = "Habilitar ordenación mediante JavaScript";
 $string['enablejspagination'] = "Habilitar paginación mediante JavaScript";
 $string['export_ods'] = "Exportar en formato ODS";
 $string['export_xls'] = "Exportar en formato XLS";
+$string['export_pdf'] = "Exportar en formato PDF";
 $string['viewreport'] = "Ver informe";
 $string['norecordsfound'] = "No se encontraron registros";
 
@@ -67,6 +68,16 @@ $string['value'] = "Valor";
 $string['filter'] = "Filtro";
 $string['nofiltersyet'] = "No hay filtros todavía";
 $string['courses'] = "Cursos";
+$string['cmat']='Comunidad Autónoma';
+$string['dgenerica']='Denominación Genérica';
+$string['tipocol']='Tipo de Colegio';
+$string['ccdocente']='Cuerpo Docente';
+$string['certificado']='Certificado';
+$string['cc']='Codigo de Centro';
+$string['groups']='Grupo';
+$string['numdocumento']='Número de documento';
+$string['idnumber']='Código del Curso';
+$string['sexo']='Sexo';
 
 // Calcs
 $string['nocalcsyet'] = "No hay cálculos todavía";
@@ -77,6 +88,7 @@ $string['noplotyet'] = "No hay gráficas todavía";
 // Permissions
 
 $string['nopermissionsyet'] = "No hay permisos todavía";
+$string['custommgm'] = "Personalizado MGM";
 
 // Ordering
 
