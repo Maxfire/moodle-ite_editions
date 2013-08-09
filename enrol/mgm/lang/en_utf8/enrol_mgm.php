@@ -34,3 +34,5 @@ $string['description'] = 'Matriculación y Gestión ITE:
 <li>Un administrador aprueba o rechaza la solicitud.</li>
 <li>El alumno recibe un correo de aviso.</li>
 </ul>';
+$string['cc']='Codigo de Centro';
+$string['cc_help'] = 'Si no recuerda o no conoce el código de su centro, puede encontrar el código de su centro en el siguiente enlace: <a href="https://www.educacion.gob.es/centros/home.do"/>https://www.educacion.gob.es/centros/home.do</a>';

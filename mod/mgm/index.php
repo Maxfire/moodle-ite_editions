@@ -41,9 +41,6 @@ if ($CFG->forcelogin) {
 if (!$site = get_site()) {
     error('Site isn\'t defined!');
 }
-
-$systemcontext = get_context_instance(CONTEXT_SYSTEM);
-
 add_to_log(0, 'mgm', 'view ediciones', "index.php", '');
 
 // Strings

@@ -43,7 +43,7 @@ $courseid = optional_param('courseid', 0, PARAM_INT);
 #$cuerpodocente = optional_param('cdocente', false);
 
 // Editions
-$editions = get_records('edicion');
+$editions = $DB->get_records('edicion');
 
 // Strings
 $strediciones      = get_string('ediciones', 'mgm');

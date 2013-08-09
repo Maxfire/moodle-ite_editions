@@ -49,7 +49,7 @@ $strdeactiveedition = get_string('desactivaedicion', 'mgm');
 $stradministration = get_string('administration');
 $streditions = get_string('ediciones', 'mgm');
 
-if (!$edition = get_record('edicion', 'id', $id)) {
+if (!$edition = $DB->get_record('edicion', array('id'=> $id))) {
     error('Edition ID was incorrect (can\'t find it)');
 }
 

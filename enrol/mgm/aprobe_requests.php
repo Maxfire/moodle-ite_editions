@@ -32,11 +32,14 @@ require_once('../../config.php');
 require_once($CFG->dirroot."/mod/mgm/locallib.php");
 
 require_login();
-
 require_capability('mod/mgm:aprobe', get_context_instance(CONTEXT_SYSTEM));
+$systemcontext = context_system::instance();
+$PAGE->set_url('/enrol/mgm/aprobe_request.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
 
-if (!$preinscripcion = get_records('edicion_preinscripcion')) {
-    error(get_string('nohaydatos', 'mgm'));
+if (!$preinscripcion = $DB->get_records('edicion_preinscripcion')) {
+	print_error('nohaydatos', 'mgm');    
 }
 
 $id = optional_param('id', 0, PARAM_INT);
@@ -53,7 +56,7 @@ if (isset($_POST['state'])){
 }
 
 // Editions
-$editions = get_records('edicion');
+$editions = $DB->get_records('edicion');
 
 if (isset($editions) && is_array($editions)) {
     foreach($editions as $edition) {
@@ -103,9 +106,11 @@ $strposalumno      = get_string('posalumno','mgm');
 
 $savebutton        = '<br /><center><input type="submit" value="'.get_string('borrador', 'mgm').'"/></center>';
 
-$navlinks = array();
-$navlinks[] = array('name' => $strediciones, 'type' => 'misc');
-$navlinks[] = array('name' => $strmatricular, 'link' => 'aprobe_requests.php', 'type' => 'misc');
+//$navlinks = array();
+$PAGE->navbar->add($strediciones);
+$PAGE->navbar->add($strmatricular, $CFG->wwwroot . '/enrol/mgm/aprobe_requests.php');
+//$navlinks[] = array('name' => $strediciones, 'type' => 'misc');
+//$navlinks[] = array('name' => $strmatricular, 'link' => 'aprobe_requests.php', 'type' => 'misc');
 
 // Table header
 $editiontable->head  = array($stredicion, $strfechainicio, $strfechafin, $strcourses, $strplazas);
@@ -119,10 +124,9 @@ $editiontable->align = array('left', 'left', 'left', 'center', 'center', 'center
 
 if ($inscribe) {
     if (!$courseid || !$id) {
-        error(get_string('nodata', 'mgm'));
+        print_error('nodata', 'mgm');
         die();
     }
-
     if (!$force && array_key_exists('users', $_REQUEST)) {
         $users = array_keys($_REQUEST['users']);
     } else if (array_key_exists('users', $_REQUEST)) {
@@ -141,7 +145,7 @@ if ($inscribe) {
     if (count($users) > $plazas && !$force) {
     		if ($states){//Set descartes
 	    		foreach($users as $user) {
-		        unset($states[$user]);
+		        	unset($states[$user]);
 		    	}
 		    	if (!$borrador and !$force){
 		    		if (! mgm_set_edicion_descartes($id, $courseid, $states)){
@@ -154,10 +158,13 @@ if ($inscribe) {
         $a->alumnos = count($users);
         $a->plazas = $plazas;
 
-        $navlinks[] = array('name' => $edition->name, 'link' => 'aprobe_requests.php?id='.$edition->id, 'type' => 'misc');
-        $navigation = build_navigation($navlinks);
-        print_header($strmatricular, $strmatricular, $navigation);
-        print_heading($strheading);
+        //$navlinks[] = array('name' => $edition->name, 'link' => 'aprobe_requests.php?id='.$edition->id, 'type' => 'misc');
+        //$navigation = build_navigation($navlinks);        
+        //print_header($strmatricular, $strmatricular, $navigation);
+        $PAGE->navbar->add($edition->name, $CFG->wwwroot . '/enrol/mgm/aprobe_requests.php?id='.$edition->id);
+        
+        echo $OUTPUT->header();
+       	echo $OUTPUT->heading($strheading);
 
         $bm = $borrador ? 1 : 0;
         notice_yesno(get_string('noplaces', 'mgm', $a),
@@ -167,7 +174,7 @@ if ($inscribe) {
         print_footer();
         die();
     }
-		if ($states){//Set descartes
+	if ($states){//Set descartes
 	    foreach($users as $user) {
 	        mgm_inscribe_user_in_edition($id, $user, $courseid, $borrador);
 	        unset($states[$user]);
@@ -196,8 +203,9 @@ if ($inscribe) {
 }
 
 if ($id) {
-    if ($edition = get_record('edicion', 'id', $id)) {
-        $navlinks[] = array('name' => $edition->name, 'link' => 'aprobe_requests.php?id='.$edition->id, 'type' => 'misc');
+    if ($edition = $DB->get_record('edicion', array('id'=> $id))) {
+    	$PAGE->navbar->add($edition->name, $CFG->wwwroot . '/enrol/mgm/aprobe_requests.php?id='.$edition->id);
+        //$navlinks[] = array('name' => $edition->name, 'link' => 'aprobe_requests.php?id='.$edition->id, 'type' => 'misc');
         $strheading = $strheading.' '.$edition->name;
 
         // Table header
@@ -207,19 +215,18 @@ if ($id) {
         // Table data
         unset($editiontable->data);
         foreach (mgm_get_edition_courses($edition) as $course) {
-        		$linkdescartes='';
-            $sql = "SELECT id FROM ".$CFG->prefix."edicion_inscripcion
-            	    WHERE edicionid='".$id."' AND value='".$course->id."' AND released='1'";
-            if ($inscripcion = get_records_sql($sql)) {
+        	$linkdescartes='';
+            $sql = "SELECT id FROM {edicion_inscripcion}
+            	    WHERE edicionid = :edicionid AND value = :value AND released='1'";            
+            if ($inscripcion = $DB->get_records_sql($sql, array('edicionid'=>$id, 'value'=>$course->id))) {
                 $asignado = $stryes;
                 $link = '<b>'.$course->fullname.'</b>';
                 $linkdescartes = '<a href="'.$CFG->wwwroot . '/mod/mgm/report.php?report_type=Report032&filter_editions='.$edition->id.'&filter_courses='.$course->id.'" style="color: green;" alt="Ver descartes"> (Ver Descartes)</a>';
-
             } else {
                 $asignado = $strno;
-                $sql = "SELECT id FROM ".$CFG->prefix."edicion_inscripcion
-            	    WHERE edicionid='".$id."' AND value='".$course->id."' AND released='0'";
-                if ($borrador = get_records_sql($sql)) {
+                $sql = "SELECT id FROM {edicion_inscripcion}
+            	    WHERE edicionid = :edicionid AND value = :value AND released='0'";                
+                if ($borrador = $DB->get_records_sql($sql, array('edicionid'=>$id, 'value'=>$course->id))) {
                     $link = '(Borrador) <a href="aprobe_requests.php?id='.$edition->id.'&courseid='.$course->id.'" style="color: red;" alt="Borrador">'.$course->fullname.'</a>';
                     $linkdescartes = '<a href="'.$CFG->wwwroot . '/mod/mgm/report.php?report_type=Report032&filter_editions='.$edition->id.'&filter_courses='.$course->id.'" style="color: green;" alt="Ver descartes"> (Ver Descartes)</a>';
                 } else {
@@ -239,12 +246,12 @@ if ($id) {
             );
         }
     }
-
 }
 
 if ($courseid) {
-    if ($course = get_record('course', 'id', $courseid)) {
-        $navlinks[] = array('name' => $course->fullname, 'type' => 'misc');
+    if ($course = $DB->get_record('course', array('id'=> $courseid))) {
+    	$PAGE->navbar->add($course->fullname);
+        //$navlinks[] = array('name' => $course->fullname, 'type' => 'misc');
 
         // Table data
         unset($editiontable->data);
@@ -267,25 +274,26 @@ if ($courseid) {
     }
 }
 
-$navigation = build_navigation($navlinks);
-
-print_header($strmatricular, $strmatricular, $navigation);
-print_heading($strheading);
+//$navigation = build_navigation($navlinks);
+echo $OUTPUT->header();
+echo $OUTPUT->heading($strheading);
+//print_header($strmatricular, $strmatricular, $navigation);
+//print_heading($strheading);
 
 if ($courseid) {
-    if (mgm_is_borrador($edition, $course = get_record('course', 'id', $courseid))) {
+	$course = $DB->get_record('course', array('id'=> $courseid));
+    if (mgm_is_borrador($edition, $course)) {
         echo '<form name="inscribe" action="?id='.$id.'&courseid='.$courseid.'&inscribe=1&borrador=1" method="POST">';
     } else {
         echo '<form name="inscribe" action="?id='.$id.'&courseid='.$courseid.'&inscribe=1" method="POST">';
     }
     print_table($editiontable);
     echo $savebutton;
-    if (mgm_is_borrador($edition, $course = get_record('course', 'id', $courseid))) {
+    if (mgm_is_borrador($edition, $course )) {
         echo '<center><input type="button" value="'.get_string('rollback_borrador', 'mgm').'" onclick="document.location.href=\'?id='.$id.'&courseid='.$courseid.'&inscribe=1&borrador=1&rollback=1\'"/></center>';
     }
     echo '</form>';
 } else {
     print_table($editiontable);
 }
-
-print_footer();
+echo $OUTPUT->footer();

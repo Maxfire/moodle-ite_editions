@@ -37,25 +37,27 @@ if (!isloggedin() or isguestuser()) {
     error('You need to be logged into the platform!');
 }
 
-if (!$preinscripcion = get_records('edicion_preinscripcion', 'userid', $USER->id)) {
+if (!$preinscripcion = $DB->get_records('edicion_preinscripcion', array('userid'=> $USER->id))) {
     error(get_string('nohaydatos', 'mgm'));
 }
-
-
-$navlinks = array();
-$navlinks[] = array('name' => get_string('ediciones', 'mgm'), 'link' => ".", 'type' => 'misc');
-$navigation = build_navigation($navlinks);
-
-print_header('', ucfirst($USER->username), $navigation);
+$context=context_user::instance($USER->id);
+//context_module::instance($moduleinstance);
+$PAGE->set_context($context);
+$PAGE->set_url('/enrol/mgm/show_requests.php');
+// $navlinks = array();
+// $navlinks[] = array('name' => get_string('ediciones', 'mgm'), 'link' => ".", 'type' => 'misc');
+// $navigation = build_navigation($navlinks);
+$PAGE->set_heading(ucfirst($USER->lastname).', '. ucfirst($USER->firstname));
+echo $OUTPUT->header();
 echo '<br />';
 
-foreach(get_records('edicion', '', '','inicio desc') as $edition) {
+foreach($DB->get_records('edicion', array(),'inicio desc') as $edition) {
     $choices = array();
     if (!$options = mgm_get_edition_user_options($edition->id, $USER->id)) {
         continue;
     } else {
-        print_heading($edition->name.' ('.$edition->description.')');
-        print_simple_box_start('center', '80%');
+    	echo $OUTPUT->heading($edition->name);
+    	echo $OUTPUT->box_start();        
         $plus = 0;
         for ($i = 0; $i < count($options)+$plus; $i++) {
             foreach (mgm_get_edition_courses($edition) as $course) {
@@ -85,13 +87,13 @@ foreach(get_records('edicion', '', '','inicio desc') as $edition) {
     	  	echo get_string('provisional', 'mgm');
     }
     if ($inscripcion = mgm_get_user_inscription_by_edition($USER, $edition)) {
-        $ctemp = get_record('course', 'id', $inscripcion->value);
+        $ctemp = $DB->get_record('course', array('id'=> $inscripcion->value));
         echo get_string('cconcedido', 'mgm').$ctemp->fullname;
     } else {
-    		if ($adescs=mgm_get_edicion_descartes($edition->id, $USER->id)){
+    		if ($adescs = mgm_get_edicion_descartes($edition->id, $USER->id)){
     			foreach ($adescs as $i=>$d){
-    				$ctemp = get_record('course', 'id', $i);
-    				if (record_exists('edicion_inscripcion', 'edicionid', $edition->id, 'value', $i, 'released', 1)) {
+    				$ctemp = $DB->get_record('course', array('id'=> $i));
+    				if ($DB->record_exists('edicion_inscripcion', array('edicionid'=> $edition->id, 'value'=> $i, 'released'=> 1))) {
     					echo '<br />Curso: '. $ctemp->fullname.' - Motivo de descarte: '.get_string('serror_'.$d, 'mgm');
     				}
     			}
@@ -100,13 +102,12 @@ foreach(get_records('edicion', '', '','inicio desc') as $edition) {
     		}
     }
 
-
-    print_simple_box_end();
+	echo $OUTPUT->box_end();
+    
 }
-
-print_simple_box_start('center', '80%');
-print_single_button('javascript: window.print();', '', get_string('pageprint', 'mgm', 'get'));
-print_simple_box_end();
-
-
-print_footer();
+echo $OUTPUT->box_start();
+// print_single_button('javascript: window.print();', '', get_string('pageprint', 'mgm', 'get'));
+$button = '<form><input type="button" onclick="javascript: window.print();" name="Print" value='.get_string('pageprint', 'mgm', 'get').'></form>';
+print $button;
+echo $OUTPUT->box_end();
+echo $OUTPUT->footer();

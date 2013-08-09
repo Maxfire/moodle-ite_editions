@@ -42,7 +42,7 @@ class block_mgm extends block_base {
         if ($this->content !== NULL) {
             return $this->content;
         }
-
+        $this->content = new stdClass;
         $this->content->footer = '';
         $this->content->text = '<div>';
 

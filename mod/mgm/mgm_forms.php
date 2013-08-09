@@ -29,10 +29,12 @@ class edicion_form extends moodleform {
 class admin_form extends moodleform {
     function definition() {
         $mform =& $this->_form;
-				$actionoptions = array('elegir'=>'Elegir','loadchistory'=>"Cargar historico de certificaciones",'loadcolegios' =>'Actualizar centros');
-				$mform->addElement('select', 'action', get_string('action', 'mgm'), $actionoptions);
-				$mform->addElement('file', 'userfile', get_string('file'));
-				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
+		$actionoptions = array('elegir'=>'Elegir','loadchistory'=>"Cargar historico de certificaciones",'loadcolegios' =>'Actualizar centros');
+		$mform->addElement('select', 'action', get_string('action', 'mgm'), $actionoptions);
+		$mform->addElement('filepicker', 'userfile', get_string('file'), null,
+							array('maxbytes' => 10485760, 'accepted_types' => '*'));
+		//$mform->addElement('file', 'userfile', get_string('file'));
+		$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
         $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));
         $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
 
@@ -42,11 +44,11 @@ class admin_form extends moodleform {
 class report_form extends moodleform {
     function definition() {
         $mform =& $this->_form;
-				$options = array(1=>"Si", 0=>'No');
-				$mform->addElement('select', 'sql', get_string('sql_report', 'mgm'),$options);
-				$mform->addElement('select', 'create', get_string('create_report', 'mgm'),$options);
-				$mform->addElement('select', 'update', get_string('update_report', 'mgm'),$options);
-				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
+		$options = array(1=>"Si", 0=>'No');
+		$mform->addElement('select', 'sql', get_string('sql_report', 'mgm'),$options);
+		$mform->addElement('select', 'create', get_string('create_report', 'mgm'),$options);
+		$mform->addElement('select', 'update', get_string('update_report', 'mgm'),$options);
+		$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
         $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));
         $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
 
@@ -266,10 +268,10 @@ class user_letter_form extends moodleform {
         $mform->addElement('header', 'page1', get_string('page', 'mgm'));
         $mform->addElement('text', 'pagetitle', get_string('pagetitle', 'mgm'), array('size'=>'50'));
         $mform->addRule('pagetitle', '', 'required', null, 'client');
-				$mform->addElement('textarea', 'pagehead1', get_string('pagehead', 'mgm'). ' 1', array('rows'=>4, 'cols'=>60));
-				$mform->addElement('textarea', 'pagehead2', get_string('pagehead', 'mgm'). ' 2', array('rows'=>4, 'cols'=>60));
-				$mform->addElement('header', 'letter', get_string('letter', 'mgm'));
-				$mform->addElement('textarea', 'letterhead', get_string('letterhead', 'mgm'), array('rows'=>6, 'cols'=>60));
+		$mform->addElement('textarea', 'pagehead1', get_string('pagehead', 'mgm'). ' 1', array('rows'=>4, 'cols'=>60));
+		$mform->addElement('textarea', 'pagehead2', get_string('pagehead', 'mgm'). ' 2', array('rows'=>4, 'cols'=>60));
+		$mform->addElement('header', 'letter', get_string('letter', 'mgm'));
+		$mform->addElement('textarea', 'letterhead', get_string('letterhead', 'mgm'), array('rows'=>6, 'cols'=>60));
         $mform->addElement('textarea', 'letterbody', get_string('letterbody', 'mgm'), array('rows'=>15, 'cols'=>60));
         $mform->addElement('textarea', 'letterfoot', get_string('letterfoot', 'mgm'), array('rows'=>4, 'cols'=>60));
         $mform->addRule('letterfoot', '', 'required', null, 'client');

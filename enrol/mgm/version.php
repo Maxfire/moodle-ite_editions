@@ -25,5 +25,5 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version  = 2010111303;  // The current module version (Date: YYYYMMDDXX)
+$plugin->version  = 2013080702;  // The current module version (Date: YYYYMMDDXX)
 $plugin->requires = 2012112900;  // Requires this Moodle version

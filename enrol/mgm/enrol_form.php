@@ -34,11 +34,11 @@ class enrol_mgm_form extends moodleform {
 
     // Form definition
     function definition() {
-    		global $CFG, $USER, $NIVELES_EDUCATIVOS, $CUERPOS_DOCENTES, $PAISES, $PROVINCIAS;
+    	global $CFG, $USER, $NIVELES_EDUCATIVOS, $CUERPOS_DOCENTES, $PAISES, $PROVINCIAS;
         $mform =& $this->_form;
         $course = $this->_customdata->course;
         $edition = $this->_customdata->edition;
-				$strrequired=get_string('required');
+		$strrequired=get_string('required');
         ###Informacion de usuario a rellenar/Validar
         $mform->addElement('header', 'usuario', get_string('user'));
 
@@ -55,25 +55,25 @@ class enrol_mgm_form extends moodleform {
 
         $mform->addElement('text', 'firstname', get_string('firstname'), 'maxlength="100" size="30"');
         $mform->addRule('firstname', $strrequired, 'required', null, 'client');
-    		$mform->setType('firstname', PARAM_NOTAGS);
+    	$mform->setType('firstname', PARAM_NOTAGS);
 
-    		$mform->addElement('static', 'apellidoswarn', get_string('important', 'mgm'),get_string('2surname', 'mgm'));
+    	$mform->addElement('static', 'apellidoswarn', get_string('important', 'mgm'),get_string('surname2', 'mgm'));
         $mform->addElement('text', 'lastname',  'Apellidos',  'maxlength="100" size="30"');
         $mform->addRule('lastname', $strrequired, 'required', null, 'client');
-    		$mform->setType('lastname', PARAM_NOTAGS);
+    	$mform->setType('lastname', PARAM_NOTAGS);
 
-				$mform->addElement('text', 'email', get_string('email'), 'maxlength="100" size="30"');
+		$mform->addElement('text', 'email', get_string('email'), 'maxlength="100" size="30"');
         $mform->addRule('email', $strrequired, 'required', null, 'client');
 
         $mform->addElement('text', 'phone1', get_string('phone'), 'maxlength="20" size="25"');
         $mform->addRule('phone1', $strrequired, 'required', null, 'client');
-    		$mform->setType('phone1', PARAM_CLEAN);
+    	$mform->setType('phone1', PARAM_CLEAN);
 
-		    $mform->addElement('text', 'address', get_string('address'), 'maxlength="70" size="25"');
-		    $mform->addRule('address', $strrequired, 'required', null, 'client');
-    		$mform->setType('address', PARAM_MULTILANG);
+    	$mform->addElement('text', 'address', get_string('address'), 'maxlength="70" size="25"');
+		$mform->addRule('address', $strrequired, 'required', null, 'client');
+    	$mform->setType('address', PARAM_MULTILANG);
 
-    		$objs = array();
+    	$objs = array();
         $objs[] =& $mform->createElement('select', 'codcuerpodocente', get_string('codcuerpodocente','mgm'), $CUERPOS_DOCENTES);
         $objs[] =& $mform->createElement('submit', 'selcuerpodocente', 'Filtrar especialidades');
         $mform->addGroup($objs, 'cuerpodocentegroup',get_string('codcuerpodocente','mgm') , array(' '), false);
@@ -98,7 +98,7 @@ class enrol_mgm_form extends moodleform {
         if (is_array($sespecs)) {
             $schoices += $sespecs;
         }
-				$mform->addElement('static', 'especialidadeswarn', get_string('note', 'mgm'). ':', get_string('multiselectespec', 'mgm'));
+		$mform->addElement('static', 'especialidadeswarn', get_string('note', 'mgm'). ':', get_string('multiselectespec', 'mgm'));
         $especs[0] = & $mform->addElement('select', 'especialidades', get_string('especialidades', 'mgm'), $achoices);
         $especs[0]->setMultiple(true);
 
@@ -107,7 +107,8 @@ class enrol_mgm_form extends moodleform {
         $mform->addElement('header', 'centro', get_string('centro', 'mgm'));
 
         $mform->addElement('text', 'cc', get_string('cc', 'mgm'), array('size'=>'30'));
-        $mform->setHelpButton('cc', array('cc', get_string('cc', 'mgm'), 'mgm'));
+        //$mform->setHelpButton('cc', array('cc', get_string('cc', 'mgm'), 'mgm'));
+        $mform->addHelpButton('cc', 'cc', 'enrol_mgm');
         $mform->addRule('cc', $strrequired, 'required', null);
 
         $mform->addElement('text', 'codpostal', get_string('codpostal','mgm'), array('size' => '5'));
@@ -148,64 +149,61 @@ class enrol_mgm_form extends moodleform {
 
 
     }
-
-		function validation($data, $files) {
-        global $CFG, $USER;
-        require_once($CFG->dirroot."/mod/mgm/locallib.php");
-        $errors = parent::validation($data, $files);
-        $data = (object)$data;
-        //$user    = get_record('user', 'id', $usernew->id);
-        // validate cc
-        $ret = MGM_DATA_NO_ERROR;
-        $newdata = $data;
-    		$newdata -> cc = mgm_check_user_cc($data -> cc, $ret);
-    		if ($ret==MGM_DATA_CC_ERROR){
-    		  $errors['cc']=get_string('cc_no_error', 'mgm');
-    		  return $errors;
-    		}
-    		//validate dni
-    		if($data -> tipoid == 'N') {
-        	$newdata -> dni = mgm_check_user_dni($USER->id, $data -> dni, $ret);
-        	if ($ret==MGM_DATA_DNI_ERROR){
-    		 		 $errors['dni']=get_string('dnimulti', 'mgm');
-    		 		 return $errors;
-        	}
-    		 	else if ($ret == MGM_DATA_DNI_INVALID){
-    		 			$errors['dni']=get_string('dninotvalid', 'mgm');
-    		 			return $errors;
-    		 	}
-    		}
-    		if ($userdb = mgm_get_user_extend($USER->id)){
-    			if (isset($userdb->dni) && $userdb->dni != '' && $userdb->dni != $data->dni){
-    				$errors['dni']=get_string('nochangedni', 'mgm');
-    				return $errors;
-    			}
-    		}
-    		//validate depends:
-				$courses = array();
-				$edition=$this->_customdata->edition;
-				if ($edition) {
-        	foreach ($data->option as $k=>$option) {
-        		  if ($course=get_record('course', 'id', $option)){
-        				if (!mgm_check_course_dependencies($edition, $course, $USER, $data->dni)) {
-        					$errors['option['.$k.']']=get_string('nodependencias', 'mgm');
-        				}
-            		$courses[$k] = $option;
-        		  }
-        	}
-        	//validate cert history
-					$ch=mgm_check_cert_history($USER->id, $courses, $data->dni);
-					if (! $ch[0]){//alguno de los cursos esta certificado para el dni del usuario
-						foreach ($data->option as $k=>$option) {
-							if ($ch[2]==$option){
-									$errors['option['.$k.']']=$ch[1];
-							}
-						}
+	function validation($data, $files) {
+		global $CFG, $USER, $DB;
+		require_once ($CFG->dirroot . "/mod/mgm/locallib.php");
+		$errors = parent::validation ( $data, $files );
+		$data = ( object ) $data;
+		// $user = get_record('user', 'id', $usernew->id);
+		// validate cc
+		$ret = MGM_DATA_NO_ERROR;
+		$newdata = $data;
+		$newdata->cc = mgm_check_user_cc ( $data->cc, $ret );
+		if ($ret == MGM_DATA_CC_ERROR) {
+			$errors ['cc'] = get_string ( 'cc_no_error', 'mgm' );
+			return $errors;
+		}
+		// validate dni
+		if ($data->tipoid == 'N') {
+			$newdata->dni = mgm_check_user_dni ( $USER->id, $data->dni, $ret );
+			if ($ret == MGM_DATA_DNI_ERROR) {
+				$errors ['dni'] = get_string ( 'dnimulti', 'mgm' );
+				return $errors;
+			} else if ($ret == MGM_DATA_DNI_INVALID) {
+				$errors ['dni'] = get_string ( 'dninotvalid', 'mgm' );
+				return $errors;
+			}
+		}
+		if ($userdb = mgm_get_user_extend ( $USER->id )) {
+			if (isset ( $userdb->dni ) && $userdb->dni != '' && $userdb->dni != $data->dni) {
+				$errors ['dni'] = get_string ( 'nochangedni', 'mgm' );
+				return $errors;
+			}
+		}
+		// validate depends:
+		$courses = array ();
+		$edition = $this->_customdata->edition;
+		if ($edition) {
+			foreach ( $data->option as $k => $option ) {
+				if ($course = $DB->get_record ( 'course', array ('id' => $option) )) {
+					if (! mgm_check_course_dependencies ( $edition, $course, $USER, $data->dni )) {
+						$errors ['option[' . $k . ']'] = get_string ( 'nodependencias', 'mgm' );
+					}
+					$courses [$k] = $option;
+				}
+			}
+			// validate cert history
+			$ch = mgm_check_cert_history ( $USER->id, $courses, $data->dni );
+			if (! $ch [0]) { // alguno de los cursos esta certificado para el dni del usuario
+				foreach ( $data->option as $k => $option ) {
+					if ($ch [2] == $option) {
+						$errors ['option[' . $k . ']'] = $ch [1];
 					}
 				}
-
-        return $errors;
-    }
+			}
+		}
+		return $errors;
+	}
 
     function definition_after_data() {
     	        // if language does not exist, use site default lang
@@ -257,6 +255,7 @@ class enrol_mgm_ro_form extends moodleform {
         }
     }
 }
+
 
 
 

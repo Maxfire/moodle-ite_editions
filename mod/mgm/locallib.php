@@ -255,10 +255,10 @@ function mgm_count_courses($edition) {
         return '';
     }
 
-    $sql = "SELECT COUNT(d.id) FROM " . $CFG -> prefix . "edicion_course d
-    		WHERE d.edicionid = $edition->id";
+    $sql = "SELECT COUNT(d.id) FROM {edicion_course} d
+    		WHERE d.edicionid = ?";
 
-    return $DB->get_field_sql($sql);
+    return $DB->get_field_sql($sql, array($edition->id));
 }
 
 function mgm_get_edition_course($editionid, $courseid) {
@@ -447,14 +447,14 @@ function mgm_get_edition_courses($edition) {
         return array();
     }
 
-    $sql = "SELECT * FROM " . $CFG -> prefix . "course
+    $sql = "SELECT * FROM {course}
     		WHERE id IN (
-    			SELECT courseid FROM " . $CFG -> prefix . "edicion_course
-    			WHERE edicionid=" . $edition -> id . "
+    			SELECT courseid FROM {edicion_course}
+    			WHERE edicionid = ?
     	    )
     	    ORDER BY fullname;";
 
-    if(!$courses = $DB->get_records_sql($sql)) {
+    if(!$courses = $DB->get_records_sql($sql, array($edition -> id))) {
         return array();
     }
 
@@ -584,9 +584,9 @@ function mgm_remove_edition_contents($editionid) {
 function mgm_translate_especialidad($id) {
     global $CFG, $DB;
 
-    $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
-    		WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
-    $especialidades = explode("\n",  $DB->get_record_sql($sql) -> value);
+    $sql = "SELECT value FROM  {edicion_ite}
+    		WHERE type = ?";
+    $especialidades = explode("\n",  $DB->get_record_sql($sql, array(MGM_ITE_ESPECIALIDADES)) -> value);
     return ($id !== false && $id != '') ? $especialidades[$id] : '';
 }
 
@@ -612,9 +612,9 @@ function mgm_get_edition_course_criteria($editionid, $courseid) {
     $criteria -> localidad = $edata -> localidad;
     $criteria -> fechainimodalidad = $edata -> fechainimodalidad;
 
-    $sql = 'SELECT * FROM ' . $CFG -> prefix . 'edicion_criterios
-    		WHERE edicion = \'' . $editionid . '\' AND course = \'' . $courseid . '\'';
-    if(!$cdata = $DB->get_records_sql($sql)) {
+    $sql = 'SELECT * FROM {edicion_criterios}
+    		WHERE edicion = :editionid AND course = :courseid';    
+    if(!$cdata = $DB->get_records_sql($sql, array('editionid'=>$editionid, 'courseid'=> $courseid))) {
         return $criteria;
     }
 
@@ -974,7 +974,7 @@ function mgm_get_course_available_especialidades($courseid, $editionid) {
  */
 function mgm_get_active_edition() {
 	global $DB;
-    if(!$edition = $DB->get_record('edicion', 'active', 1)) {
+    if(!$edition = $DB->get_record('edicion', array('active'=> 1))) {
         return false;
     }
     return $edition;
@@ -1062,10 +1062,10 @@ function mgm_set_edition_certification_on_validate($edition) {
  */
 function mgm_get_course_edition($id) {
 	global $DB;
-    if(!$row = $DB->get_record('edicion_course', 'courseid', $id)) {
+    if(!$row = $DB->get_record('edicion_course', array('courseid'=> $id))) {
         return null;
     }
-    if(!$edition = $DB->get_record('edicion', 'id', $row -> edicionid)) {
+    if(!$edition = $DB->get_record('edicion', array('id'=> $row -> edicionid))) {
         return null;
     }
     return $edition;
@@ -1073,10 +1073,10 @@ function mgm_get_course_edition($id) {
 
 function mgm_get_edition_user_options($edition, $user) {
     global $CFG, $DB;
-    $sql = "SELECT value FROM " . $CFG -> prefix . "edicion_preinscripcion
-    		WHERE edicionid = '" . $edition . "' AND userid = '" . $user . "'";
-
-    if(!$data = $DB->get_record_sql($sql)) {
+    $sql = "SELECT value FROM {edicion_preinscripcion}
+    		WHERE edicionid = ? AND userid = ?";
+	
+    if(!$data = $DB->get_record_sql($sql, array($edition, $user))) {
         return false;
     } else {
         $data = $data -> value;
@@ -1089,7 +1089,7 @@ function mgm_get_edition_user_options($edition, $user) {
     return $choices;
 }
 
-function mgm_preinscribe_user_in_edition($edition, $user, $courses, $ret) {
+function mgm_preinscribe_user_in_edition($edition, $user, $courses) {
 	global $DB;
     $rcourses = array();
     foreach($courses as $course) {
@@ -1098,26 +1098,26 @@ function mgm_preinscribe_user_in_edition($edition, $user, $courses, $ret) {
         }
     }
     if(!count($rcourses)) {
-        $DB->delete_records('edicion_preinscripcion', 'edicionid', $edition, 'userid', $user);
+        $DB->delete_records('edicion_preinscripcion', array('edicionid'=> $edition, 'userid'=> $user));
         return ;
     }
     $strcourses = implode(',', $rcourses);
 
-    if(!$record = $DB->get_record('edicion_preinscripcion', 'edicionid', $edition, 'userid', $user)) {
+    if(!$record = $DB->get_record('edicion_preinscripcion', array('edicionid'=> $edition, 'userid'=> $user))) {
         // New record
         $record = new stdClass();
         $record -> edicionid = $edition;
         $record -> userid = $user;
         $record -> value = $strcourses;
         $record -> timemodified = time();
-        $DB->insert_record('edicion_preinscripcion', $record);
+        return $DB->insert_record('edicion_preinscripcion', $record);
     } else {
         // Update record
         $record -> value = $strcourses;
         $record -> timemodified = time();
-        $DB->update_record('edicion_preinscripcion', $record);
+        return $DB->update_record('edicion_preinscripcion', $record);
     }
-}
+}	return false;
 
 /**
  * Inscribe an user into an edition
@@ -1128,10 +1128,10 @@ function mgm_preinscribe_user_in_edition($edition, $user, $courses, $ret) {
 function mgm_inscribe_user_in_edition($edition, $user, $course, $released = false) {
     global $CFG, $DB;
 
-    $sql = "SELECT * FROM ".$CFG->prefix."edicion_inscripcion
-    		WHERE edicionid='".$edition."' AND userid='".$user."'";
-
-    if(!$record = $DB->get_record_sql($sql)) {
+    $sql = "SELECT * FROM {edicion_inscripcion}
+    		WHERE edicionid = :edition AND userid = :user";
+    
+    if(!$record = $DB->get_record_sql($sql,array('edition'=> $edition, 'user'=>$user))) {
         // New record
         $record = new stdClass();
         $record->edicionid = $edition;
@@ -1278,10 +1278,10 @@ function mgm_enrol_into_course($course, $users, $enrol) {
 function mgm_enrol_edition_course($editionid, $courseid) {
     global $CFG, $DB;
 
-    $sql = "SELECT userid FROM ".$CFG->prefix."edicion_inscripcion
-    		WHERE edicionid='".$editionid."' AND value='".$courseid."'";
-    if($data = $DB->get_records_sql($sql)) {
-        $course = get_record('course', 'id', $courseid);
+    $sql = "SELECT userid FROM {edicion_inscripcion}
+    		WHERE edicionid = :editionid AND value = :courseid";    
+    if($data = $DB->get_records_sql($sql, array('editionid'=>$editionid, 'value'=>$courseid))) {
+        $course = $DB->get_record('course', array('id'=> $courseid));
         if (!$role = get_default_course_role($course)) {
             error('Role doen\'t exists for course '.$course->shortname);
             die();
@@ -1401,19 +1401,19 @@ function mgm_create_enrolment_groups($editionid, $courseid) {
 function mgm_check_already_enroled($editionid, $courseid) {
     global $CFG, $DB;
 
-    $sql = "SELECT userid as id FROM " . $CFG -> prefix . "edicion_inscripcion
-    		WHERE edicionid='" . $editionid . "' AND value='" . $courseid . "'";
-    return $DB->get_records_sql($sql);
+    $sql = "SELECT userid as id FROM {edicion_inscripcion}
+    		WHERE edicionid = :edicionid AND value = :value";
+    return $DB->get_records_sql($sql, array('edicionid'=>$editionid, 'value'=>$courseid));
 }
 
 function mgm_edition_get_solicitudes($edition, $course) {
     global $CFG, $DB;
 
     $ret = 0;
-    $sql = "SELECT count(id) as count FROM " . $CFG -> prefix . "edicion_preinscripcion
-    		WHERE edicionid='" . $edition -> id . "'
-    		AND value IN (".$course->id.")";
-    if($record = $DB->get_record_sql($sql)) {
+    $sql = "SELECT count(id) as count FROM {edicion_preinscripcion}
+    		WHERE edicionid = :edicionid
+    		AND value IN (:value)";
+    if($record = $DB->get_record_sql($sql, array('edicionid'=>$edition->id, 'value'=>$course->id))) {
        return $record->count;
     }
     return $ret;
@@ -1443,7 +1443,7 @@ function mgm_exists_criteria_for_course($edition, $course) {
  * @return array
  */
 function mgm_get_user_preinscription_data($line, $edition, $data, $criteria, $courseenrolid=false) {
-    global $CFG;
+    global $CFG, $DB;
 
     $site = get_site();
     $user = $data -> user;
@@ -1464,7 +1464,7 @@ function mgm_get_user_preinscription_data($line, $edition, $data, $criteria, $co
     }
 
     foreach($values as $courseid) {
-        $ncourse = get_record('course', 'id', $courseid);
+        $ncourse = $DB->get_record('course', array('id'=> $courseid));
         $courses .= '<option name="' . $courseid . '">' . $ncourse -> fullname . '</option>';
     }
     $courses .= '</select>';
@@ -1480,23 +1480,23 @@ function mgm_get_user_preinscription_data($line, $edition, $data, $criteria, $co
     }
     //Comprobar si el usuario ha certificado el curso (Amarillo)
     if ($courseenrolid){
-			$ch=mgm_check_cert_history($line->userid, array($courseenrolid));
+			$ch = mgm_check_cert_history($line->userid, array($courseenrolid));
 			if (! $ch[0]){//El usuario ya tiene el curso certificado
-				      $colors = $colors.'<span style="color: yellow;">(*)</span> ';
-				      $check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
-				      $state='<input type="hidden" name="state[' . $line -> userid . ']" value="3" />';
+				$colors = $colors.'<span style="color: yellow;">(*)</span> ';
+				$check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
+				$state='<input type="hidden" name="state[' . $line -> userid . ']" value="3" />';
 			}
     }
     //Comprobar comunidad autonoma (Naranja)
-    if($criteria -> comunidad) {
-        $provincia = str_split($data->user->cc, 2);
-        if(mgm_is_ca($provincia, $criteria->comunidad)) {
+    if(property_exists($criteria, 'comunidad') ) {
+    	$provincia = str_split($data->user->cc, 2);
+    	if(mgm_is_ca($provincia, $criteria->comunidad)) {
             $colors = $colors. '<span style="color: orange;">(*)</span> ';
             $check = '<input type="checkbox" name="users[' . $line -> userid . ']" checked="false" />';
             $state='<input type="hidden" name="state[' . $line -> userid . ']" value="4" />';
         }
     }
-		$name=$colors.'<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
+	$name=$colors.'<a href="../../user/view.php?id=' . $line -> userid . '&amp;course=' . $site -> id . '">' . $user -> firstname . '</a>';
     $tmpdata = array($check, $name.$state, $user->lastname, date("d/m/Y H:i\"s", $line -> timemodified), ($data -> user -> cc) ? $data -> user -> cc : '', ($data -> user -> cc) ? mgm_get_ccaa($data -> user -> cc) : '' , $userespecs, $courses);
 
     return $tmpdata;
@@ -1567,9 +1567,9 @@ function mgm_get_user_preinscription_realcourses($editionid, $value) {
 function mgm_user_preinscription_tmpdata($userid) {
     global $CFG, $DB;
 
-    $sql = "SELECT u.firstname, u.lastname, eu.especialidades, eu.cc FROM " . $CFG -> prefix . "user AS u
-            LEFT JOIN " . $CFG -> prefix . "edicion_user AS eu ON eu.userid=u.id WHERE u.id='" . $userid . "'";
-    if(!$user = $DB->get_record_sql($sql)) {
+    $sql = "SELECT u.firstname, u.lastname, eu.especialidades, eu.cc FROM {user} AS u
+            LEFT JOIN {edicion_user} AS eu ON eu.userid = u.id WHERE u.id = :userid";
+    if(!$user = $DB->get_record_sql($sql, array('userid'=>$userid))) {
         return null;
     }
     $tmpuser = new stdClass();
@@ -1934,10 +1934,10 @@ function mgm_get_edition_course_inscription_data($edition, $course, $docheck = t
     global $CFG, $DB;
 
     // Inscription data
-    $sql = "SELECT * FROM ".$CFG->prefix."edicion_inscripcion
-    		WHERE edicionid = '".$edition->id."' AND value='".$course->id."'
+    $sql = "SELECT * FROM {edicion_inscripcion}
+    		WHERE edicionid = :edicionid AND value = :value
     		ORDER BY timemodified ASC";
-    if(!$inscripcion = $DB->get_records_sql($sql)) {
+    if(!$inscripcion = $DB->get_records_sql($sql, array('edicionid'=>$edition->id, 'value'=>$course->id))) {
         return ;
     }
 
@@ -1961,42 +1961,40 @@ function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck 
     global $CFG, $DB;
 
     // Preinscripcion date first
-    $sql = "SELECT * FROM ".$CFG->prefix."edicion_preinscripcion
-    		WHERE edicionid = '".$edition->id."' AND
-    		userid NOT IN (SELECT userid FROM ".$CFG->prefix."edicion_inscripcion
-    		WHERE edicionid='".$edition->id."' )
-    		AND value REGEXP '^".$course->id."$|^".$course->id.",|,".$course->id.",|,".$course->id."$' ORDER BY timemodified ASC";
-
-    if(!$preinscripcion = $DB->get_records_sql($sql)) {
+    $sql = "SELECT * FROM {edicion_preinscripcion}
+    		WHERE edicionid = ? AND userid NOT IN 
+    			(SELECT userid FROM {edicion_inscripcion}
+    			WHERE edicionid = ?)
+    		AND value REGEXP ? ORDER BY timemodified ASC";
+    $expreg = '^' . $course->id . '$|^'. $course->id .'|,'. $course->id .',|,'. $course->id .'$';
+    if(!$preinscripcion = $DB->get_records_sql($sql, array($edition->id, $edition->id, $expreg))) {
         return ;
     }
-     $sql="select distinct value from ".$CFG->prefix."edicion_inscripcion where edicionid=".$edition->id;
-     	$course_with_inscription = $DB->get_records_sql($sql);
-    	if ($course_with_inscription){
-    		$course_with_inscription=array_keys($course_with_inscription);
-    	}else{
-    		$course_with_inscription=array();
-    	}
-	    foreach ($preinscripcion as $i=>$u){
-	    if ($a = $DB->get_record('edicion_descartes', 'edicionid', $edition->id,'userid', $u->userid, 'code', 4 )){//Eliminamos usuarios que han sido descartados por comunidad en algun otro curso de la edicion
+    $sql="select distinct value from {edicion_inscripcion} where edicionid = :edicionid";
+    $course_with_inscription = $DB->get_records_sql($sql, array('edicionid'=>$edition->id));
+    if ($course_with_inscription){
+    	$course_with_inscription=array_keys($course_with_inscription);
+    }else{
+    	$course_with_inscription=array();
+    }
+	foreach ($preinscripcion as $i=>$u){
+	    if ($a = $DB->get_record('edicion_descartes', array('edicionid'=> $edition->id,'userid'=> $u->userid, 'code'=> 4) )){//Eliminamos usuarios que han sido descartados por comunidad en algun otro curso de la edicion
+			unset($preinscripcion[$i]);
+			continue;
+		}else{
+	    	$cursos=explode(',', $u->value);
+				foreach ($cursos as $cid){//eliminamos usuarios con opciones prioritarias aun no asignadas
+					if ($cid != $course->id){
+						if(array_search($cid, $course_with_inscription) === FALSE){
 							unset($preinscripcion[$i]);
-							continue;
-				  }else{
-	    	  $cursos=explode(',', $u->value);
-						foreach ($cursos as $cid){//eliminamos usuarios con opciones prioritarias aun no asignadas
-							if ($cid != $course->id){
-								if(array_search($cid, $course_with_inscription) === FALSE){
-								  unset($preinscripcion[$i]);
-								  break;
-								}
-							}else{
-								break;
-							}
+							break;
 						}
-				  }
-	    }
-
-
+					}else{
+						break;
+					}
+				}
+		}
+	}
     $data = mgm_parse_preinscription_data($edition, $course, $preinscripcion);
     if($docheck) {
         $criteria = mgm_get_edition_course_criteria($edition -> id, $course -> id);
@@ -2004,7 +2002,7 @@ function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck 
         foreach($data as $k => $row) {
             $arr = explode('"', $row[0]);
             $userid = $arr[3];
-            if($arr[5]=="false"){
+            if(count($arr) >= 6 && $arr[5]=="false"){
             	$data[$k][0] = '<input type="checkbox" name="' . $userid . '" />';
               continue;
             }
@@ -2046,7 +2044,7 @@ function mgm_prepare_user_extend($euser){
  */
 function mgm_get_user_extend($userid) {
 	global $DB;
-    if($euser = $DB->get_record('edicion_user', 'userid', $userid)) {
+    if($euser = $DB->get_record('edicion_user', array('userid'=> $userid))) {
         return mgm_prepare_user_extend($euser);
     }
 
@@ -2116,7 +2114,7 @@ function mgm_update_user_complete($user) {
 }
 function mgm_get_user_especialidades($userid) {
 	global $DB;
-    if($especialidades = $DB->get_record('edicion_user', 'userid', $userid)) {
+    if($especialidades = $DB->get_record('edicion_user', array('userid'=> $userid) )) {
         $especs = array();
         foreach(explode("\n", $especialidades->especialidades) as $espec) {
             $especs[$espec] = mgm_translate_especialidad($espec);
@@ -2146,9 +2144,9 @@ function mgm_get_user_available_especialidades($userid, $codcuerpodocente=false)
 }
 function mgm_get_all_especialidades($codcuerpodocente=false) {
 	global $CFG, $DB;
-	$sql = "SELECT value FROM " . $CFG -> prefix . "edicion_ite
-    		WHERE type = " . MGM_ITE_ESPECIALIDADES . "";
-    $especialidades = explode("\n",  $DB->get_record_sql($sql) -> value);
+	$sql = "SELECT value FROM {edicion_ite}
+    		WHERE type = ?";
+    $especialidades = explode("\n",  $DB->get_record_sql($sql, array(MGM_ITE_ESPECIALIDADES)) -> value);
     if ($codcuerpodocente){
     	global $MGM_ITE_CUERPOS_ESPECS;
     	$a=array_intersect_key($especialidades, array_flip($MGM_ITE_CUERPOS_ESPECS[$codcuerpodocente]));
@@ -2182,9 +2180,10 @@ function mgm_check_user_cc($code, &$ret) {
  */
 function mgm_check_user_dni($userid, $dni, &$ret) {
     global $CFG, $DB;
-    $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_user
-    		WHERE dni='" . mysql_escape_string($dni) . "' AND userid!='" . $userid . "'";
-    if($odni = $DB->get_record_sql($sql)) {
+    $sql = "SELECT * FROM {edicion_user}
+    		WHERE dni=:dni  AND userid!=:userid ";    
+    				
+    if($odni = $DB->get_record_sql($sql, array('dni'=>mysql_escape_string($dni), 'userid'=>$userid))) {
         $ret = MGM_DATA_DNI_ERROR;
         return '';
     }
@@ -2207,7 +2206,7 @@ function mgm_set_userdata($userid, $data, $create=true) {
     }
     $newdata -> userid = $userid;
     if ($create){
-	    if(!$DB->record_exists('edicion_user', 'userid', $userid)) {
+	    if(!$DB->record_exists('edicion_user', array('userid'=> $userid))) {
 	        if(isset($data -> addsel)) {
 	            $newdata -> especialidades = implode("\n", $data -> aespecs);
 	        } else {
@@ -2215,7 +2214,7 @@ function mgm_set_userdata($userid, $data, $create=true) {
 	        }
 	        $DB->insert_record('edicion_user', $newdata);
 	    } else {
-	        $olddata = $DB->get_record('edicion_user', 'userid', $userid);
+	        $olddata = $DB->get_record('edicion_user', array('userid'=> $userid));
 	        $newdata -> id = $olddata -> id;
 	        if(isset($data -> addsel)) {
 	            $oldespec = explode("\n", $olddata -> especialidades);
@@ -2252,7 +2251,7 @@ function mgm_set_userdata2($userid, $data, $create=true) {
     }
     $newdata -> userid = $userid;
     if ($create){
-	    if(!$rec = $DB->get_record('edicion_user', 'userid', $userid)) {
+	    if(!$rec = $DB->get_record('edicion_user', array('userid'=> $userid))) {
 	        $DB->insert_record('edicion_user', $newdata);
 	    } else {
 	    	$newdata->id=$rec->id;
@@ -2314,7 +2313,7 @@ function mgm_is_cc_on_csv($cc) {
 }
 function mgm_is_cc_on_db($cc) {
 	global $DB;
-	if($ccdata = $DB->get_record('edicion_centro','codigo', $cc)) {
+	if($ccdata = $DB->get_record('edicion_centro', array('codigo'=> $cc))) {
     	return $cc;
   	}
   	return false;
@@ -2325,7 +2324,7 @@ function mgm_get_cc_type($cc, $sql=false) {
     if(!$cc) {
         return -1;
     }
-    if($ccdata = $DB->get_record('edicion_centro','codigo', $cc)) {
+    if($ccdata = $DB->get_record('edicion_centro',array('codigo'=> $cc))) {
     	return $ccdata->tipo;
     }
     return -1;
@@ -2506,9 +2505,9 @@ function mgm_get_preinscription_timemodified($edition, $user) {
 function mgm_is_borrador($edition, $course) {
     global $CFG, $DB;
 
-    $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_inscripcion
-            WHERE edicionid='" . $edition -> id . "' AND value='" . $course -> id . "' AND released='0'";
-    if($borrador = $DB->get_records_sql($sql)) {
+    $sql = "SELECT * FROM {edicion_inscripcion}
+            WHERE edicionid= :edicionid AND value = :value AND released='0'";
+    if($borrador = $DB->get_records_sql($sql, array('edicionid'=>$edition -> id, 'value'=>$course -> id))) {
         return true;
     }
     return false;
@@ -2520,14 +2519,11 @@ function mgm_is_inscription_active($id, $course) {
 
 function mgm_rollback_borrador($editionid, $courseid) {
     global $CFG, $DB;
-
-    $sql = "DELETE FROM " . $CFG -> prefix . "edicion_inscripcion
-    		WHERE edicionid='" . $editionid . "' AND value='" . $courseid . "'
-    		AND released='0'";
-
-    $DB->execute_sql($sql);
+    $sql = "DELETE FROM {edicion_inscripcion}
+            WHERE edicionid= :edicionid AND value = :value AND released = '0'";
+    $DB->execute_sql($sql,array('edicionid'=>$editionid, 'value'=>$courseid));
     //eliminar los descartes
-    $DB->delete_records('edicion_descartes', 'edicionid', $editionid, 'courseid', $courseid);
+    $DB->delete_records('edicion_descartes', array('edicionid'=> $editionid, 'courseid'=> $courseid));
 }
 
 function mgm_edition_set_user_address($userid, $address) {
@@ -2563,10 +2559,10 @@ function mgm_get_edition_out($edition) {
 function mgm_get_user_inscription_by_edition($user, $edition) {
     global $CFG, $DB;
 
-    $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_inscripcion
-    		WHERE edicionid = '" . $edition -> id . "' AND userid='" . $user -> id . "'
-    		AND released!='0'";
-    if(!$inscripcion = $DB->get_record_sql($sql)) {
+    $sql = "SELECT * FROM {edicion_inscripcion}
+    		WHERE edicionid = :editionid AND userid= :userid
+    		AND released != 0";    
+    if(!$inscripcion = $DB->get_record_sql($sql, array ('editionid' => $edition -> id, 'userid' => $user -> id))) {
         return false;
     }
     return $inscripcion;
@@ -2715,14 +2711,17 @@ function mgm_check_cert_history($userid, $courses, $dni=False){
   	}
 	$strcourses = implode(',', $rcourses);
 	if ($euser = mgm_get_user_extend($userid)){
-		$consulta='SELECT id, idnumber, fullname FROM  '. $CFG -> prefix .'course where  id in ('.$strcourses.')';
-		$course_objs = $DB->get_records_sql($consulta);
+		$consulta='SELECT id, idnumber, fullname FROM  {course} where  id in (:courses)';
+		$course_objs = $DB->get_records_sql($consulta, array('courses'=>$strcourses));
 		if ($dni){
 			$euser->dni=$dni;
 		}
 		foreach($course_objs as $course){
 			if (isset($course->idnumber) && isset($euser->dni) && $euser->dni != ''){
-				if ($DB->record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course->idnumber, 'confirm', 1)){
+				$sql = "SELECT id FROM  {edicion_cert_history} 
+						WHERE numdocumento like :numdocumento and courseid like :courseidnumber and confirm =1 ";
+				$args=array('numdocumento'=>$euser->dni, 'courseidnumber'=>$course->idnumber);
+				if ($DB->record_exists_sql($sql, $args)){
 					$ret[0]=false;
 					$ret[1]=$ret[1]. get_string('coursecertfied', 'mgm', $course->fullname). '<br/>';
 				 	$ret[2]=$course->id;
@@ -2757,11 +2756,11 @@ function mgm_check_course_dependencies($edition, $course, $user, $dni=False) {
         return true;
     }
 		if ($euser = mgm_get_user_extend($user->id)){
-			if ($course2 = $DB->get_record('course', id, $criteria->dlist)){
+			if ($course2 = $DB->get_record('course', array('id '=> $criteria->dlist))){
 				if ($dni){
 					$euser->dni=$dni;
 				}
-				if ($DB->record_exists('edicion_cert_history', 'numdocumento', $euser->dni, 'courseid', $course2->idnumber, 'confirm', 1) && $euser->dni != ''){
+				if ($DB->record_exists('edicion_cert_history', array('numdocumento'=> $euser->dni, 'courseid'=> $course2->idnumber, 'confirm'=> 1)) && $euser->dni != ''){
 					return true;
 				}
 			}
@@ -2844,7 +2843,7 @@ function mgm_get_check_index($criteria) {
 function mgm_set_edicion_descartes($editionid, $courseid, $states){
 	global $DB;
 	$ret = true;
-	$DB->delete_records('edicion_descartes', 'edicionid', $editionid, 'courseid', $courseid);
+	$DB->delete_records('edicion_descartes', array('edicionid'=> $editionid, 'courseid'=> $courseid));
 	foreach($states as $userid=>$code){
 		$reg=new stdClass();
 		$reg->edicionid=$editionid;
@@ -2868,8 +2867,8 @@ function mgm_set_edicion_descartes($editionid, $courseid, $states){
  */
 function mgm_get_edicion_descartes($editionid, $userid){
 	global $CFG, $DB;
-	$sql="select * from ".$CFG->prefix."edicion_descartes where edicionid=".$editionid." and userid=" .$userid;
-	if ($regs = $DB->get_records_sql($sql)){
+	$sql="select * from {edicion_descartes} where edicionid = :edicionid and userid = :userid";
+	if ($regs = $DB->get_records_sql($sql, array('edicionid'=>$editionid, 'userid'=>$userid ))){
 		$dev=array();
 		foreach ($regs as $reg){
 			$dev[$reg->courseid]=$reg->code;
@@ -2918,7 +2917,7 @@ function mgm_is_course_certified($userid, $courseid) {
         return false;
     }
 
-    if(!$cert = $DB->get_record('edicion_cert_history', 'userid', $userid, 'courseid', $courseid)) {
+    if(!$cert = $DB->get_record('edicion_cert_history', array('userid'=> $userid, 'courseid'=> $courseid))) {
         return false;
     } else {
         return true;
@@ -3673,17 +3672,20 @@ function mgm_get_user_dni($userid) {
 }
 function mgm_get_userid_from_dni($numdocumento) {
 	global $DB;
-	if ($field = $DB->get_record('user_info_field','shortname', 'nifniepasaporte')){
-		$sql='SELECT u.id, u.idnumber, eu.dni, uid.data  FROM mdl_edicion_user eu, mdl_user u, mdl_user_info_data uid where eu.userid=u.id  and uid.userid=u.id and uid.fieldid='.$field->id;
-		$sql=$sql . ' and ( UPPER(eu.dni) = '.strtoupper($numdocumento);
-		$sql=$sql . ' or UPPER(uid.data) = '.strtoupper($numdocumento);
-		$sql=$sql . ' or UPPER(u.idnumber) = '.strtoupper($numdocumento) . ' )';
+	if ($field = $DB->get_record('user_info_field',array('shortname'=> 'nifniepasaporte'))){
+		$sql = 'SELECT u.id, u.idnumber, eu.dni, uid.data  FROM mdl_edicion_user eu, mdl_user u, mdl_user_info_data uid 
+				WHERE eu.userid=u.id  and uid.userid=u.id and uid.fieldid=:fieldid				
+					and ( UPPER(eu.dni) = :numdocumento
+					or UPPER(uid.data) = :numdocumento
+					or UPPER(u.idnumber) = :numdocumento )';
+		$args = array('fieldid'=>$field->id, 'numdocumento'=>strtoupper($numdocumento));
 	}else{
-		$sql='SELECT u.id, u.idnumber, eu.dni FROM mdl_edicion_user eu, mdl_user u where eu.userid=u.id';
-		$sql=$sql . ' and ( UPPER(eu.dni) = '.strtoupper($numdocumento);
-		$sql=$sql . ' or UPPER(u.idnumber) = '.strtoupper($numdocumento) . ' )';
+		$sql = 'SELECT u.id, u.idnumber, eu.dni FROM mdl_edicion_user eu, mdl_user u 
+				WHERE eu.userid=u.id and ( UPPER(eu.dni) = :numdocumento
+					or UPPER(u.idnumber) = :numdocumento )';
+		$args = array('numdocumento'=>strtoupper($numdocumento));
 	}
-	if ($obj = $DB->get_record_sql($sql)){
+	if ($obj = $DB->get_record_sql($sql, $args)){
 		return (int)$obj->id;
 	}else{
 		return false;
@@ -3692,7 +3694,7 @@ function mgm_get_userid_from_dni($numdocumento) {
 
 function mgm_set_cert_history($reg){
 	global $DB;
-	$hr = $DB->get_record('edicion_cert_history', 'numdocumento', $reg->numdocumento, 'courseid', $reg->courseid);
+	$hr = $DB->get_record('edicion_cert_history', array('numdocumento'=> $reg->numdocumento, 'courseid'=> $reg->courseid));
 	if ($hr && $hr->confirm==1){
 		return array(false, 'Documento: '.$reg->numdocumento.', Curso '. $reg->courseid.' NO ACTION <br/>');
 	}else if ($hr && $hr->confirm==0){
@@ -3707,7 +3709,7 @@ function mgm_set_cert_history($reg){
 
 function mgm_set_centro($reg){
 	global $DB;
-	if ($oldreg = $DB->get_record('edicion_centro', 'codigo', $reg->codigo)){
+	if ($oldreg = $DB->get_record('edicion_centro', array( 'codigo'=> $reg->codigo))){
 		$reg->id=$oldreg->id;
 		$DB->update_record('edicion_centro',$reg);
 		return array(false, 'Centro: '.$reg->codigo.' UPDATE<br/>');

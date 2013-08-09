@@ -17,293 +17,199 @@
 
 
 /**
- * Implements the main code for the mgm enrolment
+ * This is a one-line short description of the file
+ *
+ * You can have a rather longer description of the file as well,
+ * if you like, and it can span multiple lines.
  *
  * @package    enrol
  * @subpackage mgm
  * @copyright  2010 Oscar Campos <oscar.campos@open-phoenix.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once($CFG->dirroot."/enrol/enrol.class.php");
-//require_once("../enrol/enrol.class.php");
-
-
-/**
- *
- * Enrolment plugin class definition
- * @author Oscar Campos
- *
- */
-class enrolment_plugin_mgm {
-	/**
-     * Prints out the configuration form for this plugin. All we need
-     * to provide is the form fields. The <form> tags and submit button will
-     * be provided for us by Moodle.
-     *
-     * @param object $formdata Equal to the global $CFG variable, or if
-     *      process_config() returned false, the form contents
-     * @return void
-     */
-    public function config_form($formdata){
-        return;
-    }
-
-    /**
-     * Process the data from the configuration form.
-     *
-     * @param object $formdata
-     * @return boolean True if configuration was successful, False if the user
-     *      should be kicked back to config_form() again.
-     */
-    public function process_config($formdata){
-        return true;
-    }
-
-/**
-     * Prints the entry form/page for interactive enrolment into a course.
-     *
-     * This is only called from course/enrol.php. Most plugins will probably
-     * override this to print payment forms, etc, or even just a notice to say
-     * that manual enrollment is disabled.
-     *
-     * @param object $course
-     * @return void
-     */
-    public function print_entry($course) {
-        global $CFG, $USER, $form, $SESSION, $_POST;
-        require_once($CFG->dirroot."/mod/mgm/locallib.php");
-
-        if (!$edition = mgm_get_course_edition($course->id)) {
-            error(get_string('noeditioncourse', 'mgm'));
-        }
-
-        if (!$edition->active) {
-            error(get_string('noactiveedition', 'mgm'));
-        }
-        if ($edition->state != 'preinscripcion'){
-        	 error(get_string('nopreinscriptionstate', 'mgm'));
-        }
-    		if ($edition->state == 'matriculacion') {
-            error(get_string('nomodifydata', 'mgm'));
-        }
-
-        $sql = "SELECT * FROM ".$CFG->prefix."edicion_inscripcion
-            	WHERE edicionid='".$edition->id."' AND value='".$course->id."'";
-        if ($inscripcion = get_records_sql($sql) || time() > $edition->fin) {
-            error(get_string('fueradeperiodo', 'mgm'));
-        }
-
-        if (!mgm_check_course_dependencies($edition, $course, $USER)) {
-            error(get_string('nodependencias', 'mgm'));
-        }
-
-        $strloginto = get_string('loginto', '', $edition->name);
-        $strcourses = get_string('courses');
-
-        $context = get_context_instance(CONTEXT_SYSTEM);
-
-        $navlinks = array();
-        $navlinks[] = array('name' => $strcourses, 'link' => ".", 'type' => 'misc');
-        $navlinks[] = array('name' => $strloginto, 'link' => null, 'type' => 'misc');
-        $navigation = build_navigation($navlinks);
-
-        if (has_capability('moodle/legacy:guest', $context, $USER->id, false)) {
-            add_to_log($course->id, 'course', 'guest', 'view.php?id='.$course->id, getremoteaddr());
-            return;
-        }
-
-        print_header($strloginto, $course->fullname, $navigation);
-        echo '<br />';
-        print_heading($edition->name.' ('.$edition->description.')');
-        print_simple_box_start('center', '80%');
-
-        $choices = array();
-        if (!$options = mgm_get_edition_user_options($edition->id, $USER->id)) {
-            $choices[0][0] = get_string('none');
-            foreach (mgm_get_edition_courses($edition) as $course) {
-                $choices[0][$course->id] = $course->fullname;
-            }
-        } else {
-            $plus = 0;
-            if (mgm_count_courses($edition) > count($options)) {
-                $plus = 1;
-            }
-
-            for ($i = 0; $i < count($options)+$plus; $i++) {
-                foreach (mgm_get_edition_courses($edition) as $course) {
-                    $choices[$i][0] = get_string('none');
-                    $choices[$i][$course->id] = $course->fullname;
-                }
-            }
-        }
-        $user=get_record('user', 'id', $USER->id);
-				$data2 = mgm_get_user_extend($USER->id);
- 		    if ($_POST['codcuerpodocente']){
-			     $allespecs = mgm_get_all_especialidades($_POST['codcuerpodocente']);
-			  }else{
-				   $allespecs = mgm_get_all_especialidades($data2->codcuerpodocente );
-				}
-				if (!empty($allespecs)) {
-    			$aespecs = $allespecs;
-				}
-
-					$data2 ->firstname=$user->firstname;
-					$data2 ->lastname=$user->lastname;
-					$data2 ->email=$user->email;
-					$data2 ->phone1=$user->phone1;
-					$data2 ->address=$user->address;
-					$data2->aespecs = $aespecs;
-					$data2->choices=$choices;
-					$data2->course=$course;
-					$data2->edition=$edition;
-					$data2->id=$course->id;
-					if ($userspec=mgm_get_user_especialidades($USER->id)){
-						$data2->especialidades=array_keys($userspec);
-					}
-
-
-        // Print form
-        require_once($CFG->dirroot.'/enrol/mgm/enrol_form.php');
-        $eform = new enrol_mgm_form('enrol.php', $data2);
-        $eform->set_data($data2);
-        if ($options) {
-            $data = new stdClass();
-            foreach ($options as $k=>$v) {
-                $prop = 'option['.$k.']';
-                $data->$prop = $v;
-            }
-            $eform->set_data($data);
-        }
-
-        $courses = array();
-        foreach ($form->option as $k=>$option) {
-          if (in_array($option, $courses) && $option > 0) {
-             error(get_string('opcionesduplicadas', 'mgm'), '?id='.$course->id);
-             print_simple_box_end();
-             print_footer();
-              die();
-          }
-                $courses[$k] = $option;
-        }
-
-        if ($data=$eform->get_data() ) {
-				//Si data devuelve algun valor (not null) entonces los datos del formulario de entrada son correctos.
-				   //guardar datos de usuario
-				   if (isset($data->submitbutton)){
-					   $user=new stdClass();
-					   $user->id=$USER->id;
-					   $user->firstname=$data->firstname;
-					   $user->lastname=$data->lastname;
-					   $user->email=$data->email;
-					   $user->phone1=$data->phone1;
-					   $user->address=$data->address;
-					   update_record('user', $user);
-
-					   //guardar datos de usuario  y centro mgm
-						 $mgmuser=new stdClass();
-						 $mgmuser->tipoid=$data->tipoid;
-						 $mgmuser->dni=$data->dni;
-						 $mgmuser->codcuerpodocente=$data->codcuerpodocente;
-						 $mgmuser->codniveleducativo=$data->codniveleducativo;
-						 $mgmuser->sexo=$data->sexo;
-						 //especialidades //
-						 if (isset($data->especialidades)){
-						 	$mgmuser->especialidades=implode("\n", $data -> especialidades);
-						 }
-						 $mgmuser->cc=$data->cc;
-						 $mgmuser->codpostal=$data->codpostal;
-						 $mgmuser->codprovincia=$data->codprovincia;
-						 $mgmuser->codpais=$data->codpais;
-
-						 mgm_set_userdata2($USER->id, $mgmuser, true);
-						 $ch=mgm_check_cert_history($USER->id, $courses);
-						 if ($ch[0]){//Ningun curso ya certificado
-	           		mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses, $ret);
-	           		notice_yesno(get_string('preinscrito', 'mgm'), '?id='.$course->id,
-	                         $CFG->wwwroot.'/index.php');
-	            die();
-						 }else{//alguno de los cursos esta certificado para el dni del usuario
-						   error($ch[1], '?id='.$course->id);
-						 }
-				   }
-        }
-
-        $eform->display();
-        if ($eform->is_validated()){
-					print "Guardar datos formulario correcto";
-				}
-        if ($options) {
-            echo "<br />";
-            echo get_string('edicionwarning', 'mgm');
-        }
-
-        print_simple_box_end();
-        print_footer();
-    }
-
-    /**
-     * The other half to print_entry(), this checks the form data.
-     *
-     * This function checks that the user has completed the task on the enrollment
-     * entry page and enrolls them.
-     *
-     * @param object $form
-     * @param object $course
-     * @return void
-     */
-    public function check_entry($form, $course) {
-    	  print 'Dentro de Check entry';
-        // some logic
-        // some role_assign();
-    }
-
-    /**
-     * OPTIONAL: Check if the given enrolment key matches a group enrolment key for
-     * the given course.
-     *
-     * @param int $courseid
-     * @param string $enrolmentkey
-     * @return mixed The group id of the group which the key matches, or false
-     *       if it matches none
-     */
-    public function check_group_entry($courseid, $password){
-        // some logic
-        if ($itlooksgood){
-            return $groupid;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * OPTIONAL: Return a string with icons that give enrolment information
-     * for this course.
-     *
-     * @param object $course
-     * @return string
-     */
-    public function get_access_icons($course){
-        global $CFG;
-
-        global $strallowguests;
-        global $strrequireskey;
-
-        if (empty($strallowguests)) {
-            $strallowguests = get_string('allowguests');
-            $strrequireskey = get_string('requireskey');
-        }
-
-        $str = '';
-
-        if (!empty($course->guest)) {
-            $str .= '<a title="'.$strallowguests.'" href="'.$CFG->wwwroot.'/course/view.php?id='.$course->id.'">';
-            $str .= '<img class="accessicon" alt="'.$strallowguests.'" src="'.$CFG->pixpath.'/i/guest.gif" /></a>&nbsp;&nbsp;';
-        }
-        if (!empty($course->password)) {
-            $str .= '<a title="'.$strrequireskey.'" href="'.$CFG->wwwroot.'/course/view.php?id='.$course->id.'">';
-            $str .= '<img class="accessicon" alt="'.$strrequireskey.'" src="'.$CFG->pixpath.'/i/key.gif" /></a>';
-        }
-
-        return $str;
-    }
+//global $CFG, $USER, $OUTPUT, $PAGE, $DB, $form, $SESSION, $_POST;
+require_once('../../config.php');
+require_once($CFG->dirroot."/mod/mgm/locallib.php");
+require_once($CFG->dirroot."/mod/mgm/locallib.php");
+$id = required_param('id', PARAM_INT);
+$instance = $DB->get_record('enrol', array('id'=> $id));
+if (!$instance || !$instance->courseid){
+	error(get_string('wsnoinstance', 'enrol_mgm'));
 }
+$course = $DB->get_record('course', array('id'=> $instance->courseid));
+//require_login($course);
+require_login();
+$context = context_course::instance($course->id, MUST_EXIST);
+//require_capability('enrol/mgm:enrol', $context);
+//require_capability('enrol/manual:manage', $context);
+$PAGE->set_url('/enrol/mgm/enrol.php');
+$PAGE->set_context($context);
+
+if (!$edition = mgm_get_course_edition($course->id)) {
+	error(get_string('noeditioncourse', 'mgm'));
+}
+
+if (!$edition->active) {
+	error(get_string('noactiveedition', 'mgm'));
+}
+if ($edition->state != 'preinscripcion'){
+	error(get_string('nopreinscriptionstate', 'mgm'));
+}
+if ($edition->state == 'matriculacion') {
+	error(get_string('nomodifydata', 'mgm'));
+}
+
+$sql = "SELECT * FROM {edicion_inscripcion}
+            	WHERE edicionid=:edition AND value=:value";
+$arg = array('edition'=>$edition->id, 'value'=> $course->id );
+if ($inscripcion = $DB->get_records_sql($sql, $arg) || time() > $edition->fin) {
+	error(get_string('fueradeperiodo', 'mgm'));
+}
+
+if (!mgm_check_course_dependencies($edition, $course, $USER)) {
+	error(get_string('nodependencias', 'mgm'));
+}
+
+$strloginto = get_string('loginto', '', $edition->name);
+$strcourses = get_string('courses');
+
+$context = get_context_instance(CONTEXT_SYSTEM);
+
+$navlinks = array();
+$navlinks[] = array('name' => $strcourses, 'link' => ".", 'type' => 'misc');
+$navlinks[] = array('name' => $strloginto, 'link' => null, 'type' => 'misc');
+$navigation = build_navigation($navlinks);
+
+// if (has_capability('moodle/legacy:guest', $context, $USER->id, false)) {
+// 	add_to_log($course->id, 'course', 'guest', 'view.php?id='.$course->id, getremoteaddr());
+// 	return;
+// }
+
+print_header($strloginto, $course->fullname, $navigation);
+echo '<br />';
+echo $OUTPUT->heading($edition->name.' ('.$edition->description.')');
+//print_simple_box_start('center', '80%');
+
+echo $OUTPUT->box_start('center');
+$choices = array();
+if (!$options = mgm_get_edition_user_options($edition->id, $USER->id)) {
+	$choices[0][0] = get_string('none');
+	foreach (mgm_get_edition_courses($edition) as $course) {
+		$choices[0][$course->id] = $course->fullname;
+	}
+} else {
+	$plus = 0;
+	if (mgm_count_courses($edition) > count($options)) {
+		$plus = 1;
+	}
+
+	for ($i = 0; $i < count($options)+$plus; $i++) {
+		foreach (mgm_get_edition_courses($edition) as $course) {
+			$choices[$i][0] = get_string('none');
+			$choices[$i][$course->id] = $course->fullname;
+		}
+	}
+}
+$user = $DB ->get_record('user', array('id'=> $USER->id));
+$data2 = mgm_get_user_extend($USER->id);
+if (array_key_exists('codcuerpodocente', $_POST)){
+	$allespecs = mgm_get_all_especialidades($_POST['codcuerpodocente']);
+}else{
+	$allespecs = mgm_get_all_especialidades($data2->codcuerpodocente );
+}
+if (!empty($allespecs)) {
+	$aespecs = $allespecs;
+}
+
+$data2 ->firstname=$user->firstname;
+$data2 ->lastname=$user->lastname;
+$data2 ->email=$user->email;
+$data2 ->phone1=$user->phone1;
+$data2 ->address=$user->address;
+$data2->aespecs = $aespecs;
+$data2->choices=$choices;
+$data2->course=$course;
+$data2->edition=$edition;
+$data2->id=$course->id;
+if ($userspec = mgm_get_user_especialidades($USER->id)){
+	$data2->especialidades=array_keys($userspec);
+}
+
+
+// Print form
+require_once($CFG->dirroot.'/enrol/mgm/enrol_form.php');
+$eform = new enrol_mgm_form('enrol.php', $data2);
+$eform->set_data($data2);
+if ($options) {
+	$data = new stdClass();
+	foreach ($options as $k=>$v) {
+		$prop = 'option['.$k.']';
+		$data->$prop = $v;
+	}
+	$eform->set_data($data);
+}
+
+
+if ($data=$eform->get_data() ) {
+	//Si data devuelve algun valor (not null) entonces los datos del formulario de entrada son correctos.
+	//guardar datos de usuario
+	if (isset($data->submitbutton)){
+		$courses = array();
+		foreach ($data->option as $k=>$option) {
+			if (in_array($option, $courses) && $option > 0) {
+				error(get_string('opcionesduplicadas', 'mgm'), '?id='.$course->id);
+				echo $OUTPUT->box_end();
+				echo $OUTPUT->footer();
+				die();
+			}
+			$courses[$k] = $option;
+		}			
+		$user=new stdClass();
+		$user->id=$USER->id;
+		$user->firstname=$data->firstname;
+		$user->lastname=$data->lastname;
+		$user->email=$data->email;
+		$user->phone1=$data->phone1;
+		$user->address=$data->address;
+		$DB->update_record('user', $user);
+
+		//guardar datos de usuario  y centro mgm
+		$mgmuser=new stdClass();
+		$mgmuser->tipoid=$data->tipoid;
+		$mgmuser->dni=$data->dni;
+		$mgmuser->codcuerpodocente=$data->codcuerpodocente;
+		$mgmuser->codniveleducativo=$data->codniveleducativo;
+		$mgmuser->sexo=$data->sexo;
+		//especialidades //
+		if (isset($data->especialidades)){
+			$mgmuser->especialidades=implode("\n", $data -> especialidades);
+		}
+		$mgmuser->cc=$data->cc;
+		$mgmuser->codpostal=$data->codpostal;
+		$mgmuser->codprovincia=$data->codprovincia;
+		$mgmuser->codpais=$data->codpais;
+
+		mgm_set_userdata2($USER->id, $mgmuser, true);
+		$ch=mgm_check_cert_history($USER->id, $courses);
+		if ($ch[0]){//Ningun curso ya certificado
+			mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses);			
+			echo $OUTPUT->confirm(get_string('preinscrito', 'mgm'),
+				new moodle_url('/enrol/mgm/enrol.php', array('id'=>$course->id)), 
+				new moodle_url($CFG->wwwroot.'/index.php'));
+			die();
+		}else{//alguno de los cursos esta certificado para el dni del usuario
+			error($ch[1], '?id='.$course->id);
+		}
+	}
+}
+
+$eform->display();
+if ($eform->is_validated()){
+	print "Guardar datos formulario correcto";
+}
+if ($options) {
+	echo "<br />";
+	echo get_string('edicionwarning', 'mgm');
+}
+echo $OUTPUT->box_end();
+echo $OUTPUT->footer();
