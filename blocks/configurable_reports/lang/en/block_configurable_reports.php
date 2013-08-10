@@ -81,9 +81,9 @@ $string['ccdocente']='Cuerpo Docente';
 $string['certificado']='Certificado';
 $string['cc']='Codigo de Centro';
 $string['groups']='Grupo';
-$string['idnumber']='Numero ID';
-$string['numdocumento']='DNI/Pasaporte';
 $string['sexo']='Sexo';
+$string['numdocumento']='Número de documento';
+$string['idnumber']='Código del Curso';
 
 // Calcs
 $string['nocalcsyet'] = "No calculations yet";

@@ -2528,29 +2528,30 @@ function mgm_rollback_borrador($editionid, $courseid) {
 
 function mgm_edition_set_user_address($userid, $address) {
 	global $DB;
-    if(!$euser = $DB->get_record('edicion_user', 'userid', $userid)) {
-        error('User doesn\'t exists!');
+    if(!$euser = $DB->get_record('edicion_user', array('userid'=> $userid))) {
+        print_error('User doesn\'t exists!');
     } else {
-        if(!empty($addres)) {
+        if(!empty($address)) {
             $euser -> alt_address = true;
             $euser -> address = $address;
         } else {
             $euser -> alt_address = false;
             $euser -> address = '';
         }
+        return $DB->update_record('edicion_user', $euser);
     }
 }
 
 function mgm_get_edition_out($edition) {
     global $CFG, $DB;
 
-    $sql = "SELECT COUNT(id) AS count FROM " . $CFG -> prefix . "edicion_preinscripcion
-    		WHERE edicionid='" . $edition -> id . "' AND userid
-    		IN ( SELECT userid FROM " . $CFG -> prefix . "edicion_preinscripcion
-    			 WHERE edicionid='" . $edition -> id . "' ) AND userid
-    		NOT IN ( SELECT userid FROM " . $CFG -> prefix . "edicion_inscripcion
-    				 WHERE edicionid='" . $edition -> id . "' )";
-    if(!$count = $DB->get_record_sql($sql)) {
+    $sql = "SELECT COUNT(id) AS count FROM {edicion_preinscripcion}
+    		WHERE edicionid = ? AND userid
+    		IN ( SELECT userid FROM {edicion_preinscripcion}
+    			 WHERE edicionid = ? AND userid
+    			 NOT IN ( SELECT userid FROM {edicion_inscripcion}
+    				 WHERE edicionid = ? )";
+    if(!$count = $DB->get_record_sql($sql, array($edition -> id, $edition -> id, $edition -> id))) {
         return 0;
     }
     return $count -> count;

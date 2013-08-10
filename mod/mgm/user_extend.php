@@ -24,7 +24,7 @@
  *
  * @package    mod
  * @subpackage mgm
- * @copyright  2011 Oscar Campos <oscar.campos@open-phoenix.com>
+ * @copyright  2011 Oscar Campos <oscar.campos@open-phoenix.com> 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,8 +32,8 @@ require_once('../../config.php');
 require_once($CFG->dirroot."/mod/mgm/locallib.php");
 
 require_login();
-
-require_capability('mod/mgm:aprobe', get_context_instance(CONTEXT_SYSTEM));
+$systemcontext = context_system::instance();
+require_capability('mod/mgm:aprobe', $systemcontext);
 
 define("MAX_USERS_PER_PAGE", 5000);
 
@@ -46,19 +46,20 @@ $strperfil        = get_string('profile');
 $strsearch        = get_string('search');
 $strsearchresults = get_string('searchresults');
 
-$navlinks = array();
-$navlinks[] = array('name' => $strediciones, 'type' => 'misc');
-$navlinks[] = array('name' => $strperfil, 'type' => 'misc');
 
-$navigation = build_navigation($navlinks);
+$PAGE->set_url('/mod/mgm/user_extend.php');
+$PAGE->set_context($systemcontext);
+$PAGE->navbar->add($strperfil);
 
-if ($frm = data_submitted() and confirm_sesskey()) {
+if ($frm = data_submitted() and confirm_sesskey()) {	
     if (!empty($frm->addselect) && empty($search)) {
-        if (!$user = get_record('user', 'id', $_REQUEST['addselect'][0])) {
-            error('User doesn\'t exists!');
+    	echo $OUTPUT->header();
+    	echo $OUTPUT->heading(get_string('edicionesaddress', 'mgm'));
+    	echo $OUTPUT->box_start();
+        if (!$user = $DB->get_record('user', array('id'=> $_REQUEST['addselect'][0]))) {
+            print_error('User doesn\'t exists!');
         } else {
-            print_header("", get_string('edicionesaddress', 'mgm'), $navigation);
-            print_simple_box_start('center');
+        	            
         ?>
 <form id="assignform" method="post" action="">
     <div style="text-align: center;">
@@ -74,7 +75,7 @@ if ($frm = data_submitted() and confirm_sesskey()) {
                 <td valign="top">
                     <textarea id="address" name="address" rows=3 cols=45>
                     <?php
-                        if ($euser = get_record('edicion_user', 'userid', $user->id)) {
+                        if ($euser = $DB->get_record('edicion_user', array('userid'=> $user->id))) {
                             p($euser->address);
                         }
                     ?>
@@ -91,7 +92,7 @@ if ($frm = data_submitted() and confirm_sesskey()) {
     </div>
 </form>
         <?php
-            print_simple_box_end();
+        	$OUTPUT->box_end();            
             die();
         }
     }
@@ -109,42 +110,27 @@ $baseurl = 'user_extend.php';
 $select  = "username <> 'guest' AND deleted = 0 AND confirmed = 1";
 
 if ($searchtext !== '') {   // Search for a subset of remaining users
-    $LIKE      = sql_ilike();
-    $FULLNAME  = sql_fullname();
+    $LIKE      = 'like';
+    $FULLNAME  = $DB->sql_fullname();
 
     $selectsql = " AND ($FULLNAME $LIKE '%$searchtext%' OR email $LIKE '%$searchtext%') ";
     $select  .= $selectsql;
 } else {
     $selectsql = '';
 }
-
-$navlinks = array();
-$navlinks[] = array('name' => $strediciones, 'type' => 'misc');
-$navlinks[] = array('name' => $strperfil, 'type' => 'misc');
-
-$navigation = build_navigation($navlinks);
-
-print_header("", get_string('edicionesaddress', 'mgm'), $navigation);
-
 $searchtext = trim($searchtext);
 
-if ($searchtext !== '') {
-    $LIKE = sql_ilike();
-    $FULLNAME = sql_fullname();
-
-    $selectsql = " AND (".$FULLNAME." ".$LIKE." '%".$searchtext."%' OR email ".$LIKE." '%".$searchtext."%') ";
-    $select .= $selectsql;
-}
-
 $sql = 'SELECT id, firstname, lastname, email
-		FROM '.$CFG->prefix.'user
-        WHERE '.$select.'
+		FROM {user} WHERE '.$select.'
         ORDER BY lastname ASC, firstname ASC';
-$availableusers = get_recordset_sql($sql);
 
-$usercount = $availableusers->_numOfRows;
+$availableusers = $DB->get_recordset_sql($sql);
+$usercount = $DB->count_records_select('user', $select);
 
-print_simple_box_start('center');
+//
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('edicionesaddress', 'mgm'));
+echo $OUTPUT->box_start();
 ?>
 <form id="assignform" method="post" action="">
     <div style="text-align: center;">
@@ -162,10 +148,10 @@ print_simple_box_start('center');
                     <?php
                         $i = 0;
                         if (!empty($searchtext)) {
-                            echo "<optgroup label=\"$strsearchresults (" . $usercount . ")\">\n";
-                            while ($user = rs_fetch_next_record($availableusers)) {
+                            echo "<optgroup label=\"$strsearchresults (" . $usercount . ")\">\n";                            
+                            foreach ($availableusers as $user){
                                 $fullname = fullname($user, true);
-                                echo "<option value=\"$user->id\">".$fullname.", ".$user->email."</option>\n";
+                                echo "<option value=\"$user->id\">".$fullname.", ".$user->email."</option>\n";                            
                                 $i++;
                             }
                             echo "</optgroup>\n";
@@ -174,9 +160,9 @@ print_simple_box_start('center');
                                 echo '<optgroup label="'.get_string('toomanytoshow').'"><option></option></optgroup>'."\n"
                                   .'<optgroup label="'.get_string('trysearching').'"><option></option></optgroup>'."\n";
                             } else {
-                                while ($user = rs_fetch_next_record($availableusers)) {
+								foreach ($availableusers as $user){                                
                                     $fullname = fullname($user, true);
-                                    echo "<option value=\"$user->id\">".$fullname.", ".$user->email."</option>\n";
+                                    echo "<option value=\"$user->id\">".$fullname.", ".$user->email."</option>\n";                                
                                     $i++;
                                 }
                             }
@@ -204,5 +190,5 @@ print_simple_box_start('center');
     </div>
 </form>
 <?php
-print_simple_box_end();
+echo $OUTPUT->box_end();
 
