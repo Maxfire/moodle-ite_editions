@@ -406,12 +406,14 @@ function mgm_print_whole_ediciones_list() {
 }
 
 function mgm_print_fees_ediciones_list() {
-    global $CFG, $DB;
+    global $CFG, $DB, $OUTPUT;
 
     $editions = $DB->get_records('edicion');
 
-    $editionimage = '<img src="' . $CFG -> pixpath . '/i/db.gif" alt="" />';
-    $courseimage = '<img src="' . $CFG -> pixpath . '/i/course.gif" alt="" />';
+    //$editionimage = '<img src="' . $CFG -> pixpath . '/i/db.gif" alt="" />';
+    $editionimage = '<img src="' . $OUTPUT->pix_url('i/db') . '" alt="" />';    
+    //$courseimage = '<img src="' . $CFG -> pixpath . '/i/course.gif" alt="" />';
+    $courseimage = '<img src="' . $OUTPUT->pix_url('/i/course') .'" alt="" />';
     $table = '<table class="mod-mgm editionlist">';
     foreach($editions as $edition) {
         $table .= '<tr>';
@@ -2577,9 +2579,8 @@ function mgm_get_user_inscription_by_edition($user, $edition) {
 function mgm_get_certification_scala() {
     global $CFG, $DB;
 
-    $sql = "SELECT * FROM " . $CFG -> prefix . "edicion_ite
-    		WHERE type = " . MGM_ITE_SCALA . "";
-    return $DB->get_record_sql($sql);
+    $sql = "SELECT * FROM {edicion_ite} WHERE type = ?";
+    return $DB->get_record_sql($sql, array(MGM_ITE_SCALA));
 }
 
 /**
@@ -2780,11 +2781,10 @@ function mgm_get_certification_task($course) {
 
     $scala = mgm_get_certification_scala();
 
-    $sql = "SELECT * FROM ".$CFG->prefix."grade_items
-    		WHERE scaleid ='".$scala->value."'
-    		AND courseid ='".$course."'";
-
-    return $DB->get_record_sql($sql);
+    $sql = "SELECT * FROM {grade_items}
+    		WHERE scaleid = ?
+    		AND courseid = ?";	
+    return $DB->get_record_sql($sql, array($scala->value, $course));
 }
 
 /**
@@ -3487,7 +3487,7 @@ function mgm_get_course_coordinador_payment($course) {
     $coord = mgm_get_course_coordinators($course);
     return array(
         'user' => $coord,
-        'edicion_user' => $DB->get_record('edicion_user', 'userid', $coord->id),
+        'edicion_user' => $DB->get_record('edicion_user', array('userid'=> $coord->id)),
         'total_amount' => (($criteria->duration+1) * $amount_per_tutor) + $criteria->prevlab,
         'tutors' => $tutors,
         'amount_per_tutor' => $amount_per_tutor,
@@ -3521,17 +3521,17 @@ function mgm_get_course_tasks($courseid) {
 }
 
 function mgm_get_course_ecuador($courseid) {
-	global $CFG;
+	global $CFG, $DB;
 	$dev=null;
     $edition = mgm_get_course_edition($courseid);
     $criteria = mgm_get_edition_course_criteria($edition->id, $courseid);
-    if ($criteria->ecuadortask != MGM_ECUADOR_DEFAULT) {
+    if (isset($criteria->ecuadortask) && $criteria->ecuadortask != MGM_ECUADOR_DEFAULT) {
         $dev=$criteria->ecuadortask;
     }else{
-    	$sql = "SELECT * FROM ".$CFG->prefix."grade_items
-            WHERE courseid=".$courseid."
-            AND itemtype !='course' and itemname like 'ec-%' ORDER by sortorder";
-    	$dev= array_pop($DB->get_records_sql($sql));
+    	$sql = "SELECT * FROM {grade_items}
+            WHERE courseid= ? AND itemtype !='course' and itemname like 'ec-%' ORDER by sortorder";
+    	$regs =	$DB->get_records_sql($sql, array($courseid));
+    	$dev= array_pop($regs);
 		if (! $dev){
 	    	$tasks = mgm_get_course_tasks($courseid);
 	    	$x = 1;
@@ -3549,16 +3549,15 @@ function mgm_get_course_ecuador($courseid) {
 function mgm_get_course_first_task($courseid) {
     global $CFG, $DB;
 		$dev=false;
-    $sql = "SELECT * FROM ".$CFG->prefix."grade_items
-            WHERE courseid=".$courseid."
+    $sql = "SELECT * FROM {grade_items}
+            WHERE courseid = ?
             AND itemtype !='course' and itemname like 'presentac%' ORDER BY sortorder LIMIT 1";
-    if ($reg = $DB->get_records_sql($sql)){
+    if ($reg = $DB->get_records_sql($sql, array($courseid))){
     	$dev = array_pop($reg);
     }else{
-    	$sql = "SELECT * FROM ".$CFG->prefix."grade_items
-            WHERE courseid=".$courseid."
-            AND itemtype !='course' ORDER BY sortorder LIMIT 1";
-			if ($reg = $DB->get_records_sql($sql))
+    	$sql = "SELECT * FROM {grade_items}
+            WHERE courseid = ? AND itemtype !='course' ORDER BY sortorder LIMIT 1";
+			if ($reg = $DB->get_records_sql($sql, array($courseid)))
     		$dev = array_pop($reg);
     }
     return $dev;
@@ -3647,25 +3646,25 @@ function mgm_get_course_roles_on_demand($course, $role) {
     }
 
     if(!$context = get_context_instance(CONTEXT_COURSE, $course->id)) {
-        error('No context found');
+        print_error('No context found');
     }
 
     $roles = mgm_get_certification_roles();
     $sql = "SELECT DISTINCT u.id, u.username, u.firstname, u.lastname, u.email, ctx.id AS ctxid, ctx.contextlevel AS ctxlevel
-            FROM ".$CFG->prefix."user u
-            LEFT OUTER JOIN ".$CFG->prefix."context ctx ON (u.id=ctx.instanceid AND ctx.contextlevel=".CONTEXT_USER.")
-            JOIN ".$CFG->prefix."role_assignments r ON u.id=r.userid
-            LEFT OUTER JOIN ".$CFG->prefix."user_lastaccess ul ON (r.userid=ul.userid and ul.courseid=".$course->id.")
-            WHERE (r.contextid=".$context->id.")
-            AND u.deleted = 0  AND r.roleid=".$roles[$role]." AND (ul.courseid=".$course->id." OR ul.courseid IS NULL)
+            FROM {user} u
+            LEFT OUTER JOIN {context} ctx ON (u.id=ctx.instanceid AND ctx.contextlevel = ".CONTEXT_USER.")
+            JOIN {role_assignments} r ON u.id=r.userid
+            LEFT OUTER JOIN {user_lastaccess} ul ON (r.userid=ul.userid and ul.courseid = ?)
+            WHERE (r.contextid = ?)
+            AND u.deleted = 0  AND r.roleid = ? AND (ul.courseid = ? OR ul.courseid IS NULL)
             AND u.username != 'guest'";
-
-    return ($role != 'coordinador') ? $DB->get_records_sql($sql) : $DB->get_record_sql($sql);
+	$parm=array($course->id, $context->id, $roles[$role], $course->id);
+    return ($role != 'coordinador') ? $DB->get_records_sql($sql, $parm) : $DB->get_record_sql($sql, $parm);
 }
 
 function mgm_get_user_dni($userid) {
 	global $DB;
-    if(!$user = $DB->get_record('edicion_user', 'userid', $userid)) {
+    if(!$user = $DB->get_record('edicion_user', array('userid'=> $userid))) {
         return 'NOT SET';
     }
 

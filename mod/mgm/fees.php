@@ -30,16 +30,19 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 
 require_login();
-require_capability('mod/mgm:aprobe', get_context_instance(CONTEXT_SYSTEM));
+$systemcontext = context_system::instance();
+require_capability('mod/mgm:aprobe', $systemcontext);
+$PAGE->set_url('/mgm/index.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
 
 function print_edition_edit_header() {
-    global $CFG;
+    global $CFG, $OUTPUT;
     require_once($CFG->libdir.'/adminlib.php');
 
     admin_externalpage_setup('fees');
-    admin_externalpage_print_header();
-    $strtitle = get_string('fees', 'mgm');
-    print_heading($strtitle);
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('fees', 'mgm'));
 }
 
 $strfechainicio     = get_string('fechainicio', 'mgm');
@@ -69,26 +72,28 @@ $change_state = optional_param('change_state', 0, PARAM_INT);
 
 
 if ($change_state==1 && $editionid){
-		global $CFG;
+	  global $CFG;
 	  mgm_set_edition_paid($editionid);
 	  redirect($CFG->wwwroot.'/mod/mgm/index?editionedit=on');
 }
 
 if ($id) {
-    if (!$course = get_record('course', 'id', $id)) {
-        error('Course not known!');
+    if (!$course = $DB->get_record('course', array('id'=> $id))) {
+        print_error('Course not known!');
     }
 }
 
 if(!$multiple) {
     if(!$format) {
         print_edition_edit_header();
-        echo skip_main_destination();
-        print_box_start('edicionesbox');
+        echo $OUTPUT->skip_link_target();
+        echo $OUTPUT->box_start('edicionesbox');        
     }
     if (!isset($course) && !isset($edition) && !$format) {
         mgm_print_fees_ediciones_list();
     } else {
+    	$feestablec = new html_table();
+    	//$feestablec->width = "80%";
         $feestablec->head  = array($strname, $strlastname, $stremail, $strdni, $strcourse, $strtutors, $strprev, $strtramo, $stramount);
         $feestablec->align = array('center', 'center', 'center', 'center', 'center', 'center', 'center', 'center', 'center');
         $edition = mgm_get_course_edition($course->id);
@@ -119,25 +124,25 @@ if(!$multiple) {
 
         $feestablec->data = $data;
         if(!$format) {
-            print_heading(date('d-m-Y', $edition->inicio).' / '.date('d-m-Y', $edition->fin).'<br/>'.get_string('coordinador', 'mgm'));
-            print_table($feestablec);
+            echo $OUTPUT->heading(date('d-m-Y', $edition->inicio).' / '.date('d-m-Y', $edition->fin).'<br/>'.get_string('coordinador', 'mgm'));
+            echo html_writer::table($feestablec);            
             echo "<br />";
         }
 
         if(!$format) {
-            print_heading('');
-            print_box_start('');
+        	echo $OUTPUT->heading('');
+        	echo $OUTPUT->box_start();            
             echo '<ul>';
             echo '<li><a href="fees.php?id='.$id.'&type=coord&format=xls">'.get_string('downloadexcel').'</a></li>';
             echo '<li><a href="fees.php?id='.$id.'&type=coord&format=ods">'.get_string('downloadods').'</a></li>';
             echo '</ul>';
-            print_box_end();
+            echo $OUTPUT->box_end();            
         }
-
+        $feestable = new html_table();
         $feestable->head  = array($strname, $strlastname, $strdni, $stremail, $strcourse, $stralumnos, $strnostart, $strhalf, $strfull, $stramount);
         $feestable->align = array('center', 'center', 'center', 'center', 'center', 'center', 'center', 'center', 'center', 'center');
         unset($feestable->data);
-        if(!$format) print_heading(get_string('tutores', 'mgm'));
+        if(!$format) echo $OUTPUT->heading(get_string('tutores', 'mgm'));
         if (empty($tmp_data['grupos'])) {
             foreach($tmp_data['coordinacion']['tutors'] as $tutor) {
                 $feestable->data[] = array(
@@ -170,20 +175,20 @@ if(!$multiple) {
         }
 
         if(!$format) {
-            print_table($feestable);
-            print_heading('');
-            print_box_start('');
+        	echo html_writer::table($feestable);
+        	echo $OUTPUT->heading('');
+        	echo $OUTPUT->box_start();            
             echo '<ul>';
             echo '<li><a href="fees.php?id='.$id.'&type=tutor&format=xls">'.get_string('downloadexcel').'</a></li>';
             echo '<li><a href="fees.php?id='.$id.'&type=tutor&format=ods">'.get_string('downloadods').'</a></li>';
-            echo '</ul>';
-            print_box_end();
+            echo '</ul>';            
+            echo $OUTPUT->box_end();            
         }
     }
 
     if(!$format) {
-        print_box_end();
-        admin_externalpage_print_footer();
+    	echo $OUTPUT->box_end();
+        echo $OUTPUT->footer();        
     }
 
     if ($format) {
@@ -205,14 +210,16 @@ if(!$multiple) {
     }
 
 } else {
+	$coordstable = new html_table();
     $coordstable->head  = array('<b>'.$strcourse.'</b>', $strname, $strlastname, $strdni, $strtutors, $strprev, $strtramo, $stramount);
     $coordstable->align = array('center', 'center', 'center', 'center', 'center', 'center', 'center', 'center');
 
+    $tutorstable = new html_table();
     $tutorstable->head  = array($strcourse, $strname, $strlastname, $strdni, $stremail, $stralumnos, $strnostart, $strhalf, $strfull, $stramount);
     $tutorstable->align = array('center', 'center', 'center', 'center', 'center', 'center', 'center', 'center', 'center', 'center');
 
     $data = '';
-    $edition = get_record('edicion', 'id', $editionid);
+    $edition = $DB->get_record('edicion', array('id'=> $editionid));
     mgm_get_edition_payment_data($edition, $data);
     $coord_data = $tutor_data = array();
     foreach($data as $course) {
@@ -264,27 +271,28 @@ if(!$multiple) {
 
     if(!$format) {
         print_edition_edit_header();
-        echo skip_main_destination();
-        print_box_start('edicionesbox');
-        print_heading(get_string('coordinador', 'mgm'));
-        print_table($coordstable);
-        print_box_start('');
+        echo $OUTPUT->skip_link_target();
+        //echo skip_main_destination();
+        echo $OUTPUT->box_start('edicionesbox');
+        echo $OUTPUT->heading(get_string('coordinador', 'mgm'));
+        echo html_writer::table($coordstable);        
+        echo $OUTPUT->box_start();        
         echo '<ul>';
         echo '<li><a href="fees.php?id='.$id.'&edition='.$editionid.'&multiple=1&type=coord&format=xls">'.get_string('downloadexcel').'</a></li>';
         echo '<li><a href="fees.php?id='.$id.'&edition='.$editionid.'&multiple=1&type=coord&format=ods">'.get_string('downloadods').'</a></li>';
         echo '</ul>';
-        print_box_end();
-        print_heading(get_string('tutores', 'mgm'));
-        print_table($tutorstable);
-        print_heading('');
-        print_box_start('');
+        echo $OUTPUT->box_end();
+        echo $OUTPUT->heading(get_string('tutores', 'mgm'));
+        echo html_writer::table($tutorstable);        
+        echo $OUTPUT->heading('');
+        echo $OUTPUT->box_start();        
         echo '<ul>';
         echo '<li><a href="fees.php?id='.$id.'&edition='.$editionid.'&multiple=1&type=tutor&format=xls">'.get_string('downloadexcel').'</a></li>';
         echo '<li><a href="fees.php?id='.$id.'&edition='.$editionid.'&multiple=1&type=tutor&format=ods">'.get_string('downloadods').'</a></li>';
         echo '</ul>';
-        print_box_end();
-        print_box_end();
-        admin_externalpage_print_footer();
+        echo $OUTPUT->box_end();
+        echo $OUTPUT->box_end();
+        echo $OUTPUT->footer();
     }
 
     if ($format) {

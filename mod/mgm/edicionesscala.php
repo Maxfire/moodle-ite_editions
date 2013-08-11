@@ -33,17 +33,20 @@ require_once(dirname(__FILE__).'/locallib.php');
 
 require_login();
 
+$systemcontext = context_system::instance();
+require_capability('mod/mgm:aprobe', $systemcontext);
+
 $scala = mgm_get_certification_scala();
-$availablescalas = get_records('scale', 'courseid', 0);
+$availablescalas = $DB->get_records('scale', array('courseid'=> 0));
 
 $strtitle = get_string('setscala', 'mgm');
 
 
 require_once($CFG->libdir.'/adminlib.php');
-
+$PAGE->set_url('/mod/mgm/edicionesscala.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
 admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
-admin_externalpage_print_header();
-print_heading($strtitle);
 
 if ($frm = data_submitted() and confirm_sesskey()) {
     if (isset($frm->scala)) {
@@ -51,8 +54,9 @@ if ($frm = data_submitted() and confirm_sesskey()) {
         redirect('index.php', get_string('scaladone', 'mgm'), 5);
     }
 }
-
-print_simple_box_start('center');
+echo $OUTPUT->header();
+echo $OUTPUT->heading($strtitle);
+echo $OUTPUT->box_start('center');
 ?>
 <form id="scalaform" method="post" action="">
     <div style="text-align: center;">
@@ -76,6 +80,5 @@ print_simple_box_start('center');
     </div>
 </form>
 <?php
-print_simple_box_end();
-
-admin_externalpage_print_footer();
+echo $OUTPUT->box_end();
+echo $OUTPUT->footer();
