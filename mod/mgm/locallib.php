@@ -2550,7 +2550,7 @@ function mgm_get_edition_out($edition) {
     		IN ( SELECT userid FROM {edicion_preinscripcion}
     			 WHERE edicionid = ? AND userid
     			 NOT IN ( SELECT userid FROM {edicion_inscripcion}
-    				 WHERE edicionid = ? )";
+    				 WHERE edicionid = ? ))";
     if(!$count = $DB->get_record_sql($sql, array($edition -> id, $edition -> id, $edition -> id))) {
         return 0;
     }
@@ -3334,37 +3334,37 @@ function mgm_get_elapsed($start, $end) {
 function mgm_get_usuarios_no_inscritos($edicion, $search='', $page=0, $recordsperpage=30) {
     global $CFG, $DB;
 
-    $LIKE = sql_ilike();
-    $fullname = sql_concat("a.firstname", "' '", "a.lastname");
+    $LIKE = 'like';
+    $fullname = $DB->sql_concat("a.firstname", "' '", "a.lastname");
 
     $sql = "SELECT p.userid, p.timemodified, p.value, a.firstname, a.lastname,
                 a.email, u.dni, u.cc, u.especialidades
-            FROM " . $CFG -> prefix . "edicion_preinscripcion AS p LEFT JOIN " . $CFG -> prefix . "user AS a
-            ON ( a.id = p.userid ) LEFT JOIN " . $CFG -> prefix . "edicion_user AS u
-            ON ( u.userid = a.id ) WHERE edicionid='" . $edicion . "'
+            FROM {edicion_preinscripcion} AS p LEFT JOIN {user} AS a
+            ON ( a.id = p.userid ) LEFT JOIN {edicion_user} AS u
+            ON ( u.userid = a.id ) WHERE edicionid = ?
             AND p.userid NOT IN
-            ( SELECT userid FROM " . $CFG -> prefix . "edicion_inscripcion
-              WHERE edicionid='" . $edicion . "' )";
+            ( SELECT userid FROM {edicion_inscripcion}
+              WHERE edicionid = ? )";
 
     if(!empty($search)) {
         $search = trim($search);
         $sql .= " AND ( " . $fullname . " " . $LIKE . " '%" . $search . "%' OR a.email " . $LIKE . " '%" . $search . "%')";
     }
 
-    $users = $DB->get_records_sql($sql, $page * $recordsperpage, $recordsperpage);
+    $users = $DB->get_records_sql($sql, array($edicion, $edicion ), $page * $recordsperpage, $recordsperpage);
 
-    $sql = "SELECT COUNT(p.id) as userscount FROM " . $CFG -> prefix . "edicion_preinscripcion
-            AS p LEFT JOIN " . $CFG -> prefix . "user AS a ON ( a.id = p.userid )
-            WHERE edicionid='" . $edicion . "' AND p.userid NOT IN
-            ( SELECT userid FROM " . $CFG -> prefix . "edicion_inscripcion
-              WHERE edicionid='" . $edicion . "' )";
+    $sql = "SELECT COUNT(p.id) as userscount FROM {edicion_preinscripcion}
+            AS p LEFT JOIN {user} AS a ON ( a.id = p.userid )
+            WHERE edicionid = ? AND p.userid NOT IN
+            ( SELECT userid FROM {edicion_inscripcion}
+              WHERE edicionid = ? )";
 
     if(!empty($search)) {
         $search = trim($search);
         $sql .= " AND ( " . $fullname . " " . $LIKE . " '%" . $search . "%' OR a.email " . $LIKE . " '%" . $search . "%' )";
     }
 
-    $users_count = $DB->get_record_sql($sql);
+    $users_count = $DB->get_record_sql($sql, array($edicion, $edicion ));
 
     return array('users' => $users, 'userscount' => $users_count -> userscount);
 }
@@ -3372,7 +3372,7 @@ function mgm_get_usuarios_no_inscritos($edicion, $search='', $page=0, $recordspe
 function mgm_courses_from_user_choices($choices) {
     global $CFG, $DB;
 
-    $sql2 = "SELECT id, fullname FROM " . $CFG -> prefix . "course
+    $sql2 = "SELECT id, fullname FROM {course}
              WHERE id IN (" . $choices . ")";
 
     return $DB->get_records_sql($sql2);

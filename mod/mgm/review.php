@@ -33,8 +33,8 @@ require_once($CFG->dirroot."/mod/mgm/locallib.php");
 require_once($CFG->dirroot.'/user/filters/lib.php');
 
 require_login();
-
-require_capability('mod/mgm:aprobe', get_context_instance(CONTEXT_SYSTEM));
+$systemcontext = context_system::instance();
+require_capability('mod/mgm:aprobe', $systemcontext);
 
 $id = optional_param('id', 0, PARAM_INT);    // Edition id
 $page = optional_param('page', 0, PARAM_INT);  
@@ -42,7 +42,7 @@ $recordsperpage = optional_param('recordsperpage', 30, PARAM_INT);
 $search = optional_param('search', '', PARAM_RAW);
 
 if (!$site = get_site()) {
-    error('Site isn\'t defined!');
+    print_error('Site isn\'t defined!');
 }
 
 // Strings
@@ -67,7 +67,7 @@ $strno             = get_string('no');
 $totalalumnos = 0;
 
 // Editions
-$editions = get_records('edicion');
+$editions = $DB->get_records('edicion');
 
 // Print the page and form
 $strgroups = get_string('groups');
@@ -76,15 +76,15 @@ $stradduserstogroup = get_string('adduserstogroup', 'group');
 $strusergroupmembership = get_string('usergroupmembership', 'group');
 
 
-// Navigation links
-$navlinks = array();
-$navlinks[] = array('name' => $stradministration, 'link' => '', 'type' => 'misc');
-$navlinks[] = array('name' => $strediciones, 'link' => 'review.php', 'type' => 'misc');
-$navlinks[] = array('name' => $stredicionesmgm, 'link' => '', 'type' => 'activity');
-$navigation = build_navigation($navlinks);
-
-print_header($site->shortname.': '.$strmgm, $stredicionesmgm, build_navigation($navlinks),
-             '', '', true);
+$PAGE->set_url('/mod/mgm/review.php');
+$PAGE->set_context($systemcontext);
+//$PAGE->set_pagelayout('standard');
+$PAGE->set_title($site->shortname.': '.$strmgm);
+$PAGE->set_heading($stredicionesmgm);
+echo $OUTPUT->header();
+echo $OUTPUT->box_start('center');
+//print_header($site->shortname.': '.$strmgm, $stredicionesmgm, build_navigation($navlinks),
+//             '', '', true);
 
 if ($id) {
     $alumnos = array();    
@@ -124,6 +124,8 @@ if ($id) {
     }   
 
     // Table data
+    $alumnostable = new html_table();
+    $alumnostable->width = "100%";
     foreach($alumnos as $alumno) {            
         // Especialidades
         $especs = $alumno->especialidades;
@@ -158,17 +160,20 @@ if ($id) {
         );
     }
 
-    // Table header
+    // Table header    
+    
     $alumnostable->head = array(get_string('name'), get_string('configsectionmail', 'admin'), get_string('dni', 'mgm'), get_string('cc', 'mgm'), get_string('cc_type', 'mgm'), get_string('especialidades', 'mgm'), get_string('courses'), get_string('date'));
     $alumnostable->align = array('left', 'left', 'left', 'left', 'left', 'left', 'left', 'left');
 } else {
     if (isset($editions) && is_array($editions)) {
+    	$editiontable = new html_table();
+    	$editiontable->width = "80%";
         foreach($editions as $edition) {
             // Check if user can see the edition.
             if (!mgm_can_do_view()) {
                 continue;
             }
-
+			
             $editiontable->data[] = array(
             	'<a title="'.$edition->description.'" href="review.php?id='.$edition->id.'">'.$edition->name.'</a>',
                 date('d/m/Y', $edition->inicio),
@@ -188,19 +193,24 @@ if ($id) {
 // Output the page
 
 if (isset($editiontable)) {
-    print_heading($strediciones);    
-    print_table($editiontable);    
+	echo $OUTPUT->heading($strediciones);
+	echo '<center>';    
+    echo html_writer::table($editiontable);
+	echo '</center>';
 } else {        
-    print_heading($stralumnos." (".$totalalumnos.")");
+	echo $OUTPUT->heading($stralumnos." (".$totalalumnos.")");
+    
     echo '<form action="">
             <label for="busca">Buscar por nombre o email: <br /></label>
             <input type="text" name="search" id="busca" />
             <input type="submit" value="Buscar" />
             <input type="hidden" name="id" value="'.$id.'" />
           </form><br />';
-    print_paging_bar($totalalumnos, $page, $recordsperpage, "?id=".$id."&amp;recordsperpage=".$recordsperpage."&amp;search=".$search."&amp;");
-    print_table($alumnostable);        
-    print_paging_bar($totalalumnos, $page, $recordsperpage, "?id=".$id."&amp;recordsperpage=".$recordsperpage."&amp;search=".$search."&amp;");
+    $pagingbar = new paging_bar($totalalumnos, $page, $recordsperpage, "?id=".$id."&amp;recordsperpage=".$recordsperpage."&amp;search=".$search."&amp;");
+    echo $OUTPUT->render($pagingbar);
+    //print_paging_bar($totalalumnos, $page, $recordsperpage, "?id=".$id."&amp;recordsperpage=".$recordsperpage."&amp;search=".$search."&amp;");
+    echo html_writer::table($alumnostable);        
+    //print_paging_bar($totalalumnos, $page, $recordsperpage, "?id=".$id."&amp;recordsperpage=".$recordsperpage."&amp;search=".$search."&amp;");
 }
-
-print_footer();
+echo $OUTPUT->box_end();
+echo $OUTPUT->footer();
