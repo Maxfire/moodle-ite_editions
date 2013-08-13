@@ -89,15 +89,15 @@ class enrol_mgm_form extends moodleform {
         $mform->addElement('select', 'sexo', get_string('sexo','mgm'), $sexos);
         $mform->addRule('sexo', $strrequired, 'required', null);
 
-        $achoices = $schoices = array();
-        $aespecs = & $this->_customdata->aespecs;
+        $achoices = array();
+        $aespecs = & $this->_customdata->aespecs;        
 
         if (is_array($aespecs)) {
             $achoices += $aespecs;
         }
-        if (is_array($sespecs)) {
-            $schoices += $sespecs;
-        }
+//         if (is_array($sespecs)) {
+//             $schoices += $sespecs;
+//         }
 		$mform->addElement('static', 'especialidadeswarn', get_string('note', 'mgm'). ':', get_string('multiselectespec', 'mgm'));
         $especs[0] = & $mform->addElement('select', 'especialidades', get_string('especialidades', 'mgm'), $achoices);
         $especs[0]->setMultiple(true);
@@ -128,16 +128,18 @@ class enrol_mgm_form extends moodleform {
 
 
         ####Informacion de matriculacion
-        $mform->addElement('header', 'matriculacion', get_string('edicioncursos', 'mgm'));
+         $mform->addElement('header', 'matriculacion', get_string('edicioncursos', 'mgm'));
 
-        $mform->addElement('hidden', 'id', $course->id);
-        $mform->setType('id', PARAM_INT);
+         $mform->addElement('hidden', 'id', $course->id);
+         $mform->setType('id', PARAM_INT);
+         $mform->addElement('hidden', 'editionid', $edition->id);
+         $mform->setType('editionid', PARAM_INT);
 
-        $mform->addElement('hidden', 'edition', $edition->id);
-        $mform->setType('edition', PARAM_INT);
+//          $mform->addElement('hidden', 'edition', $editionid);
+//          $mform->setType('edition', PARAM_INT);
 
-        $mform->addElement('hidden', 'options', count($this->_customdata->choices));
-        $mform->setType('options', PARAM_INT);
+         $mform->addElement('hidden', 'options', count($this->_customdata->choices));
+         $mform->setType('options', PARAM_INT);
 
         foreach ($this->_customdata->choices as $k=>$v) {
             $tmpnum = $k+1;

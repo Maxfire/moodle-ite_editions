@@ -72,21 +72,21 @@ if (mgm_update_edition_button()) {
 }
 
 if (!$adminediting) {
-    $navlinks = array();
-    $navlinks[] = array('name' => $strediciones, 'link' => 'index.php', 'type' => 'misc');
-
-    print_header($site->shortname.': '.$strmgm, $strediciones, build_navigation($navlinks),
-             '', '', true, mgm_update_edition_button());
-    print_heading($strediciones);
-    echo skip_main_destination();
-    print_box_start('edicionesbox');
+	$PAGE->navbar->add( $strediciones, new moodle_url('index.php'));
+	$PAGE->set_title($site->shortname.': '.$strmgm);
+	$PAGE->set_heading($strediciones);
+	$PAGE->set_button(mgm_update_edition_button());
+	echo $OUTPUT->header();
+    echo $OUTPUT->heading($strediciones);
+    echo $OUTPUT->skip_link_target();
+    echo $OUTPUT->box_start('edicionesbox');    
     mgm_print_whole_ediciones_list();
-    print_box_end();
-    print_course_search();
-    print_footer();
+    echo $OUTPUT->box_end();    
+    print_course_search();    
+    echo $OUTPUT->footer();
     exit;
 }
-
+$editiontable = new html_table();
 if (isset($editions) && is_array($editions)) {
     foreach($editions as $edition) {
         // Check if user can see the edition.
@@ -106,22 +106,19 @@ if (isset($editions) && is_array($editions)) {
 }
 
 // Navigation links
-$navlinks = array();
-$navlinks[] = array('name' => $stradministration, 'link' => '', 'type' => 'misc');
-$navlinks[] = array('name' => $strediciones, 'link' => 'index.php', 'type' => 'misc');
-$navlinks[] = array('name' => $stredicionesmgm, 'link' => '', 'type' => 'activity');
+
+// $PAGE->navbar->add($stradministration);
+// $PAGE->navbar->add($strediciones, new moodle_url('index.php'));
+// $PAGE->navbar->add($stredicionesmgm);
 
 // Table header
 $editiontable->head  = array($stredicion, $strstate, $strfechainicio, $strfechafin, $strcourses, $strplazas, $stredit);
 $editiontable->align = array('left', 'left', 'left', 'left', 'center', 'center', 'center');
 
 print_edition_edit_header();
-// Output the page
 echo $OUTPUT->heading($strediciones);
-//echo $OUTPUT->table($editiontable);
-//echo html_writer::table($editiontable);
-$editiontable->class="boxaligncenter";
-print_table($editiontable);
+$editiontable->attributes['class'] = "boxaligncenter";		
+echo html_writer::table($editiontable);
 
 echo '<div class="mod-mgm buttons boxaligncenter">';
 // Print button for creating new editions

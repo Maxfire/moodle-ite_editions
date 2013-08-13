@@ -24,7 +24,7 @@
  *
  * @package    enrol
  * @subpackage mgm
- * @copyright  2010 Oscar Campos <oscar.campos@open-phoenix.com>
+ * @copyright  2013 Jesus Jaen <jesus.jaen@open-phoenix.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -57,7 +57,8 @@ if (isset($_POST['state'])){
 
 // Editions
 $editions = $DB->get_records('edicion');
-
+$editiontable = new html_table();
+$editiontable->attributes['class'] = "boxaligncenter";
 if (isset($editions) && is_array($editions)) {
     foreach($editions as $edition) {
         // Check if user can see the edition.
@@ -106,21 +107,12 @@ $strposalumno      = get_string('posalumno','mgm');
 
 $savebutton        = '<br /><center><input type="submit" value="'.get_string('borrador', 'mgm').'"/></center>';
 
-//$navlinks = array();
 $PAGE->navbar->add($strediciones);
 $PAGE->navbar->add($strmatricular, $CFG->wwwroot . '/enrol/mgm/aprobe_requests.php');
-//$navlinks[] = array('name' => $strediciones, 'type' => 'misc');
-//$navlinks[] = array('name' => $strmatricular, 'link' => 'aprobe_requests.php', 'type' => 'misc');
 
 // Table header
 $editiontable->head  = array($stredicion, $strfechainicio, $strfechafin, $strcourses, $strplazas);
 $editiontable->align = array('left', 'left', 'left', 'center', 'center', 'center');
-
-// PLEASE DELETE ME!!!
-/*if ($pepe) {
-    mgm_create_enrolment_groups($id, $courseid);
-    die();
-}*/
 
 if ($inscribe) {
     if (!$courseid || !$id) {
@@ -158,9 +150,6 @@ if ($inscribe) {
         $a->alumnos = count($users);
         $a->plazas = $plazas;
 
-        //$navlinks[] = array('name' => $edition->name, 'link' => 'aprobe_requests.php?id='.$edition->id, 'type' => 'misc');
-        //$navigation = build_navigation($navlinks);        
-        //print_header($strmatricular, $strmatricular, $navigation);
         $PAGE->navbar->add($edition->name, $CFG->wwwroot . '/enrol/mgm/aprobe_requests.php?id='.$edition->id);
         
         echo $OUTPUT->header();
@@ -171,7 +160,7 @@ if ($inscribe) {
                      '?id='.$id.'&courseid='.$courseid.'&borrador='.$bm.'&inscribe=1&force=1&users='.implode(',', $users),
                      '?id='.$id.'&courseid='.$courseid);
 
-        print_footer();
+        echo $OUTPUT->footer();
         die();
     }
 	if ($states){//Set descartes
@@ -181,7 +170,7 @@ if ($inscribe) {
 	    }
 	    if (!$borrador and !$force){
 	    	if (! mgm_set_edicion_descartes($id, $courseid, $states)){
-	    		error('stateerror', 'mgm ');
+	    		print_error('stateerror', 'mgm ');
 	    	}
 	    }
 		}
@@ -205,9 +194,9 @@ if ($inscribe) {
 if ($id) {
     if ($edition = $DB->get_record('edicion', array('id'=> $id))) {
     	$PAGE->navbar->add($edition->name, $CFG->wwwroot . '/enrol/mgm/aprobe_requests.php?id='.$edition->id);
-        //$navlinks[] = array('name' => $edition->name, 'link' => 'aprobe_requests.php?id='.$edition->id, 'type' => 'misc');
         $strheading = $strheading.' '.$edition->name;
-
+        $editiontable = new html_table();
+        $editiontable->attributes['class'] = "boxaligncenter";
         // Table header
         $editiontable->head = array($strcourse, $strasignado, $strplazas, $strsolicitudes);
         $editiontable->align = array('left', 'center', 'center', 'center');
@@ -274,12 +263,8 @@ if ($courseid) {
     }
 }
 
-//$navigation = build_navigation($navlinks);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strheading);
-//print_header($strmatricular, $strmatricular, $navigation);
-//print_heading($strheading);
-
 if ($courseid) {
 	$course = $DB->get_record('course', array('id'=> $courseid));
     if (mgm_is_borrador($edition, $course)) {
@@ -287,13 +272,13 @@ if ($courseid) {
     } else {
         echo '<form name="inscribe" action="?id='.$id.'&courseid='.$courseid.'&inscribe=1" method="POST">';
     }
-    print_table($editiontable);
+    echo html_writer::table($editiontable);    
     echo $savebutton;
     if (mgm_is_borrador($edition, $course )) {
         echo '<center><input type="button" value="'.get_string('rollback_borrador', 'mgm').'" onclick="document.location.href=\'?id='.$id.'&courseid='.$courseid.'&inscribe=1&borrador=1&rollback=1\'"/></center>';
     }
     echo '</form>';
 } else {
-    print_table($editiontable);
+	echo html_writer::table($editiontable);    
 }
 echo $OUTPUT->footer();

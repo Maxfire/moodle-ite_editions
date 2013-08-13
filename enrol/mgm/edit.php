@@ -26,7 +26,7 @@
  */
 
 require('../../config.php');
-//require_once('edit_form.php');
+require_once('edit_form.php');
 
 $courseid   = required_param('courseid', PARAM_INT);
 $instanceid = optional_param('id', 0, PARAM_INT); // instanceid
@@ -51,55 +51,67 @@ if ($instanceid) {
     $instance = $DB->get_record('enrol', array('courseid'=>$course->id, 'enrol'=>'mgm', 'id'=>$instanceid), '*', MUST_EXIST);
     
 } else {
-    require_capability('moodle/course:enrolconfig', $context);
-    // no instance yet, we have to add new instance
-    navigation_node::override_active_url(new moodle_url('/enrol/instances.php', array('id'=>$course->id)));
-    $instance = new stdClass();
-    $instance->id       = null;
-    $instance->courseid = $course->id;
-    $plugin->add_instance($course);
-    redirect($return);
+	require_capability('moodle/course:enrolconfig', $context);
+	// No instance yet, we have to add new instance.
+	navigation_node::override_active_url(new moodle_url('/enrol/instances.php', array('id'=>$course->id)));
+	$instance = new stdClass();
+	$instance->id              = null;
+	$instance->courseid        = $course->id;
+	$instance->expirynotify    = $plugin->get_config('expirynotify');
+	$instance->expirythreshold = $plugin->get_config('expirythreshold');
 }
 
-// $mform = new enrol_paypal_edit_form(NULL, array($instance, $plugin, $context));
+$mform = new enrol_mgm_edit_form(null, array($instance, $plugin, $context));
 
-// if ($mform->is_cancelled()) {
-//     redirect($return);
+if ($mform->is_cancelled()) {
+	redirect($return);
 
-// } else if ($data = $mform->get_data()) {
-//     if ($instance->id) {
-//         $reset = ($instance->status != $data->status);
+} else if ($data = $mform->get_data()) {
+	if ($data->expirynotify == 2) {
+		$data->expirynotify = 1;
+		$data->notifyall = 1;
+	} else {
+		$data->notifyall = 0;
+	}
+	if (!$data->expirynotify) {
+		// Keep previous/default value of disabled expirythreshold option.
+		$data->expirythreshold = $instance->expirythreshold;
+	}
+	if ($instance->id) {
+		$instance->roleid          = $data->roleid;
+		$instance->enrolperiod     = $data->enrolperiod;
+		$instance->expirynotify    = $data->expirynotify;
+		$instance->notifyall       = $data->notifyall;
+		$instance->expirythreshold = $data->expirythreshold;
+		$instance->timemodified    = time();
 
-//         $instance->status         = $data->status;
-//         $instance->name           = $data->name;
-//         $instance->cost           = $data->cost;
-//         $instance->currency       = $data->currency;
-//         $instance->roleid         = $data->roleid;
-//         $instance->enrolperiod    = $data->enrolperiod;
-//         $instance->enrolstartdate = $data->enrolstartdate;
-//         $instance->enrolenddate   = $data->enrolenddate;
-//         $instance->timemodified   = time();
-//         $DB->update_record('enrol', $instance);
+		$DB->update_record('enrol', $instance);
 
-//         if ($reset) {
-//             $context->mark_dirty();
-//         }
+		// Use standard API to update instance status.
+		if ($instance->status != $data->status) {
+			$instance = $DB->get_record('enrol', array('id'=>$instance->id));
+			$plugin->update_status($instance, $data->status);
+			$context->mark_dirty();
+		}
 
-//     } else {
-//         $fields = array('status'=>$data->status, 'name'=>$data->name, 'cost'=>$data->cost, 'currency'=>$data->currency, 'roleid'=>$data->roleid,
-//                         'enrolperiod'=>$data->enrolperiod, 'enrolstartdate'=>$data->enrolstartdate, 'enrolenddate'=>$data->enrolenddate);
-//         $plugin->add_instance($course, $fields);
-//     }
+	} else {
+		$fields = array(
+				'status'          => $data->status,
+				'roleid'          => $data->roleid,
+				'enrolperiod'     => $data->enrolperiod,
+				'expirynotify'    => $data->expirynotify,
+				'notifyall'       => $data->notifyall,
+				'expirythreshold' => $data->expirythreshold);
+		$plugin->add_instance($course, $fields);
+	}
 
-//     redirect($return);
-// }
+	redirect($return);
+}
 
 $PAGE->set_heading($course->fullname);
-$PAGE->set_title(get_string('pluginname', 'mgm'));
+$PAGE->set_title(get_string('pluginname', 'enrol_mgm'));
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('pluginname', 'mgm'));
-echo "Ya existe una instancia de matriculacion de MGM";
-
-//$mform->display();
+echo $OUTPUT->heading(get_string('pluginname', 'enrol_mgm'));
+$mform->display();
 echo $OUTPUT->footer();

@@ -74,7 +74,7 @@ class mod_mgm_edit_form extends moodleform {
             $mform->addElement('select', 'theme', get_string('forcetheme'), $themes);
         }
 //         $mform->setHelpButton('description', array('writing', 'richtext'), false, 'editorhelpbutton');
-        $mform->addHelpButton('description', 'writing');
+        // $mform->addHelpButton('description', 'writing');
 
 
         $iniciogrp = array();

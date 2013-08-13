@@ -350,3 +350,5 @@ $string['acta_admin_sig']="Dª Mª del Carmen Arenas Fonollosa, Jefa del Servici
 $string['do_paid']="Marcar edicion como Pagada";
 $string['cc']='Codigo de Centro';
 $string['cc_help'] = 'Si no recuerda o no conoce el código de su centro, puede encontrar el código de su centro en el siguiente enlace: <a href="https://www.educacion.gob.es/centros/home.do"/>https://www.educacion.gob.es/centros/home.do</a>';
+$string['list'] = 'Lista de cursos';
+$string['list_help'] = 'Solo aparecen en el listado aquellos cursos que no sean parte de ninguna edición.';

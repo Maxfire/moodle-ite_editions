@@ -5,14 +5,15 @@ require_once($CFG->libdir.'/datalib.php');
 
 class edicion_form extends moodleform {
     function definition() {
+    	global $DB;
         $mform =& $this->_form;
         $achoices = array();
         $filter_editions = optional_param('edition',0,PARAM_INT);
-				$editionlist = array_keys(get_records('edicion'));
+				$editionlist = array_keys($DB->get_records('edicion'));
 				$editionoptions = array();
 				$editionoptions[0] = get_string('choose');
 				if(!empty($editionlist)){
-					$editions = get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
+					$editions = $DB->get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
 					foreach($editions as $c){
 						$editionoptions[$c->id] = format_string($c->name);
 					}
@@ -58,25 +59,25 @@ class user_filter extends moodleform {
 	var $_filters;
 
   function definition() {
-  		global $CFG;
+  		global $CFG, $DB;
         $mform =& $this->_form;
         $this->filters=array();
         $filter_edition = optional_param('edition',-1,PARAM_INT);
         $filter_catetory = optional_param('category',0,PARAM_INT);
         $filter_course = optional_param('course',0,PARAM_INT);
         $filter_group = optional_param('group',0,PARAM_INT);
-				$editionlist = array_keys(get_records('edicion'));
+				$editionlist = array_keys($DB->get_records('edicion'));
 				$editionoptions = array();
 				$editionoptions[0] = '- Elegir -';
 
 				if(!empty($editionlist)){
-					$editions = get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
+					$editions = $DB->get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
 					foreach($editions as $c){
 						$editionoptions[$c->id] = format_string($c->name);
 					}
 				}
 				$categoryoptions = array(0=>'- Elegir -');
-				if ($cats=get_records('course_categories')){
+				if ($cats = $DB->get_records('course_categories')){
 					foreach($cats as $c){
 						$categoryoptions[$c->id] = format_string($c->name);
 					}
@@ -90,14 +91,14 @@ class user_filter extends moodleform {
 				$ids=false;
 		    $courseoptions = array(0=>'- Elegir -');
 		    if ($filter_edition){
-		    	$sql="select courseid from ".$CFG->prefix."edicion_course where edicionid=".$filter_edition;
-					$ids= array_keys(get_records_sql($sql));
+		    	$sql="select courseid from {edicion_course} where edicionid = ".$filter_edition;
+					$ids= array_keys($DB->get_records_sql($sql));
 		    }
 		    else{
-		    	$ids=array_keys(get_records('course'));
+		    	$ids=array_keys($DB->get_records('course'));
 		    }
 		    if ($ids){
-		    	$courses = get_records_select('course','id in ('.(implode(',',$ids)).')');
+		    	$courses = $DB->get_records_select('course','id in ('.(implode(',',$ids)).')');
 		    	foreach($courses as $c){
 						$courseoptions[$c->id] = format_string($c->fullname);
 		    	}
@@ -107,14 +108,14 @@ class user_filter extends moodleform {
 		    $ids=false;
 		    $groupoptions = array(0=>'- Elegir -');
 		    if ($filter_course){
-		    	$ids=array_keys(get_records('groups','courseid',$filter_course));
+		    	$ids=array_keys($DB->get_records('groups','courseid',$filter_course));
 		    }
 		    else{
 		    	$ids=false;
 		    }
 
 		    if ($ids){
-		    	$groups = get_records_select('groups','id in ('.(implode(',',$ids)).')');
+		    	$groups = $DB->get_records_select('groups','id in ('.(implode(',',$ids)).')');
 		    	foreach($groups as $c){
 						$groupoptions[$c->id] = format_string($c->name);
 		    	}
@@ -177,16 +178,16 @@ class user_filter extends moodleform {
   }
 
   function get_users(){
-  	  global $CFG;
+  	  global $CFG, $DB;
   	  $arol='5';
   	  if (isset($this->_filters['groupid']) && $this->_filters['groupid']!=0){
- 	    	$sqlbase="SELECT u.id, ".sql_fullname()." AS fullname, eu.dni, eu.cc, u.email, c.fullname as curso
+ 	    	$sqlbase="SELECT u.id, ".$DB->sql_fullname()." AS fullname, eu.dni, eu.cc, u.email, c.fullname as curso
      		FROM prefix_user u left join  prefix_edicion_user eu on (u.id=eu.userid) left join prefix_edicion_centro ect on ect.codigo=eu.cc,
      		prefix_edicion_course ec left join prefix_course c on ec.courseid=c.id , prefix_role_assignments AS ra INNER JOIN prefix_context AS context ON ra.contextid=context.id,
      		(SELECT g.id groupid, g.courseid coursegr, gm.userid FROM prefix_groups_members gm join prefix_groups g on (gm.groupid=g.id)) cg
      		where context.contextlevel = 50 AND ra.roleid=".$arol." AND u.id=ra.userid AND context.instanceid=ec.courseid AND cg.userid=u.id AND cg.coursegr=ec.courseid";
   	  }else{// No filter group
-  	  	$sqlbase="SELECT u.id, ".sql_fullname()." AS fullname, eu.dni, eu.cc, u.email, c.fullname as curso
+  	  	$sqlbase="SELECT u.id, ".$DB->sql_fullname()." AS fullname, eu.dni, eu.cc, u.email, c.fullname as curso
      		FROM prefix_user u left join  prefix_edicion_user eu on (u.id=eu.userid) left join prefix_edicion_centro ect on ect.codigo=eu.cc,
      		prefix_edicion_course ec left join prefix_course c on ec.courseid=c.id , prefix_role_assignments AS ra INNER JOIN prefix_context AS context ON ra.contextid=context.id
      		where context.contextlevel = 50 AND ra.roleid=".$arol." AND u.id=ra.userid AND context.instanceid=ec.courseid";
@@ -206,7 +207,7 @@ class user_filter extends moodleform {
  	    $order=' order by cc';
 
  	    $sql=$sqlbase.$where.$order.$limit;
- 	    if($regs=get_records_sql($sql)){
+ 	    if($regs = $DB->get_records_sql($sql)){
  	    	return $regs;
  	    }
 			return false;
@@ -214,7 +215,8 @@ class user_filter extends moodleform {
 
   function print_users_table($users){
   	  global $CFG;
-			$table=new stdClass();
+			//$table=new stdClass();
+			$table = new html_table();
 			$table->head=array(
 			'',
 			get_string('user'),
@@ -226,20 +228,23 @@ class user_filter extends moodleform {
 			$table->width = '100%';
 			$table->data=array();
 			$cnt=1;
-			foreach($users as $user){
-				  $input='<input type="checkbox" name="users['.$user->id.']" checked value="'.$user->id.'" />';
-				  $name='<a href="'.$CFG->wwwroot.'/user/view.php?id='.$user->id.'&amp;course='.SITEID.'">'.$user->fullname.'</a>';
-				  $table->data[] = array(
-				  $cnt,
-				  $input.' '.$name,
-				  strtoupper($user->dni),
-				 	$user->cc,
-				  $user->email,
-				  $user->curso
-				  );
-				  $cnt++;
-			}
-			print_table($table);
+			if (is_array($users)){
+				foreach($users as $user){
+					$input='<input type="checkbox" name="users['.$user->id.']" checked value="'.$user->id.'" />';
+					$name='<a href="'.$CFG->wwwroot.'/user/view.php?id='.$user->id.'&amp;course='.SITEID.'">'.$user->fullname.'</a>';
+					$table->data[] = array(
+							$cnt,
+							$input.' '.$name,
+							strtoupper($user->dni),
+							$user->cc,
+							$user->email,
+							$user->curso
+					);
+					$cnt++;
+				}				
+			}			
+			echo html_writer::table($table);
+			
   }
 
 }
@@ -318,16 +323,17 @@ class user_letter_form extends moodleform {
 
 }
 
-class export_data extends moodleform {
+class export_data extends moodleform {	
     function definition() {
+    	global $DB;
         $mform =& $this->_form;
         $achoices = array();
         $filter_editions = optional_param('edition',0,PARAM_INT);
-				$editionlist = array_keys(get_records('edicion'));
+				$editionlist = array_keys($DB->get_records('edicion'));
 				$editionoptions = array();
 				$editionoptions[0] = get_string('choose');
 				if(!empty($editionlist)){
-					$editions = get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
+					$editions = $DB->get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
 					foreach($editions as $c){
 						$editionoptions[$c->id] = format_string($c->name);
 					}
@@ -360,7 +366,7 @@ class export_data extends moodleform {
 class espec_form extends moodleform {
 function definition() {
         $mform =& $this->_form;
-				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
+		$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
         $objs[1] =& $mform->createElement('submit', 'update', get_string('update'));
         $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
     }

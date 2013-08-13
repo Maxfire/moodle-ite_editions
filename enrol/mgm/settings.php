@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Manual enrolment plugin settings and presets.
+ * MGM enrolment plugin settings and presets.
  *
- * @package    enrol_manual
+ * @package    enrol_mgm
  * @copyright  2013 Jesus Jaen	{jesus.jaen@open-phoenix.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

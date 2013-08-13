@@ -22,7 +22,7 @@ $gradereport_acta_capabilities = array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSE,
         'legacy' => array(
-						'teacher' => CAP_ALLOW,
+			'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'admin' => CAP_ALLOW
         )

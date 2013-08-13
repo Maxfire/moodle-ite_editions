@@ -136,7 +136,7 @@ public function opCabecera($title, $head1, $head2)
   }
 
 public function AddLetter($letterhead, $letterbody, $letterfoot){
-	  global $CFG;
+	 global $CFG;
     $this->AddPage();
     $this->SetFont('Arial','B',10);
     $this->setXY(6,40);

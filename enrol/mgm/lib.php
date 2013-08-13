@@ -117,13 +117,16 @@ class enrol_mgm_plugin extends enrol_plugin {
      * @return moodle_url page url
      */
     public function get_newinstance_link($courseid) {
+    	global $DB;
         $context = context_course::instance($courseid, MUST_EXIST);
 
         if (!has_capability('moodle/course:enrolconfig', $context) or !has_capability('enrol/mgm:config', $context)) {
             return NULL;
         }
-
-        // multiple instances supported - different cost for different roles
+        // multiple instances supported are not supported
+        if ($DB->record_exists('enrol', array('courseid'=>$courseid, 'enrol'=>'mgm'))) {
+        	return NULL;
+        }        
         return new moodle_url('/enrol/mgm/edit.php', array('courseid'=>$courseid));
     }
 

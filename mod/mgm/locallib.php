@@ -1140,6 +1140,7 @@ function mgm_inscribe_user_in_edition($edition, $user, $course, $released = fals
         $record->userid = $user;
         $record->value = $course;
         $record->released = $released;
+        $record->timemodified = time();
         $DB->insert_record('edicion_inscripcion', $record);
     } else {
         // Update record
@@ -1174,13 +1175,11 @@ function mgm_massive_role_assign($course, $users, $timestart=0, $timeend=0, $enr
         $timemodified = time();
     }
 
-    foreach($users as $user) {
-    	global $DB;
+    foreach($users as $user) {    	
         /// Check for existing entry
         if($user->id) {
-            $ra = $DB->get_record('role_assignments', 'roleid', $course->role->id, 'contextid', $course->context->id, 'userid', $user->id);
+            $ra = $DB->get_record('role_assignments', array('roleid'=> $course->role->id, 'contextid'=> $course->context->id, 'userid'=>$user->id));
         }
-
         if (empty($ra)) {
             $ra = new object();
             $ra->roleid = $course->role->id;
@@ -1234,13 +1233,13 @@ function mgm_massive_role_assign($course, $users, $timestart=0, $timeend=0, $enr
     }
 
     /// now handle metacourse role assignments if in course context
-    if ($context->contextlevel == CONTEXT_COURSE) {
-        if ($parents = $DB->get_records('course_meta', 'child_course', $context->instanceid)) {
-            foreach ($parents as $parent) {
-                sync_metacourse($parent->parent_course);
-            }
-        }
-    }
+//     if ($context->contextlevel == CONTEXT_COURSE) {
+//         if ($parents = $DB->get_records('course_meta', array('child_course'=> $context->instanceid))) {
+//             foreach ($parents as $parent) {
+//                 sync_metacourse($parent->parent_course);
+//             }
+//         }
+//     }
 
     return true;
 }
@@ -1256,7 +1255,7 @@ function mgm_massive_role_assign($course, $users, $timestart=0, $timeend=0, $enr
  * @param object $users
  * @param string $enrol - the plugin used to do this enrolment
  */
-function mgm_enrol_into_course($course, $users, $enrol) {
+function mgm_enrol_into_course($course, $users, $enrol_instance) {
 
     $timestart = time();
     // remove time part from the timestamp and keep only the date part
@@ -1279,35 +1278,47 @@ function mgm_enrol_into_course($course, $users, $enrol) {
 
 function mgm_enrol_edition_course($editionid, $courseid) {
     global $CFG, $DB;
-
+    if (!$enrol_mgm = enrol_get_plugin('mgm')) {
+    	throw new coding_exception('Can not instantiate enrol_mgm');
+    }
     $sql = "SELECT userid FROM {edicion_inscripcion}
     		WHERE edicionid = :editionid AND value = :courseid";    
-    if($data = $DB->get_records_sql($sql, array('editionid'=>$editionid, 'value'=>$courseid))) {
-        $course = $DB->get_record('course', array('id'=> $courseid));
-        if (!$role = get_default_course_role($course)) {
-            error('Role doen\'t exists for course '.$course->shortname);
-            die();
+    if($data = $DB->get_records_sql($sql, array('editionid'=>$editionid, 'courseid'=>$courseid))) {
+        if (! $course = $DB->get_record('course', array('id'=> $courseid))){
+        	print_error('Course not exist! '.$course->shortname);
+        	die();
+        } 
+        if (! $enrol_mgm_instance = $DB->get_record('enrol', array('courseid'=>$courseid, 'enrol'=>'mgm'))) {
+        	print_error('Course not configure for MGM enrol! '.$course->shortname);
+        	die();
         }
-        $context = get_context_instance(CONTEXT_COURSE, $course->id);
-        $course->role = $role;
+        $roleid = $enrol_mgm_instance->roleid;
+         if (! $roleid ) {
+             print_error('Role doen\'t exists for course '.$course->shortname);
+             die();
+        }        
+         
+        $context = context_course::instance($course->id, MUST_EXIST);
+        $course->roleid = $roleid;
         $course->context = $context;
-
-        $users = array();
+        
+        $today = time();
+        $today = make_timestamp(date('Y', $today), date('m', $today), date('d', $today), 0, 0, 0);
+        if ($course->startdate > 0) {
+        	$timestart = $course->startdate;
+        }
+        else{
+        	$timestart = $today;
+        }
+        $timeend = 0;
         foreach($data as $row) {
-            $usql = "SELECT auth, email, id, emailstop, deleted, mnethostid, mailformat, firstname, lastname
-                     FROM ".$CFG->prefix."user
-                     WHERE id='".$row->userid."'";
-
-            if(!$user = $DB->get_record_sql($usql)) {
-                continue;
-            }
-
-            $users[] = $user;
-        }
-
-        if(!mgm_enrol_into_course($course, $users, 'mgm')) {
-            print_error('couldnotassignrole');
-        }
+        	$adduserid = $row->userid;
+        	$enrol_mgm->enrol_user($enrol_mgm_instance, $adduserid, $roleid, $timestart, $timeend);
+        	add_to_log($course->id, 'course', 'enrol', '../enrol/users.php?id='.$course->id, $course->id); //there should be userid somewhere!
+       	}
+//        if(!mgm_enrol_into_course($course, $users, $enrol_mgm_instance)) {
+//             print_error('couldnotassignrole');
+//         }
     }
 }
 

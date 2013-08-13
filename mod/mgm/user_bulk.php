@@ -18,7 +18,7 @@ if (isset($_POST['submit_action']) ) {
     if (isset($_POST['users'])){
     	$SESSION->bulk_users = $_POST['users'];
     }
-		redirect($CFG->wwwroot.'/mod/mgm/user_bulk_action.php?action='.$action);
+	redirect($CFG->wwwroot.'/mod/mgm/user_bulk_action.php?action='.$action);
 
 }
 if ($data = $ufiltering->get_data(false)) {
@@ -30,29 +30,29 @@ if ($data = $ufiltering->get_data(false)) {
         unset($SESSION->bulk_filters);
         redirect($CFG->wwwroot.'/mod/mgm/user_bulk.php');
   }else if (!empty($data->show)){
-  	admin_externalpage_print_header();
+  	echo $OUTPUT->header();  	
   	$ufiltering->display();
   	$users=$ufiltering->get_users();
-  	print '<form action="user_bulk.php" method="POST">';
+  	echo '<form action="user_bulk.php" method="POST">';
    	$ufiltering->print_users_table($users);
-   	print '<center>';
-   	print '<input type="hidden" value="1" name="confirm">
+   	echo '<center>';
+   	echo '<input type="hidden" value="1" name="confirm">
     	<input type="hidden" value="'.sesskey().'" name="sesskey">
     	<SELECT name="action">
 		  <OPTION VALUE="0">Elegir</OPTION>
 		  <OPTION VALUE="1">Enviar mensaje</OPTION>
 		  <OPTION VALUE="2">Generar cartas</OPTION>
-			</SELECT>
+		</SELECT>
     	<input type="submit" name="submit_action" id="Submit_btn1" value="'.get_string('next').'">
     	</form>';
-   	print '</center>';
-   	admin_externalpage_print_footer();
+   	echo '</center>';
+   	echo $OUTPUT->footer();   	
    	die();
   }
 }
 
-admin_externalpage_print_header();
+echo $OUTPUT->header();
 $ufiltering->display();
-admin_externalpage_print_footer();
+echo $OUTPUT->footer();
 
 ?>

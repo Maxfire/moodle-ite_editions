@@ -76,7 +76,7 @@ $strcourses = get_string('courses');
 $context = get_context_instance(CONTEXT_SYSTEM);
 
 $navlinks = array();
-$navlinks[] = array('name' => $strcourses, 'link' => ".", 'type' => 'misc');
+$navlinks[] = array('name' => $strcourses, 'link' =>"/course/index.php", 'type' => 'misc');
 $navlinks[] = array('name' => $strloginto, 'link' => null, 'type' => 'misc');
 $navigation = build_navigation($navlinks);
 
@@ -205,7 +205,7 @@ if ($data=$eform->get_data() ) {
 
 $eform->display();
 if ($eform->is_validated()){
-	print "Guardar datos formulario correcto";
+	echo "Guardar datos formulario correcto";
 }
 if ($options) {
 	echo "<br />";

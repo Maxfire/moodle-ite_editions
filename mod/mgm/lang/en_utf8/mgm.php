@@ -330,3 +330,5 @@ $string['pagefoot']='Pie de página';
 $string['page']='Página';
 $string['letter']='Carta';
 $string['show_users']='Mostrar Usuarios';
+$string['list'] = 'Lista de cursos';
+$string['list_help'] = 'Solo aparecen en el listado aquellos cursos que no sean parte de ninguna edición.';
