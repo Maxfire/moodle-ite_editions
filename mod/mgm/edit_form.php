@@ -73,23 +73,28 @@ class mod_mgm_edit_form extends moodleform {
             $themes += get_list_of_themes();
             $mform->addElement('select', 'theme', get_string('forcetheme'), $themes);
         }
-//         $mform->setHelpButton('description', array('writing', 'richtext'), false, 'editorhelpbutton');
-        // $mform->addHelpButton('description', 'writing');
-
-
         $iniciogrp = array();
-        $iniciogrp[] = &MoodleQuickForm::createElement('date_time_selector', 'inicio');
+        $iniciogrp[] = &$mform->createElement('date_time_selector', 'inicio');
         $mform->addGroup($iniciogrp, 'iniciogrp', get_string('fechainicio', 'mgm'), ' ', false);
         $mform->setDefault('inicio', 0);
 
         $fingrp = array();
-        $fingrp[] = &MoodleQuickForm::createElement('date_time_selector', 'fin');
+        $fingrp[] = &$mform->createElement('date_time_selector', 'fin');
         $mform->addGroup($fingrp, 'fingrp', get_string('fechafin', 'mgm'), ' ', false);
         $mform->setDefault('fin', 0);
+        
+        $methodlist=array(
+        		'1'=>get_string('methodenrol1', 'mgm'),
+        		'2'=>get_string('methodenrol2', 'mgm'),
+        		'3'=>get_string('methodenrol3', 'mgm'));
+        $mform->addElement('select', 'methodenrol', get_string('methodenrol', 'mgm'), $methodlist);
+        $mform->addRule('methodenrol', get_string('required'), 'required', null);
+        $mform->setDefault('methodenrol', '1');
 
         $achoices = $schoices = array();
         $acourses = & $this->_customdata->acourses;
         $scourses = & $this->_customdata->scourses;
+        $mform->addHelpButton('methodenrol', 'methodenrol', 'mgm');
 
         if (is_array($acourses)) {
             $achoices += $acourses;
@@ -100,6 +105,14 @@ class mod_mgm_edit_form extends moodleform {
         }
 
         $mform->addElement('header', 'courses', get_string('courses'));
+        
+        $mform->addElement('text', 'numberc', get_string('numberc', 'mgm'));
+        $mform->addRule('numberc', get_string('required'), 'required', null);
+        $mform->addRule('numberc', get_string('numeric', 'mgm'), 'numeric');
+        $mform->setDefault('numberc', 3);
+        $mform->addHelpButton('numberc', 'numberc', 'mgm');
+        
+        
         $courses = array();
         $courses[0] = & $mform->createElement('select', 'acourses', get_string('cavailable', 'mgm'), $achoices,
         									  'size="15" class="mod-mgm courses-select"
@@ -115,15 +128,12 @@ class mod_mgm_edit_form extends moodleform {
         $courses[1]->setMultiple(true);
 
         $grp =& $mform->addElement('group', 'coursesgrp', get_string('courses'), $courses, ' ', false);
-//         $grp->setHelpButton(array('lists', get_string('courses'), 'mgm'));
         $mform->addHelpButton('coursesgrp', 'lists', 'mgm');
 
         $objs = array();
         $objs[] =& $mform->createElement('submit', 'addsel', get_string('addsel', 'mgm'));
         $objs[] =& $mform->createElement('submit', 'removesel', get_string('removesel', 'mgm'));
         $grp =& $mform->addElement('group', 'buttonsgrp', get_string('selectedlist', 'mgm'), $objs, array(' ', '<br />'), false);
-//         $grp->setHelpButton(array('selectedlist', get_string('selectedlist', 'mgm'), 'mgm'));
-        $mform->addHelpButton('buttonsgrp', 'selectedlist', 'mgm');
 
         if (isset($edition->id)) {
             $mform->addElement('hidden', 'id', 0);

@@ -32,7 +32,10 @@
 				<FIELD NAME="fechaemision" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="certified" NEXT="state"/>
 				<FIELD NAME="state" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="borrador" SEQUENCE="false" COMMENT="Estado" PREVIOUS="fechaemision" NEXT="paid"/>
 <!-- 				<FIELD NAME="state" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="borrador" SEQUENCE="false" ENUM="true" ENUMVALUES="'borrador', 'preinscripcion', 'matriculacion', 'en curso', 'gestion', 'finalizada'" COMMENT="Estado" PREVIOUS="fechaemision" NEXT="paid"/> -->
-				<FIELD NAME="paid" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="state"/>      
+				<FIELD NAME="paid" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="state"/>
+				<FIELD NAME="numberc" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="3" SEQUENCE="false"  PREVIOUS="paid"/>
+				<FIELD NAME="methodenrol" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"  PREVIOUS="numberc"/>
+<!-- 				Metodo de Matriculacion para generar las matriculas de los alumnos: 1->'Estandar', 2->'Primeras opciones', 3->'Orden de peticion' -->
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

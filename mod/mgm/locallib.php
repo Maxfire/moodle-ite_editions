@@ -468,23 +468,17 @@ function mgm_get_edition_available_courses($edition) {
 //     require_once ("$CFG->dirroot/enrol/enrol.class.php");
 
 //     $sql = "SELECT id, fullname, enrol FROM " . $CFG -> prefix . "course
-    $sql = "SELECT id, fullname FROM " . $CFG -> prefix . "course
+    $sql = "SELECT id, fullname FROM {course}
 			WHERE id NOT IN (
-				SELECT courseid FROM " . $CFG -> prefix . "edicion_course
-				WHERE edicionid = " . $edition -> id . "
-			) AND id NOT IN (
-				SELECT courseid FROM " . $CFG -> prefix . "edicion_course
+				SELECT courseid FROM {edicion_course}
 			) AND id != '1'
 			ORDER BY fullname";
     $courses = $DB->get_records_sql($sql);
     $ret = array();
     foreach($courses as $course) {
-    	
-//         if(enrolment_factory::factory($course -> enrol) instanceof enrolment_plugin_mgm) {
-            $ret[] = $course;
-//         }
+    	$ret[] = $course;
+    	// Puede ser necesario devolver solo cursos con instancica de enrol = mgm
     }
-
     return $ret;
 }
 
@@ -540,10 +534,10 @@ function mgm_create_edition($edition) {
     $edition -> timemodified = time();
     $edition -> fechaemision = 0;
     $id = $DB->insert_record('edicion', $edition);
-    if($result) {
+    if($id) {
         events_trigger('edition_created', get_record('edicion', 'id', $result));
     }
-    return $result;
+    return $id;
 }
 
 function mgm_delete_edition($editionorid) {

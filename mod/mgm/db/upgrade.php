@@ -67,7 +67,26 @@ function xmldb_mgm_upgrade($oldversion=0) {
 // 		}
 // 		// Forum savepoint reached.
 // 		upgrade_mod_savepoint(true, 2012112901, 'forum');
-// 	}    
+// 	}
+	if ($oldversion < 2013081400) {
 	
+		// Define field to be added to assign.
+		$table = new xmldb_table('edicion');		                         
+		$field1 = new xmldb_field('numberc', XMLDB_TYPE_INTEGER, '1', true, XMLDB_NOTNULL, null, '3', 'paid');
+		$field2 = new xmldb_field('methodenrol', XMLDB_TYPE_INTEGER, '1', true, XMLDB_NOTNULL, null, '1', 'numberc');
+	
+		// Conditionally launch add field1.
+		if (!$dbman->field_exists($table, $field1)) {
+			$dbman->add_field($table, $field1);
+		}
+		// Conditionally launch add field2.
+		if (!$dbman->field_exists($table, $field2)) {
+			$dbman->add_field($table, $field2);
+		}
+	
+		// Assign savepoint reached.
+		upgrade_mod_savepoint(true, 2013081400, 'assign');
+	}
+		
     return $result;
 }

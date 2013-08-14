@@ -28,22 +28,23 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/edit_form.php');
+require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
+//admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
 $systemcontext = context_system::instance();
-$PAGE->set_url('/mgm/index.php');
+$PAGE->set_url('/edicionedit.php');
 $PAGE->set_context($systemcontext);
 $PAGE->set_pagelayout('admin');
-
 
 $id = optional_param('id', 0, PARAM_INT);    // Edition id
 
 if ($id) {
     if (!$edition = $DB->get_record('edicion', array('id'=> $id))) {
-        error('Edition not known!');
+        print_error('Edition not known!');
     }
 
-    require_capability('mod/mgm:editedicion', get_context_instance(CONTEXT_SYSTEM));
+    require_capability('mod/mgm:editedicion', $systemcontext);
     $strtitle = get_string('editeditionsettings', 'mgm');
 } else {
     $strtitle = get_string('newedition', 'mgm');
@@ -52,6 +53,8 @@ if ($id) {
 if (isset($edition)) {
     $selectedcourses = mgm_get_edition_courses($edition);
     $allcourses = mgm_get_edition_available_courses($edition);
+}else{
+	$edition = new stdClass();
 }
 
 $acourses = $scourses = array();
@@ -70,7 +73,6 @@ if (!empty($allcourses)) {
 
 $edition->scourses = $scourses;
 $edition->acourses = $acourses;
-
 $mform = new mod_mgm_edit_form('edicionedit.php', $edition);
 $mform->set_data($edition);
 
@@ -85,6 +87,8 @@ if ($mform->is_cancelled()) {
 //     $newedition->plazas = $data->plazas;
     $newedition->inicio = $data->inicio;
     $newedition->fin = $data->fin;
+    $newedition->numberc = $data->numberc;
+    $newedition->methodenrol = $data->methodenrol;
 
     if (isset($data->theme) && !empty($CFG->allowcategorythemes)) {
         $newcategory->theme = $data->theme;
@@ -107,8 +111,9 @@ if ($mform->is_cancelled()) {
                 mgm_remove_course($edition, $courseid);
             }
         }
-        if ($reg = $DB->get_record('edicion', array('id'=> $data->id)) && $reg->state=='finalizada'){
-        	error(get_string('state_ed_error5', 'mgm'));//no se puede modificar una edicion finalizada
+        $reg = $DB->get_record('edicion', array('id'=> $data->id));
+        if ( $reg && $reg->state=='finalizada'){
+        	print_error(get_string('state_ed_error5', 'mgm'));//no se puede modificar una edicion finalizada
         }else{
         	mgm_update_edition($newedition);
         }
@@ -118,26 +123,12 @@ if ($mform->is_cancelled()) {
     }
     redirect('index.php');
 }
-
 // Print the form
 $straddnewedition = get_string('addedicion', 'mgm');
 $stradministration = get_string('administration');
 $streditions = get_string('editions', 'mgm');
 
-require_once($CFG->libdir.'/adminlib.php');
-
-admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
 echo $OUTPUT->header();
-//admin_externalpage_print_header();
-//print_heading($strtitle);
 echo $OUTPUT->heading($strtitle);
 $mform->display();
 echo $OUTPUT->footer();
-//admin_externalpage_print_footer();
-
-// admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
-// $OUTPUT->header();
-// //admin_externalpage_print_header();
-// $OUTPUT->heading($strtitle);
-// $mform->display();
-// $OUTPUT->footer();

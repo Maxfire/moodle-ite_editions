@@ -350,5 +350,17 @@ $string['acta_admin_sig']="Dª Mª del Carmen Arenas Fonollosa, Jefa del Servici
 $string['do_paid']="Marcar edicion como Pagada";
 $string['cc']='Codigo de Centro';
 $string['cc_help'] = 'Si no recuerda o no conoce el código de su centro, puede encontrar el código de su centro en el siguiente enlace: <a href="https://www.educacion.gob.es/centros/home.do"/>https://www.educacion.gob.es/centros/home.do</a>';
-$string['list'] = 'Lista de cursos';
-$string['list_help'] = 'Solo aparecen en el listado aquellos cursos que no sean parte de ninguna edición.';
+$string['lists'] = 'Lista de cursos';
+$string['lists_help'] = '<b>Cursos disponibles:</b> Solo aparecen en el listado aquellos cursos que no sean parte de ninguna otra edición.<br/>
+<b>Cursos seleccionados:</b> Conjunto de cursos asignados a esta edición y que por lo tanto no están disponibles para otras';
+$string['numberc'] = 'Número de cursos';
+$string['numberc_help'] = 'Numero máximo de cursos a los que cada solicitante se puede preinscribir';
+$string['numberc_help'] = 'Numero Máximo de cursos a los que cada solicitante se puede preinscribir';
+$string['methodenrol1'] = 'Estandar';
+$string['methodenrol2'] = 'Primeras opciones';
+$string['methodenrol3'] = 'Orden de peticion';
+$string['methodenrol'] = 'Método de matriculación';
+$string['methodenrol_help'] = 'Metodo usado a la hora de matricular los alumnos para asignarles plaza.<br>
+<b>Método estándar: </b> Metodo comunmente usado en ediciones anteriores a Septiembre de 2013. Las plazas asignadas dependen del orden en que se confirman los cursos.
+<b>Primeras opciones:</b> Con este metodo primero se asignan plaza las primeras opciones de todos los solicitantes de todos los cursos.<br>
+<b>Orden de peticion:</b> Se procede usuario por usuario comprobando cada una de sus opciones hasta que se le concede un curso o se le deniegan todos.<br>';

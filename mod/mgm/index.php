@@ -30,7 +30,7 @@ require_once(dirname(__FILE__).'/locallib.php');
 require_login();
 $editionedit = optional_param('editionedit', -1, PARAM_BOOL);
 $systemcontext = context_system::instance();
-$PAGE->set_url('/mgm/index.php');
+$PAGE->set_url('/mod/mgm/index.php');
 $PAGE->set_context($systemcontext);
 $PAGE->set_pagelayout('admin');
 
