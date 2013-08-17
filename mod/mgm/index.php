@@ -105,12 +105,6 @@ if (isset($editions) && is_array($editions)) {
     }
 }
 
-// Navigation links
-
-// $PAGE->navbar->add($stradministration);
-// $PAGE->navbar->add($strediciones, new moodle_url('index.php'));
-// $PAGE->navbar->add($stredicionesmgm);
-
 // Table header
 $editiontable->head  = array($stredicion, $strstate, $strfechainicio, $strfechafin, $strcourses, $strplazas, $stredit);
 $editiontable->align = array('left', 'left', 'left', 'left', 'center', 'center', 'center');

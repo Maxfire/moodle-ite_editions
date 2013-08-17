@@ -39,7 +39,7 @@ class plugin_custommgm extends plugin_base{
 
 	function execute($userid, $context, $data){
 		global $SESSION;
-		if ($SESSION->MGMINF->active){
+		if (isset($SESSION->MGMINF) && isset ($SESSION->MGMINF->active)){
 			$SESSION->MGMINF->active=0;
 			return true;
 

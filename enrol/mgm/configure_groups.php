@@ -33,32 +33,35 @@ require_once($CFG->dirroot."/mod/mgm/locallib.php");
 require_once('configure_groups_form.php');
 
 require_login();
-
-require_capability('mod/mgm:aprobe', get_context_instance(CONTEXT_SYSTEM));
+$systemcontext = context_system::instance();
+require_capability('mod/mgm:aprobe', $systemcontext);
+$PAGE->set_url('/enrol/mgm/configure_groups.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
 
 $id = optional_param('id', 0, PARAM_INT);    // Edition id
 $courseid = optional_param('courseid', 0, PARAM_INT);
 $done = optional_param('done', false, PARAM_BOOL);
 
 if ($courseid) {
-    if (!$course = get_record('course', 'id', $courseid)) {
-        error('Course not known');
+    if (!$course = $DB->get_record('course', array('id'=> $courseid))) {
+        print_error('Course not known');
     }
 }
 
 if ($id) {
-    if (!$edition = get_record('edicion', 'id', $id)) {
-        error('Edicion not known');
+    if (!$edition = $DB->get_record('edicion', array('id'=> $id))) {
+        print_error('Edicion not known');
     }
 }
 
 if ($id && $courseid) {
     $criteria = mgm_get_edition_course_criteria($id, $courseid);
-    if (!$groups = get_records('groups', 'courseid', $courseid)) {
-        error('No groups found');
+    if (!$groups = $DB->get_records('groups', array('courseid'=> $courseid))) {
+        print_error('No groups found');
     }
 } else {
-    error('Edition and Course id required');
+    print_error('Edition and Course id required');
 }
 
 if ($frm = data_submitted() and confirm_sesskey()) {
@@ -71,11 +74,11 @@ if ($frm = data_submitted() and confirm_sesskey()) {
             print_error('erroraddremoveuser', 'group');
         }
 
-        $ggroup = get_record('groups', 'id', $group['data']);
+        $ggroup = $DB->get_record('groups', array('id'=> $group['data']));
         $ggroup->name = $group['name'];
         $ggroup->description = $group['name'];
         if(!groups_update_group($ggroup)) {
-            error('Error saving the group');
+            print_error('Error saving the group');
         }
     }
 
@@ -90,14 +93,17 @@ $strparticipants = get_string('participants');
 $stradduserstogroup = get_string('adduserstogroup', 'group');
 $strusergroupmembership = get_string('usergroupmembership', 'group');
 
-$navlinks = array();
-$navlinks[] = array('name' => $edition->name, 'link' => "$CFG->wwwroot/enrol/mgm/aprobe_requests.php?id=$id", 'type' => 'misc');
-$navlinks[] = array('name' => $course->shortname, 'type' => 'misc');
-$navlinks[] = array('name' => $strgroups, 'link' => "$CFG->wwwroot/group/index.php?id=$courseid", 'type' => 'misc');
-$navlinks[] = array('name' => $stradduserstogroup, 'link' => null, 'type' => 'misc');
-$navigation = build_navigation($navlinks);
 
-print_header("$course->shortname: $strgroups", $course->fullname, $navigation, '', '', true, '', user_login_string($course, $USER));
+$PAGE->navbar->add($edition->name, new moodle_url("$CFG->wwwroot/enrol/mgm/aprobe_requests.php", array('id'=>$id)));
+$PAGE->navbar->add($course->shortname);
+$PAGE->navbar->add($strgroups, new moodle_url("$CFG->wwwroot/group/index.php", array('id'=>$courseid)));
+$PAGE->navbar->add($stradduserstogroup);
+
+$PAGE->set_title("$course->shortname: $strgroups");
+echo $OUTPUT->header();
+echo $OUTPUT->heading($course->fullname);
+
+//print_header("$course->shortname: $strgroups", $course->fullname, $navigation, '', '', true, '', user_login_string($course, $USER));
 ?>
 <script type="text/javascript">
 //<![CDATA[
@@ -169,4 +175,5 @@ function updateGroupName(elId, userId, gId) {
 </div>
 
 <?php
-print_footer();
+echo $OUTPUT->footer();
+

@@ -62,6 +62,8 @@ if ($id) {
 if (isset($course) && isset($edition)) {
     $selectedespecs = mgm_get_course_especialidades($course->id, $edition->id);
     $allespecs = mgm_get_course_available_especialidades($course->id, $edition->id);
+    $selectedcomunidades = mgm_get_course_comunidades($course->id, $edition->id);
+    $allcomunidades = $COMUNIDADES;
 } else {
     print_edition_edit_header();
     echo $OUTPUT->heading(get_string('edicioncriteria', 'mgm'));
@@ -83,6 +85,14 @@ if (!empty($allespecs)) {
     $aespecs = $allespecs;
 }
 
+$acomunidades = $scomunidades = array();
+if (!empty($selectedcomunidades)) {
+	$scomunidades = $selectedcomunidades;
+}
+if (!empty($allcomunidades)) {
+	$acomunidades = $allcomunidades;
+}
+
 $dependencias = mgm_get_courses($course);
 
 $criteria = mgm_get_edition_course_criteria($edicionid, $courseid);
@@ -93,6 +103,8 @@ $criteria->courseid = $courseid;
 $criteria->edicionid = $edicionid;
 $criteria->sespecs = $sespecs;
 $criteria->aespecs = $aespecs;
+$criteria->scomunidades = $scomunidades;
+$criteria->acomunidades = $acomunidades;
 $criteria->dependencias = $dependencias;
 
 // Get course task ecuador

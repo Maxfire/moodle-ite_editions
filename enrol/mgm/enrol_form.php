@@ -140,10 +140,14 @@ class enrol_mgm_form extends moodleform {
 
          $mform->addElement('hidden', 'options', count($this->_customdata->choices));
          $mform->setType('options', PARAM_INT);
-
+		
         foreach ($this->_customdata->choices as $k=>$v) {
+        	
             $tmpnum = $k+1;
-            $mform->addElement('select', 'option['.$k.']', get_string('opcion', 'mgm').' '.$tmpnum, $v);
+            if ($tmpnum <= $edition->numberc){
+            	$mform->addElement('select', 'option['.$k.']', get_string('opcion', 'mgm').' '.$tmpnum, $v);
+            }
+            
         }
 
         $this->add_action_buttons(false, get_string('savechanges'));

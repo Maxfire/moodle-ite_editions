@@ -43,8 +43,7 @@ class mgm_course_edit_form extends moodleform {
         global $MODALIDADES;
         global $PROVINCIAS;
         global $PAISES;
-        global $MATERIAS;
-        global $COMUNIDADES;
+        global $MATERIAS;        
         $mform =& $this->_form;
         $criteria = $this->_customdata;
 
@@ -117,23 +116,23 @@ class mgm_course_edit_form extends moodleform {
 
         $mform->addElement('text', 'tramo[0]', get_string('tramo', 'mgm').' 1-5');
         $mform->addRule('tramo[0]', get_string('required'), 'required', null);
-        $mform->setDefault('tramo[0]', ($this->_customdata->tramo[0]) ? $this->_customdata->tramo[0] : 350);
+        $mform->setDefault('tramo[0]', (isset($this->_customdata->tramo[0])) ? $this->_customdata->tramo[0] : 350);
 
         $mform->addElement('text', 'tramo[1]', get_string('tramo', 'mgm').' 6-10');
         $mform->addRule('tramo[1]', get_string('required'), 'required', null);
-        $mform->setDefault('tramo[1]', ($this->_customdata->tramo[1]) ? $this->_customdata->tramo[1] : 450);
+        $mform->setDefault('tramo[1]', (isset($this->_customdata->tramo[1])) ? $this->_customdata->tramo[1] : 450);
 
         $mform->addElement('text', 'tramo[2]', get_string('tramo', 'mgm').' 11-15');
         $mform->addRule('tramo[2]', get_string('required'), 'required', null);
-        $mform->setDefault('tramo[2]', ($this->_customdata->tramo[2]) ? $this->_customdata->tramo[2] : 500);
+        $mform->setDefault('tramo[2]', (isset($this->_customdata->tramo[2])) ? $this->_customdata->tramo[2] : 500);
 
         $mform->addElement('text', 'tramo[3]', get_string('tramo', 'mgm').' 16-20');
         $mform->addRule('tramo[3]', get_string('required'), 'required', null);
-        $mform->setDefault('tramo[3]', ($this->_customdata->tramo[3]) ? $this->_customdata->tramo[3] : 550);
+        $mform->setDefault('tramo[3]', (isset($this->_customdata->tramo[3])) ? $this->_customdata->tramo[3] : 550);
 
         $mform->addElement('text', 'tramo[4]', get_string('tramo', 'mgm').' 20+');
         $mform->addRule('tramo[4]', get_string('required'), 'required', null);
-        $mform->setDefault('tramo[4]', ($this->_customdata->tramo[4]) ? $this->_customdata->tramo[4] : 600);
+        $mform->setDefault('tramo[4]', (isset($this->_customdata->tramo[4])) ? $this->_customdata->tramo[4] : 600);
 
         $tasks = array(0 => 'Automático');
         $atasks = & $this->_customdata->tasks;
@@ -167,11 +166,37 @@ class mgm_course_edit_form extends moodleform {
         $mform->addElement('select', 'opcion1', get_string('opcionuno', 'mgm'), $choices, 'onChange="mgm_opciones(true);"');
         $mform->addElement('select', 'opcion2', get_string('opciondos', 'mgm'), $choices, 'onChange="mgm_opciones(false);"');
 
-        $comunidades = $COMUNIDADES;
-
-        $mform->addElement('select', 'comunidad', get_string('comunidad_exclude', 'mgm'), $comunidades);
-        //$mform->setHelpButton('comunidad', array('comunidad', 'Ayuda sobre la comunidad', 'mgm'));
-        $mform->addHelpButton('comunidad', 'comunidad', 'mgm');
+        $acomunidades =& $this->_customdata->acomunidades;
+        $scomunidades =& $this->_customdata->scomunidades;
+		$achoicescom = array();
+		$schoicescom = array();
+		
+		if (is_array($acomunidades)){
+			$achoicescom =  $acomunidades;
+		}
+		if (is_array($scomunidades)){
+			$schoicescom =  $scomunidades;
+		}
+		$comunidades = array();
+		
+		//$mform->addElement('header', 'comunidades', get_string('comunidades', 'mgm'));
+		$objs = array();
+		$objs[0] =& $mform->createElement('select', 'acomunidades', get_string('available', 'mgm'), $achoicescom, 'size="15"');
+		$objs[0]->setMultiple(true);
+		$objs[1] =& $mform->createElement('select', 'scomunidades', get_string('selected', 'mgm'), $schoicescom, 'size="15"');
+		$objs[1]->setMultiple(true);		
+		$grp =& $mform->addElement('group', 'comunidadesgrp', get_string('comunidades', 'mgm'), $objs, ' ', false);
+		$mform->addHelpButton('comunidadesgrp', 'comunidades', 'mgm');
+		
+		$objs = array();
+		$objs[] =& $mform->createElement('submit', 'addsel', get_string('comunidad_exclude', 'mgm'));
+		$objs[] =& $mform->createElement('submit', 'removesel', get_string('comunidad_include', 'mgm'));
+		$grp =& $mform->addElement('group', 'buttonscomgrp', get_string('comunidades_exclude', 'mgm'), $objs, array(' ', '<br />'), false);
+		//$mform->addHelpButton('buttonscomgrp', 'selectedlist', 'bulkusers');
+		
+		
+        //$mform->addElement('select', 'comunidad', get_string('comunidad_exclude', 'mgm'), $comunidades);        
+        //$mform->addHelpButton('comunidades', 'comunidades', 'mgm');
 
         $achoices = $schoices = array();
         $aespecs = & $this->_customdata->aespecs;

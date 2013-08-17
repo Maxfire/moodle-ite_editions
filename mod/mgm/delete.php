@@ -33,51 +33,54 @@ $delete = optional_param('delete', '', PARAM_ALPHANUM);
 
 require_login();
 
+$systemcontext = context_system::instance();
+$PAGE->set_url('/mod/mgm/delete.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
+
 if (!mgm_can_do_create()) {
-    error('You do not have the permission to delete this edition.');
+    print_error('You do not have the permission to delete this edition.');
 }
 
 if (!$site = get_site()) {
-    error('Site not found!');
+    print_error('Site not found!');
 }
 
-$strdeleteedition = get_string('deletedicion', 'mgm');
+$strdeleteedition = get_string('deleteedicion', 'mgm');
 $stradministration = get_string('administration');
 $streditions = get_string('ediciones', 'mgm');
 
-if (!$edition = get_record('edicion', 'id', $id)) {
-    error('Edition ID was incorrect (can\'t find it)');
+if (!$edition = $DB->get_record('edicion', array('id'=> $id))) {
+    print_error('Edition ID was incorrect (can\'t find it)');
 }else{
-	if ($edition->active==1){
-		error('No se puede eliminar una edición activa');
+	if ($edition->active == 1){
+		print_error('No se puede eliminar una edición activa');
 	}
 }
 
 $edition->shortname = $edition->name;
 
-$navlinks = array();
-
 if (!$delete) {
     $strdeletecheck = get_string('deletecheck', '', $edition->name);
     $strdeleteeditioncheck = get_string('deleteedicioncheck', 'mgm');
-
-    $navlinks[] = array('name' => $stradministration, 'link' => "../$CFG->admin/index.php", 'type' => 'misc');
-    $navlinks[] = array('name' => $streditions, 'link' => "index.php", 'type' => 'misc');
-    $navlinks[] = array('name' => $strdeletecheck, 'link' => null, 'type' => 'misc');
-    $navigation = build_navigation($navlinks);
-
-    print_header("$site->shortname: $strdeletecheck", $site->fullname, $navigation);
-
-    notice_yesno($strdeleteeditioncheck."<br /><br />" . format_string($edition->name),
-                 "delete.php?id=$edition->id&amp;delete=".md5($edition->timemodified)."&amp;sesskey=$USER->sesskey",
-                 "index.php");
-
-    print_footer();
+    
+    $PAGE->navbar->add( $stradministration);
+    $PAGE->navbar->add( $streditions, new moodle_url('index.php'));
+    $PAGE->navbar->add( $strdeletecheck);
+    $PAGE->set_title("$site->shortname: $strdeletecheck");    
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($site->fullname);
+    $optionsyes = array('id'=>$edition->id, 'delete'=>md5($edition->timemodified), 'sesskey'=>$USER->sesskey);
+    $buttoncontinue = new single_button(new moodle_url("delete.php", $optionsyes), get_string('yes'));
+    $buttoncancel   = new single_button(new moodle_url("index.php"), get_string('no'));
+    $message = $strdeleteeditioncheck."<br /><br />" . format_string($edition->name);
+    echo $OUTPUT->confirm($message, $buttoncontinue, $buttoncancel);    
+	echo $OUTPUT->footer();
     exit;
 }
 
 if ($delete != md5($edition->timemodified)) {
-    error('The check variable was wrong - try again');
+    print_error('The check variable was wrong - try again');
 }
 
 if (!confirm_sesskey()) {
@@ -90,19 +93,17 @@ add_to_log(SITEID, "edition", "delete", "view.php?id=$edition->id", "$edition->n
 
 $strdeletingedition = get_string("deletingedition", "mgm", format_string($edition->name));
 
-$navlinks[] = array('name' => $stradministration, 'link' => "../$CFG->admin/index.php", 'type' => 'misc');
-$navlinks[] = array('name' => $streditions, 'link' => "index.php", 'type' => 'misc');
-$navlinks[] = array('name' => $strdeletingedition, 'link' => null, 'type' => 'misc');
-$navigation = build_navigation($navlinks);
 
-print_header("$site->shortname: $strdeletingedition", $site->fullname, $navigation);
-
-print_heading($strdeletingedition);
+$PAGE->navbar->add( $stradministration);
+$PAGE->navbar->add( $streditions, new moodle_url('index.php'));
+$PAGE->navbar->add( $strdeletingedition);
+$PAGE->set_title("$site->shortname: $strdeletingedition");
+echo $OUTPUT->header();
+echo $OUTPUT->heading($site->fullname);
+echo $OUTPUT->heading($strdeletingedition);
 
 mgm_delete_edition($edition);
 
-print_heading( get_string("deletededicion", "mgm", format_string($edition->name)) );
-
-print_continue("index.php");
-
-print_footer();
+echo $OUTPUT->heading( get_string("deletededicion", "mgm", format_string($edition->name)) );
+echo $OUTPUT->continue_button("index.php");
+echo $OUTPUT->footer();

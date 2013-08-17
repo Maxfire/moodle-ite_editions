@@ -37,11 +37,11 @@ $active = optional_param('active', '', PARAM_ALPHANUM);
 require_login();
 
 if (!mgm_can_do_edit()) {
-    error('You do not have the permission to active this edition.');
+    print_error('You do not have the permission to active this edition.');
 }
 
 if (!$site = get_site()) {
-    error('Site not found!');
+    print_error('Site not found!');
 }
 
 $stractiveedition = get_string('activaedicion', 'mgm');
@@ -49,8 +49,14 @@ $strdeactiveedition = get_string('desactivaedicion', 'mgm');
 $stradministration = get_string('administration');
 $streditions = get_string('ediciones', 'mgm');
 
+$systemcontext = context_system::instance();
+$PAGE->set_url('/active.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
+
+
 if (!$edition = $DB->get_record('edicion', array('id'=> $id))) {
-    error('Edition ID was incorrect (can\'t find it)');
+    print_error('Edition ID was incorrect (can\'t find it)');
 }
 
 $edition->shortname = $edition->name;
@@ -60,34 +66,30 @@ $navlinks = array();
 if (!$active) {
     $stractivecheck = get_string('activar', 'mgm');
     $strdeactivecheck = get_string('desactivar', 'mgm');
-
-    $navlinks[] = array('name' => $stradministration, 'link' => "../$CFG->admin/index.php", 'type' => 'misc');
-    $navlinks[] = array('name' => $streditions, 'link' => "index.php", 'type' => 'misc');
+	$PAGE->navbar->add($stradministration);
+	$PAGE->navbar->add($streditions, "index.php");
 
     if (!$edition->active) {
-        $navlinks[] = array('name' => $stractivecheck, 'link' => null, 'type' => 'misc');
+    	$PAGE->navbar->add($stractivecheck);        
         $strcheck = $stractivecheck;
         $stredition = $stractiveedition;
     } else {
-        $navlinks[] = array('name' => $strdeactivecheck, 'link' => null, 'type' => 'misc');
+    	$PAGE->navbar->add($strdeactivecheck);        
         $strcheck = $strdeactivecheck;
         $stredition = $strdeactiveedition;
     }
-
-    $navigation = build_navigation($navlinks);
-
-    print_header("$site->shortname: $strcheck", $site->fullname, $navigation);
-
-    notice_yesno($stredition."<br /><br />" . format_string($edition->name),
-                 "active.php?id=$edition->id&amp;active=".md5($edition->timemodified)."&amp;sesskey=$USER->sesskey",
-                 "index.php");
-
-    print_footer();
+    $PAGE->set_title("$site->shortname: $strcheck");
+    $PAGE->set_heading($site->fullname);    
+    $buttoncontinue = new single_button(new moodle_url("active.php?id=$edition->id&amp;active=".md5($edition->timemodified)."&amp;sesskey=$USER->sesskey"), get_string('yes'));
+    $buttoncancel   = new single_button(new moodle_url("index.php"), get_string('no'));
+    echo $OUTPUT->header();
+    echo $OUTPUT->confirm($stredition."<br /><br />" . format_string($edition->name), $buttoncontinue, $buttoncancel);
+    echo $OUTPUT->footer();    
     exit;
 }
 
 if ($active != md5($edition->timemodified)) {
-    error('The check variable was wrong - try again');
+    print_error('The check variable was wrong - try again');
 }
 
 if (!confirm_sesskey()) {
@@ -96,31 +98,26 @@ if (!confirm_sesskey()) {
 
 $stractivingedition = get_string('activing', 'mgm', format_string($edition->name));
 $strdeactivingedition = get_string('deactiving', 'mgm', format_string($edition->name));
-
-$navlinks[] = array('name' => $stradministration, 'link' => "../$CFG->admin/index.php", 'type' => 'misc');
-$navlinks[] = array('name' => $streditions, 'link' => "index.php", 'type' => 'misc');
-$navlinks[] = array('name' => ($edition->active) ? $strdeactivingedition : $stractivingedition, 'link' => null, 'type' => 'misc');
-$navigation = build_navigation($navlinks);
-
-print_header($site->shortname.": ".($edition->active) ? $stractivingedition : $strdeactivingedition, $site->fullname, $navigation);
-
-print_heading((!$edition->active) ? $stractivingedition : $strdeactivingedition);
-
+$PAGE->navbar->add($stradministration);
+$PAGE->navbar->add($streditions, "index.php");
+$PAGE->navbar->add(($edition->active) ? $strdeactivingedition : $stractivingedition);
+$PAGE->set_title($site->shortname.": ".($edition->active) ? $stractivingedition : $strdeactivingedition);
+$PAGE->set_heading($site->fullname);
+echo $OUTPUT->header();
+echo $OUTPUT->heading((!$edition->active) ? $stractivingedition : $strdeactivingedition);
 if ($edition->active) {
-	  if ($edition->state=='preinscripcion' || $editon->state='matriculacion'){
-	  	error('No se puede desactivar una edición que está en estado de Preinscripción o Matriculación', $CFG->wwwroot.'/mod/mgm/index.php?editionedit=on');
+	  if ($edition->state == 'preinscripcion' || $edition->state == 'matriculacion'){
+	  	print_error('No se puede desactivar una edición que está en estado de Preinscripción o Matriculación', $CFG->wwwroot.'/mod/mgm/index.php?editionedit=on');
 	  }else{
     	mgm_deactive_edition($edition);
-    	print_heading( get_string("deactivededicion", "mgm", format_string($edition->name)) );
+    	echo $OUTPUT->heading(get_string("deactivededicion", "mgm", format_string($edition->name)));    	
 	  }
 } else {
 		if ($aedition=mgm_get_active_edition() and ($aedition->state=='matriculacion' || $aedition->state=='preinscripcion')){
-		 	error('La edicion activa está en estado de Preinscripción o Matriculación', $CFG->wwwroot.'/mod/mgm/index.php?editionedit=on');
+		 	print_error('La edicion activa está en estado de Preinscripción o Matriculación', $CFG->wwwroot.'/mod/mgm/index.php?editionedit=on');
 		}
     mgm_active_edition($edition);
-    print_heading( get_string("activededicion", "mgm", format_string($edition->name)) );
+    echo $OUTPUT->heading(get_string("activededicion", "mgm", format_string($edition->name)));
 }
-
-print_continue("index.php");
-
-print_footer();
+echo $OUTPUT->continue_button("index.php"); 
+echo $OUTPUT->footer();
