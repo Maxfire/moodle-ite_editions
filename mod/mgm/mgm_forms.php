@@ -9,21 +9,27 @@ class edicion_form extends moodleform {
         $mform =& $this->_form;
         $achoices = array();
         $filter_editions = optional_param('edition',0,PARAM_INT);
-				$editionlist = array_keys($DB->get_records('edicion'));
-				$editionoptions = array();
-				$editionoptions[0] = get_string('choose');
-				if(!empty($editionlist)){
-					$editions = $DB->get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
-					foreach($editions as $c){
-						$editionoptions[$c->id] = format_string($c->name);
-					}
-				}
-				$mform->addElement('select', 'edition', get_string('edition', 'mgm'), $editionoptions);
-				$mform->setType('edition', PARAM_INT);        $objs = array();
-				$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
+		$editionlist = array_keys($DB->get_records('edicion'));
+		$editionoptions = array();
+		$editionoptions[0] = get_string('choose');
+		if(!empty($editionlist)){
+			$editions = $DB->get_records_select('edicion','id in ('.(implode(',',$editionlist)).')');
+			foreach($editions as $c){
+				$editionoptions[$c->id] = format_string($c->name);
+			}
+		}
+		$mform->addElement('select', 'edition', get_string('edition', 'mgm'), $editionoptions);
+		$mform->setType('edition', PARAM_INT);        $objs = array();
+		$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
         $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));
         $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);
-
+    }
+    function addFileField(){
+    	global $DB;
+    	$mform =& $this->_form;
+    	$mform ->insertElementBefore($mform->createElement('filepicker', 'userfile', get_string('file'),
+    			null, array('maxbytes' => 10485760, 'accepted_types' => '*')), 'actionsgrp');
+    	return true;
     }
 }
 
@@ -34,7 +40,7 @@ class admin_form extends moodleform {
 		$mform->addElement('select', 'action', get_string('action', 'mgm'), $actionoptions);
 		$mform->addElement('filepicker', 'userfile', get_string('file'), null,
 							array('maxbytes' => 10485760, 'accepted_types' => '*'));
-		//$mform->addElement('file', 'userfile', get_string('file'));
+
 		$objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
         $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));
         $mform->addElement('group', 'actionsgrp', '', $objs, ' ', false);

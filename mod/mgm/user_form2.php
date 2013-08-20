@@ -31,20 +31,18 @@ class user_mgm_form2 extends moodleform {
         } else {
             $achoices[-1] = get_string('nofilteredusers', 'bulkusers', $total);
         }
-
-				if(! $sourceuser){
-					$sourceuser=get_string('noselectedsourceuser');
-				}
-				if(! $destinationuser){
-					$destinationuser=get_string('noselecteddestinationuser');
-				}
-
+		if(!isset($sourceuser)){
+			$sourceuser=get_string('noselectedsourceuser', 'mgm');
+		}
+		if(! isset($destinationuser)){
+			$destinationuser=get_string('noselecteddestinationuser', 'mgm');
+		}
         $mform->addElement('header', 'users', get_string('usersinlist', 'bulkusers'));
 
         $objs = array();
         $objs[0] =& $mform->createElement('select', 'ausers', '', $achoices, 'size="15"');
         $grp =& $mform->addElement('group', 'usersgrp', get_string('users'), $objs, ' ', false);
-        $grp->setHelpButton(array('lists', get_string('users'), 'bulkusers'));
+        $mform->addHelpButton('usersgrp', 'joinuser', 'mgm');
         $mform->addElement('static', 'comment');
         $objs[0] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
         $objs[1] =& $mform->createElement('submit', 'next', get_string('next'));

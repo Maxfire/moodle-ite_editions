@@ -5,6 +5,8 @@ require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/mod/mgm/mgm_forms.php');
 
 admin_externalpage_setup('userbulkmgm');
+
+
 if (!isset($SESSION->bulk_users)) {
     $SESSION->bulk_users = array();
 }

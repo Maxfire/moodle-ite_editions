@@ -207,13 +207,13 @@ $string['fechafin'] = 'Fecha de fin';
 $string['localidad'] = 'Localidad';
 $string['fechainimodalidad'] = 'Fecha de inicio de la modalidad';
 $string['edition_not_ended'] = '<p>La edición actual no ha concluido</p>';
-$string['user_no_task_ended'] = '<p>El usuario {$a->tipo} {$a->usuario} del curso \"{$a->curso}\" no ha concluido la tarea <a href=\"../feedback/view.php?id={$a->tareaid}\"/>\"{$a->tarea}\"</a>.</p>';
-$string['file_export_link'] = '<p>Pulse aquí para descargar el <a href=\"export.php?filename={$a->filename}\">fichero</a>.</p>';
-$string['incidencia_curso'] = '<p>Advertencia: No hay dato para el campo {$a->campo} del curso \"{$a->curso}\" de la edición \"{$a->edicion}\". Puede editarlo <a href=\"courses.php?courseid={$a->curso}id&edicionid={$a->edicionid}\"/>aquí</a>.</p>';
-$string['incidencia_usuario'] = '<p>Advertencia: No hay información extendida para el usuario {$a->nombre}. Pulse <a href=\"../../course/loginas.php?user={$a->id}&sesskey={$a->sesskey}\"/>aquí</a> para iniciar sesión con dicho usuario y editar la información docente en el Panel de control ITE.</p>';
-$string['incidencia_dni'] = '<p>Advertencia: El campo DNI está vacío o es incorrecto para el usuario {$a->nombre}. Pulse <a href=\"../../course/loginas.php?user={$a->id}&sesskey={$a->sesskey}\"/>aquí</a> para iniciar sesión con dicho usuario y editar la información docente en el Panel de control ITE.</p>';
-$string['incidencia_no_aprobado'] = '<p>Advertencia: No se incluye al usuario {$a->nombre} al no haber aprobado el curso \"{$a->curso}\".</p>';
-$string['incidencia_no_tipo_usuario'] = '<p>Advertencia: El usuario {$a->nombre} no tiene asignado un rol de Tutor, Coordinador o Alumno para el curso \"{$a->curso}\".</p>';
+$string['user_no_task_ended'] = '<p>El usuario {$a->tipo} {$a->usuario} del curso "{$a->curso}" no ha concluido la tarea <a href="../feedback/view.php?id={$a->tareaid}"/>"{$a->tarea}"</a>.</p>';
+$string['file_export_link'] = '<p>Pulse aquí para descargar el <a href="export.php?filename={$a->filename}">fichero</a>.</p>';
+$string['incidencia_curso'] = '<p>Advertencia: No hay dato para el campo {$a->campo} del curso "{$a->curso}" de la edición "{$a->edicion}". Puede editarlo <a href="courses.php?courseid={$a->curso}id&edicionid={$a->edicionid}"/>aquí</a>.</p>';
+$string['incidencia_usuario'] = '<p>Advertencia: No hay información extendida para el usuario {$a->nombre}. Pulse <a href="../../course/loginas.php?user={$a->id}&sesskey={$a->sesskey}"/>aquí</a> para iniciar sesión con dicho usuario y editar la información docente en el Panel de control ITE.</p>';
+$string['incidencia_dni'] = '<p>Advertencia: El campo DNI está vacío o es incorrecto para el usuario {$a->nombre}. Pulse <a href="../../course/loginas.php?user={$a->id}&sesskey={$a->sesskey}"/>aquí</a> para iniciar sesión con dicho usuario y editar la información docente en el Panel de control ITE.</p>';
+$string['incidencia_no_aprobado'] = '<p>Advertencia: No se incluye al usuario {$a->nombre} al no haber aprobado el curso "{$a->curso}".</p>';
+$string['incidencia_no_tipo_usuario'] = '<p>Advertencia: El usuario {$a->nombre} no tiene asignado un rol de Tutor, Coordinador o Alumno para el curso "{$a->curso}".</p>';
 $string['edition'] = 'Edición';
 $string['editions'] = 'Ediciones';
 $string['editions_summary'] = 'Este filtro muestra una lista de ediciones. Solo se puede seleccionar una edicion al mismo tiempo';
@@ -364,3 +364,15 @@ $string['methodenrol_help'] = 'Metodo usado a la hora de matricular los alumnos 
 <b>Método estándar: </b> Metodo comunmente usado en ediciones anteriores a Septiembre de 2013. Las plazas asignadas dependen del orden en que se confirman los cursos.
 <b>Primeras opciones:</b> Con este metodo primero se asignan plaza las primeras opciones de todos los solicitantes de todos los cursos.<br>
 <b>Orden de peticion:</b> Se procede usuario por usuario comprobando cada una de sus opciones hasta que se le concede un curso o se le deniegan todos.<br>';
+$string['sinprioridad'] = 'Sin prioridad';
+$string['comunidad_exclude'] = 'Excluir Comunidad/es';
+$string['comunidad_include'] = 'incluir Comunidad/es';
+$string['comunidades_exclude'] = 'Comunidades excluidas';
+$string['comunidades'] ='Comunidades';
+$string['comunidades_help'] = 'A los solicitantes con centros en las comunidades autonomas excluidas no se les asignará plaza.<br>
+Por defecto, todas las comunidades están includias; use el boton "Excluir comunidad/es" para excluir las comunidades seleccionadas.<br>
+Use el botón "Incluir comunidad" para incluir comunidades que previamente habian sido excluidas (cuadro de la derecha)';
+$string['selectedespeclist'] = 'Lista de especialidades seleccionadas';
+$string['available'] = 'Disponibles';
+$string['selected'] = 'Seleccionados';
+$string['invalidedition'] ='Edicion no valida';

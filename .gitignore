@@ -21,7 +21,8 @@ mod/mgm/pix/letter_003.jpg
 !blocks/configurable_reports/components/permissions/custommgm
 !blocks/configurable_reports/export/pdf
 !blocks/configurable_reports/lang
-!mod/mgm/
+!mod/mgm
+!lib/fpdf
 !grade/report/acta
 !libreta.txt
 !mgm_version.txt

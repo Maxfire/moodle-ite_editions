@@ -34,19 +34,21 @@ require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot."/mod/mgm/locallib.php");
 require_once($CFG->dirroot."/mod/mgm/mgm_forms.php");
 require_once($CFG->dirroot."/lib/adodb/adodb.inc.php");
-
-require_login();
-require_capability('mod/mgm:aprobe', get_context_instance(CONTEXT_SYSTEM));
-$strtitle = get_string('importdata','mgm');
 require_once($CFG->libdir.'/adminlib.php');
+
+//admin_externalpage_setup('importdata', mgm_update_edition_button());
+require_login();
+$systemcontext = context_system::instance();
+require_capability('mod/mgm:aprobe', $systemcontext);
+$PAGE->set_url('/mod/mgm/import.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
+
+$strtitle = get_string('importdata','mgm');
 $tempdir = $CFG->dataroot."/temp/";
 
 $mform = new edicion_form("$CFG->wwwroot".'/mod/mgm/import.php');
-//  $mform ->_form->addElement('file', 'userfile', get_string('file'));
-//  $mform ->_form->insertElementBefore($mform->_form->removeElement('userfile', false), 'actionsgrp');
-$mform ->_form->insertElementBefore($mform->_form->createElement('file', 'userfile', get_string('file')), 'actionsgrp');
-//$um = new upload_manager('newfile');
-//$mform -> set_upload_manager($um);
+$mform->addFileField();
 
 if ($data = $mform->get_data(false)) {
     if 	(!empty($data->cancel)){
@@ -54,23 +56,21 @@ if ($data = $mform->get_data(false)) {
     	redirect("$CFG->wwwroot".'/index.php');
     }
     else if (!empty($data->next)) {
-    	if ($mform->save_files($tempdir)) {
-    		$mform->_upload_manager->inputname='userfile';
-    		$filename=$tempdir.$mform->get_new_filename();
-    		$mform->save_files($tempdir);
-    		if ($filename){
-    			print 'fichero' . $filename . ' guardado';
-    		}
+    	$name = $mform->get_new_filename('userfile');
+    	$filename = $tempdir . $name;
+    	$save= $mform->save_file( 'userfile', $tempdir . $name, true);
+    	if ($save) {    		
+    		echo 'fichero' . $filename . ' guardado';    		
     	}
-    	$edicion=$data->edition;
-    	if (isset($edicion) and $edicion != 0 and $filename){
+    	$edicion = $data->edition;
+    	if (isset($edicion) and $edicion != 0 and $save){
     		$idata=new ImportData($filename);
-    		$tables=$idata->setDataHistory();
-    		print "Tablas: " . $tables;
-				die();
+    		$tables = $idata->setDataHistory();
+    		echo "Tablas: " . $tables;
+			die();
 
     	}else{
-    		error('Edicion no valida',"$CFG->wwwroot".'/mod/mgm/import.php');
+    		print_error('invalidedition', 'mgm', "$CFG->wwwroot".'/mod/mgm/import.php');
     	}
 
     }else{
@@ -81,27 +81,11 @@ if ($data = $mform->get_data(false)) {
  	unset($_POST);
 }
 
-//if ($filename && file_exists($tempdir.$filename)) {
-//  $lifetime = 0;
-//  //send_file($tempdir.$filename, "export.zip", $lifetime, 0, false, true);
-//  print "Realizar operaciones en la base de datos Moodle";
-//  $table="PARTICIPANTES";
-//  $cmd="/usr/bin/mdb-export ".$tempdir.$filename. ' ' . $table;
-//  $ret=0;
-//  $dev=system($cmd, $ret);
-//  print $dev;
-//
-//}else {
-
-//do output
-	admin_externalpage_setup('importdata', mgm_update_edition_button());
-  admin_externalpage_print_header();
-  print_heading($strtitle);
-  print_simple_box_start('center');
-  $mform->display();
-  print_simple_box_end();
-  admin_externalpage_print_footer();
-  #redirect("$CFG->wwwroot".'/mod/mgm/import.php?filename=repuestamdb_externo.mdb');
-//}
-
-?>
+	//do output	
+	echo $OUTPUT->header();
+	echo $OUTPUT->heading($strtitle);	
+	echo $OUTPUT->box_start('boxaligncenter');
+	$mform->display();
+	echo $OUTPUT->box_end();
+	echo $OUTPUT->footer();  	
+  	#redirect("$CFG->wwwroot".'/mod/mgm/import.php?filename=repuestamdb_externo.mdb');

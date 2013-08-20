@@ -49,28 +49,27 @@ if ($data = $user_form->get_data(false)) {
             $strstep=get_string('selectdestinationuser', 'mgm');
         }
     }else if (!empty($data->next) && isset($SESSION->sourceuser) && !isset($SESSION->destinationuser)){
-    		if (!empty($data->ausers)) {
+    	if (!empty($data->ausers)) {
             $SESSION->destinationuser=$data->ausers;
         }
     }
-		if (isset($SESSION->sourceuser)&& isset($SESSION->destinationuser)){
-        	redirect("$CFG->wwwroot".'/mod/mgm/join_users_act.php');
+	if (isset($SESSION->sourceuser)&& isset($SESSION->destinationuser)){
+        redirect("$CFG->wwwroot".'/mod/mgm/join_users_act.php');
     }
     // reset the form selection
     unset($_POST);
     $user_form = new user_mgm_form2(null, get_selection_data($ufiltering));
 }else{
- 	unset($_POST);
-  unset($SESSION->sourceuser);
-  unset($SESSION->destinationuser);
-  unset($SESSION->joinusers);
+	unset($_POST);
+  	unset($SESSION->sourceuser);
+  	unset($SESSION->destinationuser);
+  	unset($SESSION->joinusers);
 }
 
-
 // do output
-admin_externalpage_print_header();
-print_heading($strstep);
+echo $OUTPUT->header();
+echo $OUTPUT->heading($strstep);
 $ufiltering->display_add();
 $ufiltering->display_active();
 $user_form->display();
-admin_externalpage_print_footer();
+echo $OUTPUT->footer();

@@ -27,27 +27,26 @@
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/locallib.php');
-
-require_login();
-
-$roles = mgm_get_certification_roles();
-$availableroles = get_records('role');
-
-$strtitle = get_string('setroles', 'mgm');
-
-
 require_once($CFG->libdir.'/adminlib.php');
 
+require_login();
+$systemcontext = context_system::instance();
+$PAGE->set_url('/mod/mgm/index.php');
+$PAGE->set_context($systemcontext);
+$PAGE->set_pagelayout('admin');
+
+$roles = mgm_get_certification_roles();
+$availableroles = $DB->get_records('role');
+
+$strtitle = get_string('setroles', 'mgm');
 admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
-admin_externalpage_print_header();
-print_heading($strtitle);
 
 if ($frm = data_submitted() and confirm_sesskey()) {
     if (isset($frm->roles)) {
         $ardy = array();
         foreach ($frm->roles as $k=>$v) {
             if (in_array($v, $ardy)) {
-                error('You have duplicated IDs in your data, fix it!');
+                print_error('You have duplicated IDs in your data, fix it!');
             }
             $ardy[] = $v;           
         }        
@@ -57,7 +56,9 @@ if ($frm = data_submitted() and confirm_sesskey()) {
     }
 }
 
-print_simple_box_start('center');
+echo $OUTPUT->header();
+echo $OUTPUT->heading($strtitle);
+echo $OUTPUT->box_start('boxaligncenter');
 ?>
 <form id="rolesform" method="post" action="">
     <div style="text-align: center;">
@@ -69,11 +70,11 @@ print_simple_box_start('center');
                 foreach($availableroles as $avalrole) {
                     if ($roles['coordinador'] && $roles['coordinador'] == $avalrole->id) {                    
                         ?>
-                        <option value="<?php echo $avalrole->id; ?>" selected><?php echo $avalrole->name; ?></option>
+                        <option value="<?php echo $avalrole->id; ?>" selected><?php echo $avalrole->shortname; ?></option>
                         <?php
                     } else {
                         ?>
-                        <option value="<?php echo $avalrole->id; ?>"><?php echo $avalrole->name; ?></option>
+                        <option value="<?php echo $avalrole->id; ?>"><?php echo $avalrole->shortname; ?></option>
                         <?php
                     }
                 }
@@ -86,11 +87,11 @@ print_simple_box_start('center');
                 foreach($availableroles as $avalrole) {
                     if ($roles['tutor'] && $roles['tutor'] == $avalrole->id) {                    
                         ?>
-                        <option value="<?php echo $avalrole->id; ?>" selected><?php echo $avalrole->name; ?></option>
+                        <option value="<?php echo $avalrole->id; ?>" selected><?php echo $avalrole->shortname; ?></option>
                         <?php
                     } else {
                         ?>
-                        <option value="<?php echo $avalrole->id; ?>"><?php echo $avalrole->name; ?></option>
+                        <option value="<?php echo $avalrole->id; ?>"><?php echo $avalrole->shortname; ?></option>
                         <?php
                     }
                 }
@@ -103,11 +104,11 @@ print_simple_box_start('center');
                 foreach($availableroles as $avalrole) {
                     if ($roles['alumno'] && $roles['alumno'] == $avalrole->id) {                    
                         ?>
-                        <option value="<?php echo $avalrole->id; ?>" selected><?php echo $avalrole->name; ?></option>
+                        <option value="<?php echo $avalrole->id; ?>" selected><?php echo $avalrole->shortname; ?></option>
                         <?php
                     } else {
                         ?>
-                        <option value="<?php echo $avalrole->id; ?>"><?php echo $avalrole->name; ?></option>
+                        <option value="<?php echo $avalrole->id; ?>"><?php echo $avalrole->shortname; ?></option>
                         <?php
                     }
                 }
@@ -117,6 +118,5 @@ print_simple_box_start('center');
     </div>
 </form>
 <?php
-print_simple_box_end();
-
-admin_externalpage_print_footer();
+echo $OUTPUT->box_end();
+echo $OUTPUT->footer();
