@@ -232,7 +232,7 @@ $string['selectdestinationuser'] = 'Usuario Destino';
 $string['joinusercheck'] = '¿Realizar la fusión de usuarios?';
 $string['importdata'] = 'Importar Datos';
 $string['centro'] = 'Centro';
-$string['coursecertfied']='<p>¡Curso \"{$a}\" ya certificado!</p>';
+$string['coursecertfied']='<p>¡Curso "{$a}" ya certificado!</p>';
 $string['nochangedni']="No puede modificar su DNI una vez establecido!";
 $string['important']='¡Importante!';
 $string['surname2']='Introduzca sus 2 apellidos';
@@ -252,7 +252,7 @@ $string['state_ed_error2']='No pueden existir varias ediciones en estado de prei
 $string['state_ed_error3']='Una nueva edicion solo puede estar en estado borrador';
 $string['state_ed_error4']='Aun no ha terminado el periodo de preinscripción';
 $string['state_ed_error5']='No se puede modificar una edición finalizada';
-$string['state_ed_error6']='El estado anterior debe ser \"Gestión\"';
+$string['state_ed_error6']='El estado anterior debe ser "Gestión"';
 $string['state_ed_error7']='Edición no certificada';
 $string['state_ed_error8']='Edición no pagada';
 $string['state_ed_error9']='Solo la edicion activa puede estar en estado de matriculación';
@@ -350,21 +350,23 @@ $string['acta_admin_sig']="Dª Mª del Carmen Arenas Fonollosa, Jefa del Servici
 $string['do_paid']="Marcar edicion como Pagada";
 $string['cc']='Codigo de Centro';
 $string['cc_help'] = 'Si no recuerda o no conoce el código de su centro, puede encontrar el código de su centro en el siguiente enlace:
-<A TARGET=google HREF="https://www.educacion.gob.es/centros/home.do">"https://www.educacion.gob.es/centros/home.do"</A>';		 
-$string['lists'] = 'Lista de cursos';
-$string['lists_help'] = '<b>Cursos disponibles:</b> Solo aparecen en el listado aquellos cursos que no sean parte de ninguna otra edición.<br/>
+<A TARGET=google HREF="https://www.educacion.gob.es/centros/home.do">"https://www.educacion.gob.es/centros/home.do"</A>';
+$string['solicitudes'] = 'Solicitudes';
+$string['numdocumento']='Número de documento';
+$string['idnumber']='Código del Curso';
+$string['lists'] = 'Lista de cursos disponibles';
+$string['lists_help'] = '<b>Cursos disponibles:</b> Solo aparecen en el listado aquellos cursos que no sean parte de ninguna otra edición.<br>
 <b>Cursos seleccionados:</b> Conjunto de cursos asignados a esta edición y que por lo tanto no están disponibles para otras';
 $string['numberc'] = 'Número de cursos';
-$string['numberc_help'] = 'Numero máximo de cursos a los que cada solicitante se puede preinscribir';
 $string['numberc_help'] = 'Numero Máximo de cursos a los que cada solicitante se puede preinscribir';
 $string['methodenrol1'] = 'Estandar';
 $string['methodenrol2'] = 'Primeras opciones';
-$string['methodenrol3'] = 'Orden de peticion';
+$string['methodenrol3'] = 'Orden de petición';
 $string['methodenrol'] = 'Método de matriculación';
-$string['methodenrol_help'] = 'Metodo usado a la hora de matricular los alumnos para asignarles plaza.<br>
-<b>Método estándar: </b> Metodo comunmente usado en ediciones anteriores a Septiembre de 2013. Las plazas asignadas dependen del orden en que se confirman los cursos.
+$string['methodenrol_help'] = 'Metodo usado en el proceso de asignacion de plazas para todos los solicitantes de la edición.<br><br>
+<b>Método estándar: </b> Metodo comunmente usado en ediciones anteriores a Septiembre de 2013. Las plazas asignadas dependen del orden en que se confirman los cursos.<br>
 <b>Primeras opciones:</b> Con este metodo primero se asignan plaza las primeras opciones de todos los solicitantes de todos los cursos.<br>
-<b>Orden de peticion:</b> Se procede usuario por usuario comprobando cada una de sus opciones hasta que se le concede un curso o se le deniegan todos.<br>';
+<b>Orden de petición:</b> Se procede usuario por usuario comprobando cada una de sus opciones hasta que se le concede un curso o se le deniegan todos.<br>';
 $string['sinprioridad'] = 'Sin prioridad';
 $string['comunidad_exclude'] = 'Excluir Comunidad/es';
 $string['comunidad_include'] = 'incluir Comunidad/es';
@@ -376,4 +378,15 @@ Use el botón "Incluir comunidad" para incluir comunidades que previamente habia
 $string['selectedespeclist'] = 'Lista de especialidades seleccionadas';
 $string['available'] = 'Disponibles';
 $string['selected'] = 'Seleccionados';
-$string['invalidedition'] ='Edicion no valida';
+$string['invalidedition'] = 'Edicion no valida';
+$string['joinuser'] = 'Usuario';
+$string['joinuser_help'] = 'Seleccione el usuario a fusionar de la siguiente lista';
+$string['noselectedsourceuser'] = 'Usuario origen no seleccionado';
+$string['noselecteddestinationuser'] = 'Usuario destino no seleccionado';
+$string['nocourse'] = 'Course {$a->shortname} not exist!';
+$string['nocourseconfigure'] = 'Course {$a->shortname} not configure for MGM enrol!';
+$string['nocourserole'] = 'Role doen\'t exists for course {$a->shortname}!';
+$string['grerrcreate'] = 'Error creating the group {$a->name}';
+$string['grerradduser'] = 'Error adding user {$a->user} to group {$a->group}';
+$string['usernotexist'] = 'User doesn\'t exists!';
+$string['nocontext'] = 'No context found';
