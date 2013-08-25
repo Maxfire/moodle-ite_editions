@@ -37,7 +37,8 @@ $string['description'] = 'Matriculación y Gestión ITE:
 <li>El alumno recibe un correo de aviso.</li>
 </ul>';
 $string['cc']='Codigo de Centro';
-$string['cc_help'] = 'Si no recuerda o no conoce el código de su centro, puede encontrar el código de su centro en el siguiente enlace: <a href="https://www.educacion.gob.es/centros/home.do"/>https://www.educacion.gob.es/centros/home.do</a>';
+$string['cc_help'] = 'Si no recuerda o no conoce el código de su centro, puede encontrar el código de su centro en el siguiente enlace:
+<A TARGET=google HREF="https://www.educacion.gob.es/centros/home.do">"https://www.educacion.gob.es/centros/home.do"</A>';
 $string['alterstatus'] = 'Alter status';
 $string['altertimeend'] = 'Alter end time';
 $string['altertimestart'] = 'Alter start time';

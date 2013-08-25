@@ -1055,24 +1055,27 @@ function mgm_get_edition_user_options($edition, $user) {
     return $choices;
 }
 
-function mgm_preinscribe_user_in_edition($edition, $user, $courses) {
+function mgm_preinscribe_user_in_edition($editionid, $user, $courses) {
 	global $DB;
     $rcourses = array();
-    foreach($courses as $course) {
-        if($course) {
+    $i=1;
+    $edition = $DB->get_record('edicion', array('id'=>$editionid));
+    foreach($courses as $course) {  //Como mucho solicitamos numberc cursos.
+        if($course && $i<=$edition->numberc) {
             $rcourses[] = $course;
         }
+        $i++;
     }
     if(!count($rcourses)) {
-        $DB->delete_records('edicion_preinscripcion', array('edicionid'=> $edition, 'userid'=> $user));
+        $DB->delete_records('edicion_preinscripcion', array('edicionid'=> $editionid, 'userid'=> $user));
         return ;
     }
     $strcourses = implode(',', $rcourses);
 
-    if(!$record = $DB->get_record('edicion_preinscripcion', array('edicionid'=> $edition, 'userid'=> $user))) {
+    if(!$record = $DB->get_record('edicion_preinscripcion', array('edicionid'=> $editionid, 'userid'=> $user))) {
         // New record
         $record = new stdClass();
-        $record -> edicionid = $edition;
+        $record -> edicionid = $editionid;
         $record -> userid = $user;
         $record -> value = $strcourses;
         $record -> timemodified = time();
@@ -1393,9 +1396,9 @@ function mgm_edition_get_solicitudes($edition, $course) {
 
     $ret = 0;
     $sql = "SELECT count(id) as count FROM {edicion_preinscripcion}
-    		WHERE edicionid = :edicionid
-    		AND value IN (:value)";
-    if($record = $DB->get_record_sql($sql, array('edicionid'=>$edition->id, 'value'=>$course->id))) {
+    		WHERE edicionid = ?
+    		AND value LIKE '".$course->id ."%'";
+    if($record = $DB->get_record_sql($sql, array($edition->id))) {
        return $record->count;
     }
     return $ret;
@@ -2567,9 +2570,8 @@ function groups_get_users_not_in_group_by_role($courseid, $groupid, $searchtext=
 
 function mgm_rollback_borrador($editionid, $courseid) {
     global $CFG, $DB;
-    $sql = "DELETE FROM {edicion_inscripcion}
-            WHERE edicionid= :edicionid AND value = :value AND released = 0";
-    $DB->execute_sql($sql,array('edicionid'=>$editionid, 'value'=>$courseid));
+	$select =  "edicionid = $editionid AND value like '$courseid' AND released = 0";
+    $DB->delete_records_select('edicion_inscripcion', $select);
     //eliminar los descartes
     $DB->delete_records('edicion_descartes', array('edicionid'=> $editionid, 'courseid'=> $courseid));
 }
@@ -2759,8 +2761,8 @@ function mgm_check_cert_history($userid, $courses, $dni=False){
   	}
 	$strcourses = implode(',', $rcourses);
 	if ($euser = mgm_get_user_extend($userid)){
-		$consulta='SELECT id, idnumber, fullname FROM  {course} where  id in (:courses)';
-		$course_objs = $DB->get_records_sql($consulta, array('courses'=>$strcourses));
+		$consulta='SELECT id, idnumber, fullname FROM  {course} where  id in ('.$strcourses.')';
+		$course_objs = $DB->get_records_sql($consulta);
 		if ($dni){
 			$euser->dni=$dni;
 		}
@@ -2804,11 +2806,12 @@ function mgm_check_course_dependencies($edition, $course, $user, $dni=False) {
         return true;
     }
 		if ($euser = mgm_get_user_extend($user->id)){
-			if ($course2 = $DB->get_record('course', array('id '=> $criteria->dlist))){
+			if ($course2 = $DB->get_record('course', array('id'=> $criteria->dlist))){
 				if ($dni){
 					$euser->dni=$dni;
 				}
-				if ($DB->record_exists('edicion_cert_history', array('numdocumento'=> $euser->dni, 'courseid'=> $course2->idnumber, 'confirm'=> 1)) && $euser->dni != ''){
+				$select = "numdocumento = '$euser->dni' AND courseid = '$course2->idnumber' AND confirm = '1'";
+				if ($DB->record_exists_select('edicion_cert_history', $select) && $euser->dni != ''){
 					return true;
 				}
 			}
@@ -2963,8 +2966,8 @@ function mgm_is_course_certified($userid, $courseid) {
     if(!$userid || !$courseid) {
         return false;
     }
-
-    if(!$cert = $DB->get_record('edicion_cert_history', array('userid'=> $userid, 'courseid'=> $courseid))) {
+    $select = "userid = $userid and courseid = $courseid";
+    if(!$cert = $DB->get_record_select('edicion_cert_history', $select)) {
         return false;
     } else {
         return true;

@@ -349,7 +349,8 @@ $string['acta_admin_msg']='Documento generado por Administración INTEF';
 $string['acta_admin_sig']="Dª Mª del Carmen Arenas Fonollosa, Jefa del Servicio de Formación en Red del Profesorado.\nInstituto Nacional de Tecnologías Educativas. INTEF. Ministerio de Educación,Cultura y Deporte.";
 $string['do_paid']="Marcar edicion como Pagada";
 $string['cc']='Codigo de Centro';
-$string['cc_help'] = 'Si no recuerda o no conoce el código de su centro, puede encontrar el código de su centro en el siguiente enlace: <a href="https://www.educacion.gob.es/centros/home.do"/>https://www.educacion.gob.es/centros/home.do</a>';
+$string['cc_help'] = 'Si no recuerda o no conoce el código de su centro, puede encontrar el código de su centro en el siguiente enlace:
+<A TARGET=google HREF="https://www.educacion.gob.es/centros/home.do">"https://www.educacion.gob.es/centros/home.do"</A>';		 
 $string['lists'] = 'Lista de cursos';
 $string['lists_help'] = '<b>Cursos disponibles:</b> Solo aparecen en el listado aquellos cursos que no sean parte de ninguna otra edición.<br/>
 <b>Cursos seleccionados:</b> Conjunto de cursos asignados a esta edición y que por lo tanto no están disponibles para otras';

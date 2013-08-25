@@ -1,3 +1,7 @@
+-- Set initial key value for courses and editions
+ALTER TABLE `mgm24`.`mdl_course` AUTO_INCREMENT = 1000;
+ALTER TABLE `mgm24`.`mdl_edicion` AUTO_INCREMENT = 1000;
+
 -- mdl_user
 DELETE FROM `mgm24`.`mdl_user` where id>2;
 ALTER TABLE `mgm24`.`mdl_user` AUTO_INCREMENT = 110000;

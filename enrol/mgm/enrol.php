@@ -32,42 +32,44 @@ require_once('../../config.php');
 require_once($CFG->dirroot."/mod/mgm/locallib.php");
 require_once($CFG->dirroot."/mod/mgm/locallib.php");
 $id = required_param('id', PARAM_INT);
+//require_login($course);
+require_login();
+$PAGE->set_url(new moodle_url('/enrol/mgm/enrol.php', array('id'=> $id)));
 $instance = $DB->get_record('enrol', array('id'=> $id));
 if (!$instance || !$instance->courseid){
 	error(get_string('wsnoinstance', 'enrol_mgm'));
 }
 $course = $DB->get_record('course', array('id'=> $instance->courseid));
-//require_login($course);
-require_login();
 $context = context_course::instance($course->id, MUST_EXIST);
 //require_capability('enrol/mgm:enrol', $context);
 //require_capability('enrol/manual:manage', $context);
-$PAGE->set_url('/enrol/mgm/enrol.php');
 $PAGE->set_context($context);
 
+
 if (!$edition = mgm_get_course_edition($course->id)) {
-	error(get_string('noeditioncourse', 'mgm'));
+	print_error('noeditioncourse', 'mgm');
 }
 
 if (!$edition->active) {
-	error(get_string('noactiveedition', 'mgm'));
+	print_error('noactiveedition', 'mgm');
 }
 if ($edition->state != 'preinscripcion'){
-	error(get_string('nopreinscriptionstate', 'mgm'));
+	print_error('nopreinscriptionstate', 'mgm');
 }
 if ($edition->state == 'matriculacion') {
-	error(get_string('nomodifydata', 'mgm'));
+	print_error('nomodifydata', 'mgm');
 }
 
 $sql = "SELECT * FROM {edicion_inscripcion}
             	WHERE edicionid=:edition AND value=:value";
 $arg = array('edition'=>$edition->id, 'value'=> $course->id );
-if ($inscripcion = $DB->get_records_sql($sql, $arg) || time() > $edition->fin) {
-	error(get_string('fueradeperiodo', 'mgm'));
+// TODO: Descomentar  linea y comentar la siguiente en entorno de producion//if ($inscripcion = $DB->get_records_sql($sql, $arg) || time() > $edition->fin) {
+if ($inscripcion = $DB->get_records_sql($sql, $arg)) {
+	print_error('fueradeperiodo', 'mgm');
 }
 
 if (!mgm_check_course_dependencies($edition, $course, $USER)) {
-	error(get_string('nodependencias', 'mgm'));
+	print_error('nodependencias', 'mgm');
 }
 
 $strloginto = get_string('loginto', '', $edition->name);
@@ -75,22 +77,21 @@ $strcourses = get_string('courses');
 
 $context = get_context_instance(CONTEXT_SYSTEM);
 
-$navlinks = array();
-$navlinks[] = array('name' => $strcourses, 'link' =>"/course/index.php", 'type' => 'misc');
-$navlinks[] = array('name' => $strloginto, 'link' => null, 'type' => 'misc');
-$navigation = build_navigation($navlinks);
+$PAGE->navbar->add($strcourses,"/course/index.php");
+$PAGE->navbar->add($strloginto);
 
 // if (has_capability('moodle/legacy:guest', $context, $USER->id, false)) {
 // 	add_to_log($course->id, 'course', 'guest', 'view.php?id='.$course->id, getremoteaddr());
 // 	return;
 // }
-
-print_header($strloginto, $course->fullname, $navigation);
+$PAGE->set_title($strloginto);
+$PAGE->set_heading($course->fullname);
+echo $OUTPUT->header();
 echo '<br />';
-echo $OUTPUT->heading($edition->name.' ('.$edition->description.')');
+echo $OUTPUT->heading($edition->name);
 //print_simple_box_start('center', '80%');
 
-echo $OUTPUT->box_start('center');
+echo $OUTPUT->box_start('boxaligncenter');
 $choices = array();
 if (!$options = mgm_get_edition_user_options($edition->id, $USER->id)) {
 	$choices[0][0] = get_string('none');
@@ -130,7 +131,7 @@ $data2->aespecs = $aespecs;
 $data2->choices=$choices;
 $data2->course=$course;
 $data2->edition=$edition;
-$data2->id=$course->id;
+$data2->courseid=$course->id;
 if ($userspec = mgm_get_user_especialidades($USER->id)){
 	$data2->especialidades=array_keys($userspec);
 }
@@ -138,7 +139,7 @@ if ($userspec = mgm_get_user_especialidades($USER->id)){
 
 // Print form
 require_once($CFG->dirroot.'/enrol/mgm/enrol_form.php');
-$eform = new enrol_mgm_form('enrol.php', $data2);
+$eform = new enrol_mgm_form(new moodle_url('/enrol/mgm/enrol.php', array('id'=> $id)), $data2);
 $eform->set_data($data2);
 if ($options) {
 	$data = new stdClass();
@@ -157,7 +158,7 @@ if ($data=$eform->get_data() ) {
 		$courses = array();
 		foreach ($data->option as $k=>$option) {
 			if (in_array($option, $courses) && $option > 0) {
-				error(get_string('opcionesduplicadas', 'mgm'), '?id='.$course->id);
+				print_error('opcionesduplicadas', 'mgm', "?id=$id");
 				echo $OUTPUT->box_end();
 				echo $OUTPUT->footer();
 				die();
@@ -194,11 +195,11 @@ if ($data=$eform->get_data() ) {
 		if ($ch[0]){//Ningun curso ya certificado
 			mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses);			
 			echo $OUTPUT->confirm(get_string('preinscrito', 'mgm'),
-				new moodle_url('/enrol/mgm/enrol.php', array('id'=>$course->id)), 
+				new moodle_url('/enrol/mgm/enrol.php', array('id'=>$id)), 
 				new moodle_url($CFG->wwwroot.'/index.php'));
 			die();
 		}else{//alguno de los cursos esta certificado para el dni del usuario
-			error($ch[1], '?id='.$course->id);
+			print_error('coursecertfied', 'mgm', "?id=$id",  $course->fullname);
 		}
 	}
 }

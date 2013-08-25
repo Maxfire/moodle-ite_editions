@@ -27,8 +27,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $logs = array(
-    array('module'=>'mgm', 'action'=>'add', 'mtable'=>'mgm', 'field'=>'name'),
-    array('module'=>'mgm', 'action'=>'update', 'mtable'=>'mgm', 'field'=>'name'),
-	array('module'=>'mgm', 'action'=>'view', 'mtable'=>'mgm', 'field'=>'name'),
-	array('module'=>'mgm', 'action'=>'view all', 'mtable'=>'mgm', 'field'=>'name'),
+    array('module'=>'mgm', 'action'=>'add', 'mtable'=>'edicion', 'field'=>'name'),
+    array('module'=>'mgm', 'action'=>'update', 'mtable'=>'edicion', 'field'=>'name'),
+	array('module'=>'mgm', 'action'=>'view', 'mtable'=>'edicion', 'field'=>'name'),
+	array('module'=>'mgm', 'action'=>'view all', 'mtable'=>'edicion', 'field'=>'name'),
 );

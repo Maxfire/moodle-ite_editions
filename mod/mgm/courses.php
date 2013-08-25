@@ -99,6 +99,11 @@ $criteria = mgm_get_edition_course_criteria($edicionid, $courseid);
 if (!isset($criteria->depends)) {
     $criteria->depends = 0;
 }
+// else{
+// 	if (isset($criteria->dlist) && $coursedepend = $DB->get_record('course', array('id'=>$criteria->dlist))){
+// 		$criteria->dlist=$coursedepend->idnumber;		
+// 	}	
+// }
 $criteria->courseid = $courseid;
 $criteria->edicionid = $edicionid;
 $criteria->sespecs = $sespecs;

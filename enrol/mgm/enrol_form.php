@@ -99,7 +99,7 @@ class enrol_mgm_form extends moodleform {
 //             $schoices += $sespecs;
 //         }
 		$mform->addElement('static', 'especialidadeswarn', get_string('note', 'mgm'). ':', get_string('multiselectespec', 'mgm'));
-        $especs[0] = & $mform->addElement('select', 'especialidades', get_string('especialidades', 'mgm'), $achoices);
+        $especs[0] = & $mform->addElement('select', 'especialidades', get_string('especialidades', 'mgm'), $achoices, array('size'=>"10"));
         $especs[0]->setMultiple(true);
 
 
@@ -130,8 +130,8 @@ class enrol_mgm_form extends moodleform {
         ####Informacion de matriculacion
          $mform->addElement('header', 'matriculacion', get_string('edicioncursos', 'mgm'));
 
-         $mform->addElement('hidden', 'id', $course->id);
-         $mform->setType('id', PARAM_INT);
+         $mform->addElement('hidden', 'courseid', $course->id);
+         $mform->setType('courseid', PARAM_INT);
          $mform->addElement('hidden', 'editionid', $edition->id);
          $mform->setType('editionid', PARAM_INT);
 
@@ -152,9 +152,8 @@ class enrol_mgm_form extends moodleform {
 
         $this->add_action_buttons(false, get_string('savechanges'));
 
-
-
     }
+    
 	function validation($data, $files) {
 		global $CFG, $USER, $DB;
 		require_once ($CFG->dirroot . "/mod/mgm/locallib.php");
@@ -257,7 +256,7 @@ class enrol_mgm_ro_form extends moodleform {
 
         foreach ($this->_customdata['choices'] as $k=>$v) {
             $tmpnum = $k+1;
-            $mform->addElement('select', 'option['.$k.']', get_string('opcion', 'mgm').' '.$tmpnum, $v, 'readonly');
+            $mform->addElement('select', 'option['.$k.']', get_string('opcion', 'mgm').' '.$tmpnum, $v, array('disabled'=>''));
         }
     }
 }

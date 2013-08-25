@@ -37,10 +37,20 @@ require_login();
 if (!isloggedin() or isguestuser()) {
     error('You need to be logged into the platform!');
 }
-
 $id = optional_param('id', 0, PARAM_INT);
 $courseid = optional_param('courseid', 0, PARAM_INT);
+
+	
 #$cuerpodocente = optional_param('cdocente', false);
+$PAGE->set_url('/mod/mgm/user.php');
+if ($courseid > 0){
+	$context = context_course::instance($courseid);
+	$PAGE->set_context($context);
+}else{
+	$PAGE->set_course($SITE);	
+}
+
+
 
 // Editions
 $editions = $DB->get_records('edicion');
@@ -54,15 +64,13 @@ $strselect         = get_string('select');
 $strmatricular     = get_string('mgm:aprobe', 'mgm');
 $strheading        = $strperfil.' '.$strediciones.' '.$USER->firstname.' '.$USER->lastname;
 
-$navlinks = array();
-$navlinks[] = array('name' => $strediciones, 'type' => 'misc');
-$navlinks[] = array('name' => $strperfil, 'type' => 'misc');
+$PAGE->navbar->add($strediciones);
+$PAGE->navbar->add($strperfil);
 
-$navigation = build_navigation($navlinks);
 $userdata = mgm_get_user_extend($USER->id);
 $selectedespecs = mgm_get_user_especialidades($USER->id);
 
-if ($_POST['codcuerpodocente']){
+if (isset($_POST['codcuerpodocente'])){
 	$allespecs = mgm_get_user_available_especialidades($USER->id, $_POST['codcuerpodocente']);
 }else{
 	$allespecs = mgm_get_user_available_especialidades($USER->id, $userdata->codcuerpodocente );
@@ -110,10 +118,9 @@ if ($mform->is_cancelled()) {
 	    notice(get_string('codemessage', 'mgm'), $CFG->wwwroot.'/index.php');
 	  }
 }
-
-print_header($strmatricular, $strmatricular, $navigation);
-print_heading($strheading);
-
+$PAGE->set_title($strmatricular);
+$PAGE->set_heading($strmatricular);
+echo $OUTPUT->header();
+echo $OUTPUT->heading($strheading);
 $mform->display();
-
-print_footer();
+echo $OUTPUT->footer();
