@@ -759,9 +759,9 @@ function mgm_set_edition_course_criteria($data) {
     }
 
     // Dependencies
-    if(isset($data -> dpendsgroup)) {
+    if(isset($data -> depends) && $data -> depends) {
         $criteria -> type = MGM_CRITERIA_DEPEND;
-        $criteria -> value = $data -> dpendsgroup['dlist'];
+        $criteria -> value = $data -> dlist;
         if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
             $DB->insert_record('edicion_criterios', $criteria);
         } else {
@@ -771,10 +771,10 @@ function mgm_set_edition_course_criteria($data) {
         }
     }else{//eliminar dependencia
     	$criteria -> type = MGM_CRITERIA_DEPEND;
-    	if (isset($data -> dpendsgroup['dlist'])){
-    		$criteria -> value = $data -> dpendsgroup['dlist'];
+    	if (isset($data -> dlist)){
+    		$criteria -> value = $data -> dlist;
     		if($criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
-    			$DB->delete_records('edicion_criterios', 'id', $criteriaid -> id);
+    			$DB->delete_records('edicion_criterios', array('id'=> $criteriaid -> id));
     		}    		
     	}
     }

@@ -243,24 +243,25 @@ class mgm_course_edit_form extends moodleform {
             $mform->setType('courseid', PARAM_INT);
             $mform->setDefault('courseid', $criteria->courseid);
         }
-
-
+        
         $dpends = array();
         $dchoices = array();
-
         foreach ($this->_customdata->dependencias as $k => $v) {
             $dchoices[$k] = ($v->idnumber != "") ? $v->idnumber : "NO CODE"." (".$v->fullname.")";
         }
-
         $dpends[] =& $mform->createElement('checkbox', 'depends', '',
-                           '', 'id="dcheck" onclick="if(this.checked) {
-                           		getElementById(\'id_dpendsgroup_dlist\').disabled=false;
-    					   } else {
-    					   		getElementById(\'id_dpendsgroup_dlist\').disabled=true;
-    					   }"');
-        $dpends[] =& $mform->createElement('select', 'dlist', '', $dchoices, ($this->_customdata->depends) ? 'enabled' : 'disabled');
-        $grp =& $mform->addElement('group', 'dpendsgroup', get_string('cdepend', 'mgm'), $dpends);
-
+                           '', array('id'=>"dcheck",'onclick'=>"if(this.checked) {
+                           			getElementById('id_dlist').disabled=false;
+    					   	} else {
+    					   		getElementById('id_dlist').disabled=true;
+    					   	}") );
+        if  ($this->_customdata->depends){
+        	$dlistoption=array('enabled'=> "1");
+        } else{
+        	$dlistoption=array('disabled'=> "1");
+        }
+        $dpends[] =& $mform->createElement('select', 'dlist', '', $dchoices, $dlistoption);        
+        $grp =& $mform->addElement('group', 'dpendsgroup', get_string('cdepend', 'mgm'), $dpends, ' ', false);
         $this->add_action_buttons(true);
     }
 }
