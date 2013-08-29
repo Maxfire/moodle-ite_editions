@@ -13,6 +13,8 @@ mod/mgm/pix/letter_001.jpg
 mod/mgm/pix/letter_002.jpg
 mod/mgm/pix/letter_003.jpg
 
+mod/mgm/simpletest/testGenGroups.php
+
 !blocks/mgm
 !blocks/cert
 !enrol/mgm
@@ -21,6 +23,7 @@ mod/mgm/pix/letter_003.jpg
 !blocks/configurable_reports/components/permissions/custommgm
 !blocks/configurable_reports/export/pdf
 !blocks/configurable_reports/lang
+!blocks/configurable_reports/reports/sql/report.class.php
 !mod/mgm
 !lib/fpdf
 !grade/report/acta

@@ -102,10 +102,10 @@
 		if(file_exists($exportplugin)){
 			require_once($exportplugin);
 			if ($format=='pdf'){
-				$filtercourseid = optional_param('filter_courses',false);
-				$reportname = optional_param('report_name',false);
-				$admin = optional_param('admin',false);
-				$filtergroupid = optional_param('filter_groups',false);
+				$filtercourseid = optional_param('filter_courses',false, PARAM_INT);
+				$reportname = optional_param('report_name',false, PARAM_ALPHA);
+				$admin = optional_param('admin',false, PARAM_INT);
+				$filtergroupid = optional_param('filter_groups',false, PARAM_INT);
 
 				export_report($reportclass, $filtercourseid, $reportname, $admin, $filtergroupid);
 			}
