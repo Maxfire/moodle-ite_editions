@@ -15,12 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Paypal enrolment plugin.
+ * MGM enrolment plugin.
  *
  * This plugin allows you to set up paid courses.
  *
  * @package    enrol
- * @subpackage paypal
+ * @subpackage mgm
  * @copyright  2013 Jesus Jaen { jesus.jaen@open-phoeix.com }
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

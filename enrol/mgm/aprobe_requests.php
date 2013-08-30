@@ -36,7 +36,8 @@ require_capability('mod/mgm:aprobe', get_context_instance(CONTEXT_SYSTEM));
 $systemcontext = context_system::instance();
 $PAGE->set_url('/enrol/mgm/aprobe_request.php');
 $PAGE->set_context($systemcontext);
-$PAGE->set_pagelayout('admin');
+
+//$PAGE->set_pagelayout('admin');
 
 if (!$preinscripcion = $DB->get_records('edicion_preinscripcion')) {
 	print_error('nohaydatos', 'mgm');    
@@ -48,6 +49,14 @@ $borrador = optional_param('borrador', false, PARAM_BOOL);
 $inscribe = optional_param('inscribe', false, PARAM_BOOL);
 $rollback = optional_param('rollback', false, PARAM_BOOL);
 $force = optional_param('force', false, PARAM_BOOL);
+$salir = optional_param('out', false, PARAM_BOOL);
+
+if ( $salir ){
+	if ( isset($SESSION->mgm_enrol_m2)){
+		unset($SESSION->mgm_enrol_m2);
+	}	
+	redirect($CFG->wwwroot);
+}
 
 if (isset($_POST['state'])){
 	$states=$_POST['state'];
@@ -60,6 +69,9 @@ $editions = $DB->get_records('edicion');
 $editiontable = new html_table();
 $editiontable->attributes['class'] = "boxaligncenter";
 if (isset($editions) && is_array($editions)) {
+// 	if (isset($SESSION->mgm_enrol_m2)){
+// 		unset($SESSION->mgm_enrol_m2);
+// 	}
     foreach($editions as $edition) {
         // Check if user can see the edition.
         if (!mgm_can_do_view()) {
@@ -197,6 +209,7 @@ if ($id) {
         $strheading = $strheading.' '.$edition->name;
         $editiontable = new html_table();
         $editiontable->attributes['class'] = "boxaligncenter";
+        
         // Table header
         $editiontable->head = array($strcourse, $strasignado, $strplazas, $strsolicitudes);
         $editiontable->align = array('left', 'center', 'center', 'center');
@@ -233,7 +246,7 @@ if ($id) {
                 $plazas,
                 mgm_edition_get_solicitudes($edition, $course)
             );
-        }
+        }                              
     }
 }
 
@@ -253,9 +266,9 @@ if ($courseid) {
             $strheading = $strheading.' - '.$course->fullname.' '.get_string('borrador_txt', 'mgm');
             $savebutton = '<br /><center><input type="submit" value="'.get_string('confirmar_borrador', 'mgm').'"/></center>';
         } else {
-            // Table header
-            $editiontable->head = array($strposalumno,$strselect, $strname, $strlastname, $strinscripcion, $strcc, 'CA', $strespecialidades, $strcourses);
-            $editiontable->align = array('left','left', 'left', 'left', 'left', 'left', 'left', 'left', 'left');
+            // Table header            
+            $editiontable->head = array('','', $strname, $strlastname, $strinscripcion, $strcc, 'CA', $strespecialidades, $strcourses, 'P');
+            $editiontable->align = array('left','left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left');
 
             $editiontable->data = mgm_get_edition_course_preinscripcion_data($edition, $course);
             $strheading = $strheading.' - '.$course->fullname;
@@ -265,6 +278,21 @@ if ($courseid) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strheading);
+
+if ($id && $courseid == 0){
+	if ($edition->methodenrol == 2){		
+// 		# Metodo de matriculacion asignando primero las primeras opciones de todos los candidatos. 		
+// 		echo $OUTPUT->notification("Generando datos para la matriculacion mediante el metodo 'Primeras Opciones'");
+// 		echo $OUTPUT->notification("Espere ...");			
+		require_once($CFG->dirroot."/enrol/mgm/locallib.php");
+		mgm_enrol_set_preinscripcion_data($edition);			
+		 
+	}else if ($edition->methodenrol == 3){
+		#Metodo de matriculacion asignando primero plazas por fecha de peticion
+		print_error('noimplemented', 'mgm');
+	}
+}
+
 if ($courseid) {
 	$course = $DB->get_record('course', array('id'=> $courseid));
     if (mgm_is_borrador($edition, $course)) {
@@ -281,4 +309,7 @@ if ($courseid) {
 } else {
 	echo html_writer::table($editiontable);    
 }
-echo $OUTPUT->footer();
+echo '<center>';
+echo $OUTPUT->single_button(new moodle_url('aprobe_requests.php', array('out'=> true)), get_string('outenrol', 'mgm'));
+echo '</center>';
+//echo $OUTPUT->footer();

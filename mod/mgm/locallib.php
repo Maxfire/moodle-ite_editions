@@ -90,8 +90,11 @@ define('MGM_STATE_GE_ERROR', 12);//Todos los cursos tienen que haber finalizado 
 
 
 
-global $NIVELES_EDUCATIVOS, $CUERPOS_DOCENTES, $PAISES, $PROVINCIAS, $COMUNIDADES, $MEC_CODES, $MGM_ITE_CUERPOS_ESPECS;
+global $NIVELES_EDUCATIVOS, $CUERPOS_DOCENTES, $PAISES, $PROVINCIAS, $COMUNIDADES, $MEC_CODES, $MGM_ITE_CUERPOS_ESPECS, $MGM;
 
+// if ( ! isset($SESSION->MGM)){
+// 	$SESSION->MGM = new stdClass(); 
+// }
 $CODIGOS_AGRUPACION = array("0" => "0 Agrupación General", "1" => "1 Agrupación de Cursos", "2" => "2 Investigación Nacional", "3" => "3 Proyectos de Formación", "4" => "4 Comenius", "5" => "5 Lingua", "6" => "6 Arion", "7" => "7 Petra I y II", "8" => "8 Leonardo Da Vinci", "9" => "9 Música y Danza", "10" => "10 Enseñanza de Idiomas", "11" => "11 Titulaciones de Primer Ciclo", "12" => "12 Titulaciones de Segundo Ciclo", "13" => "13 Titulaciones de Tercer Ciclo", "14" => "14 Investigación Provincial", "15" => "15 Investigación Carácter Distinto", "16" => "16 Proyecto Innovación", "17" => "17 Minerva", "18" => "18 Medidas de acompañamiento", "19" => "19 Grundtvig", "20" => "20 Acciones conjuntas", "25" => "25 En Red");
 
 $MODALIDADES = array("10" => "10 Curso", "20" => "20 Grupos de Trabajo", "30" => "30 Seminarios", "A0" => "A0 Curso a distancia");
@@ -115,7 +118,7 @@ $COMUNIDADES = array(0 => 'NINGUNA', 1 => 'ANDALUCIA', 2 => 'ARAGON', 3 => 'ASTU
 $PROV_COMUNIDADES = array(01 => array(04 => 'Almería', 11 => 'Cádiz', 14 => 'Córdoba', 18 => 'Granada', 21 => 'Huelva', 23 => 'Jaén', 29 => 'Málaga', 41 => 'Sevilla'), 02 => array(22 => 'Huesca', 44 => 'Teruel', 50 => 'Zaragoza'), 03 => array(33 => 'Asturias'), 04 => array(07 => 'Islas Baleares'), 05 => array(35 => 'Las Palmas', 38 => 'Santa Cruz de Tenerife'), 06 => array(39 => 'Cantabria'), 07 => array(05 => 'Ávila', 09 => 'Burgos', 24 => 'León', 34 => 'Palencia', 37 => 'Salamanca', 40 => 'Segovia', 42 => 'Soria', 47 => 'Valladolid', 49 => 'Zamora'), 08 => array(02 => 'Albacete', 13 => 'Ciudad Real', 16 => 'Cuenca', 19 => 'Guadalajara', 45 => 'Toledo'), 09 => array(08 => 'Barcelona', 17 => 'Girona', 25 => 'Lleida', 43 => 'Tarragona'), 10 => array(03 => 'Alicante', 12 => 'Castellón', 46 => 'Valencia'), 11 => array(10 => 'Cáceres', 06 => 'Badajoz'), 12 => array(15 => 'A Coruña', 27 => 'Lugo', 32 => 'Ourense', 36 => 'Pontevedra', ), 13 => array(28 => 'Madrid'), 14 => array(30 => 'Murcia'), 15 => array(31 => 'Navarra'), 16 => array(01 => 'Álava', 20 => 'Guipúzcoa', 48 => 'Vizcaya'), 17 => array(26 => 'La Rioja'), 18 => array(51 => 'Ceuta'), 19 => array(52 => 'Melilla'));
 $COMUNIDADES_CC = array('04' => 'ANDALUCIA', '11' => 'ANDALUCIA', '14' => 'ANDALUCIA', '18' => 'ANDALUCIA', '21' => 'ANDALUCIA', '23' => 'ANDALUCIA', '29' => 'ANDALUCIA', '41' => 'ANDALUCIA', '22' => 'Aragon', '44' => 'Aragon', '50' => 'Aragon', '33' => 'Asturias', '07' => 'Baleares', '35' => 'Canarias', '38' => 'Canarias', '39' => 'Cantabria', '05' => 'Castilla Leon', '09' => 'Castilla Leon', '24' => 'Castilla Leon', '34' => 'Castilla Leon', '37' => 'Castilla Leon', '40' => 'Castilla Leon', '42' => 'Castilla Leon', '47' => 'Castilla Leon', '49' => 'Castilla Leon', '02' => 'C. Mancha', '13' => 'C. Mancha', '16' => 'C. Mancha', '19' => 'C. Mancha', '45' => 'C. Mancha', '08' => 'Cataluña', '17' => 'Cataluña', '25' => 'Cataluña', '43' => 'Cataluña', '03' => 'Valencia', '12' => 'Valencia', '46' => 'Valencia', '10' => 'Extremadura', '06' => 'Extremadura', '15' => 'Galicia', '27' => 'Galicia', '32' => 'Galicia', '36' => 'Galicia', '28' => 'Madrid', '30' => 'Murcia', '31' => 'Navarra', '01' => 'Euskadi', '20' => 'Euskadi', '48' => 'Euskadi', '26' => 'La Rioja', '51' => 'Ceuta', '52' => 'Melilla');
 $CSV_CACHED_FILE = array();
-$MEC_PATTERN="/^51|^52|^60|28923065|^00*25|^00*50|^00*15|^00*35/";  //Ceuta, Melilla, Extranjero, Interno, Itinerantes, extranjero, iberoamerica, eTwinning
+$MEC_PATTERN="/^51|^52|^60|28923065|^00*25$|^00*50$|^00*15$|^00*35$/";  //Ceuta, Melilla, Extranjero, Interno, Itinerantes, extranjero, iberoamerica, eTwinning
 
 /**
  * Checks if an user can perform the view action on module access
@@ -476,6 +479,21 @@ function mgm_get_edition_available_courses($edition) {
     return $ret;
 }
 
+function mgm_set_courses_edition_cache($editionid){
+	global $DB, $SESSION;
+	$sql = "SELECT id, fullname FROM {course}
+			WHERE id IN (
+				SELECT courseid FROM {edicion_course}
+				WHERE edicionid = ?)			
+			ORDER BY fullname";
+	$SESSION->mgm_courses_edition = $DB->get_records_sql($sql, array($editionid));	
+}
+
+function mgm_unset_courses_edition_cache(){
+	global $GLOBALS;
+	unset($GLOBALS['SESSION']->mgm_courses_edition);
+}
+
 function mgm_add_course($edition, $courseid) {
     global $DB;
 
@@ -571,14 +589,36 @@ function mgm_remove_edition_contents($editionid) {
     return true;
 }
 
-function mgm_translate_especialidad($id) {
-    global $CFG, $DB;
+// function mgm_translate_especialidad($id) {
+//     global $CFG, $DB;
 
-    $sql = "SELECT value FROM  {edicion_ite}
-    		WHERE type = ?";
-    $especialidades = explode("\n",  $DB->get_record_sql($sql, array(MGM_ITE_ESPECIALIDADES)) -> value);
-    return ($id !== false && $id != '') ? $especialidades[$id] : '';
+//     $sql = "SELECT value FROM  {edicion_ite}
+//     		WHERE type = ?";
+//     $especialidades = explode("\n",  $DB->get_record_sql($sql, array(MGM_ITE_ESPECIALIDADES)) -> value);
+//     return ($id !== false && $id != '') ? $especialidades[$id] : '';
+// }
+
+function mgm_translate_especialidad($id) {
+    global $MGM_ITE_ESPECS;
+
+//     $sql = "SELECT value FROM  {edicion_ite}
+//     		WHERE type = ?";
+//     $especialidades = explode("\n",  $DB->get_record_sql($sql, array(MGM_ITE_ESPECIALIDADES)) -> value);
+    return ($id !== false && $id != '') ? $MGM_ITE_ESPECS[$id] : '';
 }
+
+// function mgm_translate_especialidad($id) {
+// 	global $CFG, $DB, $MGM;
+// 	if (! isset($MGM->translate_esps)){
+// 		//$old = memory_get_usage();
+// 		$sql = "SELECT value FROM  {edicion_ite}
+//     		WHERE type = ?";
+// 		$MGM->translate_esps = explode("\n",  $DB->get_record_sql($sql, array(MGM_ITE_ESPECIALIDADES)) -> value);
+// 		//$new = memory_get_usage();
+// 		//$size = $new - $old;
+// 	}
+// 	return ($id !== false && $id != '') ? $MGM->translate_esps[$id] : '';
+// }
 
 function mgm_get_edition_course_criteria($editionid, $courseid) {
     global $CFG, $DB, $COMUNIDADES;
@@ -1291,6 +1331,42 @@ function mgm_enrol_edition_course($editionid, $courseid) {
 //         }
     }
 }
+/**
+ * Recursive implementation of addslashes()
+ *
+ * This function will allow you to add the slashes from a variable.
+ * If the variable is an array or object, slashes will be added
+ * to the items (or properties) it contains, even if they are arrays
+ * or objects themselves.
+ *
+ * @param mixed the variable to add slashes from
+ * @return mixed
+ */
+function addslashes_recursive($var) {
+	if (is_object($var)) {
+		$new_var = new object();
+		$properties = get_object_vars($var);
+		foreach($properties as $property => $value) {
+			$new_var->$property = addslashes_recursive($value);
+		}
+
+	} else if (is_array($var)) {
+		$new_var = array();
+		foreach($var as $property => $value) {
+			$new_var[$property] = addslashes_recursive($value);
+		}
+
+	} else if (is_string($var)) {
+		$new_var = addslashes($var);
+
+	} else { // nulls, integers, etc.
+		$new_var = $var;
+	}
+
+	return $new_var;
+}
+
+
 //TODO: check trigger_error function
 function mgm_create_enrolment_groups($editionid, $courseid) {
     global $CFG, $DB;
@@ -1316,7 +1392,7 @@ function mgm_create_enrolment_groups($editionid, $courseid) {
             $groups[$ncount] = array();
         }
         $user = $DB->get_record('user', array('id'=> $row->id));
-        if(!$user->ite_data = $DB->get_record('edicion_user', array('userid'=> $row->userid))) {
+        if(!$user->ite_data = $DB->get_record('edicion_user', array('userid'=> $row->id))) {
             if(count($groups[$ncount]) < $max) {
                 $groups[$ncount][] = $user;
             } else {
@@ -1387,8 +1463,8 @@ function mgm_check_already_enroled($editionid, $courseid) {
     global $CFG, $DB;
 
     $sql = "SELECT userid as id FROM {edicion_inscripcion}
-    		WHERE edicionid = :edicionid AND value = :value";
-    return $DB->get_records_sql($sql, array('edicionid'=>$editionid, 'value'=>$courseid));
+    		WHERE edicionid = ? AND value = $courseid";
+    return $DB->get_records_sql($sql, array($editionid));
 }
 
 function mgm_edition_get_solicitudes($edition, $course) {
@@ -1957,8 +2033,12 @@ function mgm_get_edition_course_inscription_data($edition, $course, $docheck = t
  * @param boolean $docheck
  */
 function mgm_get_edition_course_preinscripcion_data($edition, $course, $docheck = true) {
-    global $CFG, $DB;
-
+    global $CFG, $DB, $SESSION;
+	
+    if (isset($SESSION->mgm_enrol_m2) && isset($SESSION->mgm_enrol_m2[$course->id])){
+    	return $SESSION->mgm_enrol_m2[$course->id];
+    }
+    
     // Preinscripcion date first
     $sql = "SELECT * FROM {edicion_preinscripcion}
     		WHERE edicionid = ? AND userid NOT IN 
@@ -3796,7 +3876,7 @@ function mgm_parse_letter($data, $userid, $editionid){
      {edicion_course} ec left join {course} c on ec.courseid=c.id , {role_assignments} AS ra INNER JOIN {context} AS context ON ra.contextid=context.id
      WHERE context.contextlevel = ? AND ra.roleid = ? AND u.id=ra.userid AND context.instanceid=ec.courseid AND u.id = ? AND ec.edicionid = ?";     
      $parm = array($ctxlevel, $arol, $userid, $editionid);
-     if($reg = $DB->get_record_sql($sql, parm)){
+     if($reg = $DB->get_record_sql($sql, $parm)){
      	$letter=new stdClass();
      	$fields=array('usuario', 'nombre', 'apellidos', 'dni', 'cc', 'email', 'curso', 'dgenerica', 'despecifica', 'direccion', 'cp', 'localidad', 'provincia', 'pais', 'telefono');
      	foreach($fields as $field){

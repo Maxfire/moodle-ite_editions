@@ -380,4 +380,5 @@ $string['grerrcreate'] = 'Error creating the group {$a->name}';
 $string['grerradduser'] = 'Error adding user {$a->user} to group {$a->group}';
 $string['usernotexist'] = 'User doesn\'t exists!';
 $string['nocontext'] = 'No context found';
+$string['outenrol'] = 'Salir de matriculación';
 

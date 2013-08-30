@@ -11,7 +11,7 @@
 
 mod/mgm/pix/letter_001.jpg
 mod/mgm/pix/letter_002.jpg
-mod/mgm/pix/letter_003.jpg
+mod/mgm/pix/letter_003.png
 
 mod/mgm/simpletest/testGenGroups.php
 
@@ -29,3 +29,4 @@ mod/mgm/simpletest/testGenGroups.php
 !grade/report/acta
 !libreta.txt
 !mgm_version.txt
+

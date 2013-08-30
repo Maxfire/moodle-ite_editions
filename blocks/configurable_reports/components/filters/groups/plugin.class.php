@@ -48,7 +48,7 @@ class plugin_groups extends plugin_base{
 		else{
 			if(preg_match("/%%FILTER_GROUPS:([^%]+)%%/i",$finalelements,
     $output)){
-				$replace = ' AND '.$output[1].' IN '.$filter_groups;
+				$replace = ' AND '.$output[1].' = '.$filter_groups;
 				return str_replace('%%FILTER_GROUPS:'.$output[1].'%%',$replace,$finalelements);
 			}
 		}
@@ -72,7 +72,7 @@ class plugin_groups extends plugin_base{
 		}
 		else{
 			if ($filter_courses != 0){
-				$sql="select id from {groups where courseid = ?";
+				$sql="select id from {groups} where courseid = ?";
 				$grouplist= array_keys($DB->get_records_sql($sql, array($filter_courses)));
 			}else
 				$grouplist = array_keys($DB->get_records('groups'));
@@ -85,7 +85,7 @@ class plugin_groups extends plugin_base{
 			$groups = $DB->get_records_select('groups','id in ('.(implode(',',$grouplist)).')');
 
 			foreach($groups as $c){
-				$groupoptions['('.$c->id.')'] = format_string($c->name);
+				$groupoptions[$c->id] = format_string($c->name);
 			}
 		}
 

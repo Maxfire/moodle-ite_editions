@@ -113,7 +113,7 @@ function updateGroupName(elId, userId, gId) {
     if (!target) {
         target = document.getElementById('none_'+gId);
     }
-    nameEl.value = target.text;
+    nameEl.value = nameEl.value + ': ' + target.text;
 }
 //]]>
 </script>
@@ -148,16 +148,15 @@ function updateGroupName(elId, userId, gId) {
                 <tr>
                     <td valign="top">
                         <p>
-                            <label id="label[<?php echo $gname[1] ?>]" for="<?php echo $gname ?>"><?php echo $group->name ?></label>
+                            <label id="label[<?php echo $gname[1] ?>]" for="groups[<?php echo $gname[1] ?>][name]"><?php echo $group->name ?></label>
                         </p>
-                        <input type="text" id="groups[<?php echo $gname[1] ?>][name]" name="groups[<?php echo $gname[1] ?>][name]" readonly=1 value="<?php echo $group->name ?>" />
+                        <input size="40" type="text" id="groups[<?php echo $gname[1] ?>][name]" name="groups[<?php echo $gname[1] ?>][name]" readonly=1 value="<?php echo $group->name ?>" />
                     </td>
                     <td valign="top">
                         <p>
                             <label for="groups[<?php echo $gname[1] ?>][tutor]"><?php print_string('tutor', 'mgm'); ?></label>
                         </p>
-                        <select name="groups[<?php echo $gname[1] ?>][tutor]" id="groups[<?php echo $gname[1] ?>][tutor]" onchange="updateGroupName('groups[<?php  echo $gname[1] ?>][name]', this.value, '<?php echo $gname[1]; ?>');"
-                        onfocus="updateGroupName('groups[<?php  echo $gname[1] ?>][name]', this.value, '<?php echo $gname[1]; ?>');">
+                        <select name="groups[<?php echo $gname[1] ?>][tutor]" id="groups[<?php echo $gname[1] ?>][tutor]" onchange="updateGroupName('groups[<?php  echo $gname[1] ?>][name]', this.value, '<?php echo $gname[1]; ?>');">
                           <?php echo $memberoptions ?>
                         </select>
                         <input type="hidden" name="groups[<?php echo $gname[1] ?>][data]" value="<?php echo $group->id ?>" />
