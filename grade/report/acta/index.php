@@ -18,41 +18,46 @@
 require_once '../../../config.php';
 require_once $CFG->libdir.'/gradelib.php';
 require_once $CFG->dirroot.'/grade/lib.php';
+require_once $CFG->dirroot.'/grade/report/grader/lib.php';
 require_once $CFG->dirroot.'/mod/mgm/locallib.php';
+
+
+
 
 $courseid = required_param('id', PARAM_INT);
 $userid   = optional_param('userid', $USER->id, PARAM_INT);
 $groupid = optional_param('group', 0, PARAM_INT);
 /// basic access checks
-if (!$course = get_record('course', 'id', $courseid)) {
+if (!$course = $DB->get_record('course', array('id'=> $courseid))) {
     print_error('nocourseid');
 }
 require_login($course);
 
-$context = get_context_instance(CONTEXT_COURSE, $course->id);
-require_capability('gradereport/user:view', $context);
+$context = context_course::instance($course->id);
+require_capability('gradereport/acta:view', $context);
+//$PAGE->set_context($context);
+$PAGE->set_url(new moodle_url('/grade/report/acta/index.php', array('id'=>$courseid)));
 
 if (empty($userid)) {
     require_capability('moodle/grade:viewall', $context);
 
 } else {
-    if (!get_record('user', 'id', $userid, 'deleted', 0) or isguestuser($userid)) {
-        error("Incorrect userid");
+    if (!$DB->get_record('user', array('id'=> $userid, 'deleted'=> 0)) or isguestuser($userid)) {
+        print_error('invaliduserid');
     }
 }
-if(!$groups=get_records_sql('select id from mdl_groups where id in ( select groupid from mdl_groups_members where userid ='. $userid . ' and courseid=' .$courseid .' )' )) {
+$sql = 'select id from {groups} where id in ( select groupid from {groups_members} where userid = ? and courseid = ? )'; 
+if(!$groups = $DB->get_records_sql($sql, array($userid, $courseid))) {
 	$groups='';
 }else{
-
 	$groups='&filter_groups=('. implode(",", array_keys($groups)).')';
 }
 
-if (!$coursemgm = get_record('edicion_course', 'courseid', $courseid)) {
-    error(get_string('nocoursemgm', 'mgm'), $CFG->wwwroot.'/course/view.php?id='.$courseid);
+if (!$coursemgm = $DB->get_record('edicion_course', array('courseid'=> $courseid))) {
+    print_error('nocoursemgm', 'mgm', $CFG->wwwroot.'/course/view.php?id='.$courseid);
 }else{
 	if ($coursemgm->fechafin>time()){
-
-		error(get_string('coursenotended','mgm'), $CFG->wwwroot.'/course/view.php?id='.$courseid);
+		print_error('coursenotended','mgm', $CFG->wwwroot.'/course/view.php?id='.$courseid);
 	}
 }
 
@@ -72,7 +77,7 @@ if (has_capability('moodle/grade:viewall', $context)) {
 
 if (!$access) {
     // no access to grades!
-    error("Can not view grades.", $CFG->wwwroot.'/course/view.php?id='.$courseid); //TODO: localize
+	print_error('nopermissiontoviewgrades', 'error',  $CFG->wwwroot.'/course/view.php?id='.$courseid);    
 }
 
 /// return tracking object
@@ -99,41 +104,36 @@ if ($reporttype){
 	}
 }
 if ($reportid ==0){
-	error("Informe incorrecto.", $CFG->wwwroot.'/course/view.php?id='.$courseid);
+	print_error('noreport', 'mgm', $CFG->wwwroot.'/course/view.php?id='.$courseid);
 }
 //Establecer permisos para acceso a informe de actas:
 global $SESSION;
-$SESSION->MGMINF->active=1;
+$MGMINF = new stdClass();
 $MGMINF->courseid=$courseid;
 $MGMINF->userid=$userid;
+$MGMINF->active=1;
+$SESSION->MGMINF=$MGMINF;
+
 
 
 if (has_capability('moodle/grade:viewall', $context)) { //Teachers will see all student reports
 		if ($groups == ''){//admin
 			if ($groupid){
-				$groups='&filter_groups=('.$groupid.')';
+				$groups="&filter_groups=($groupid)";
 				$params='?id='.$reportid . '&filter_courses=' . $courseid . $groups. '&report_name=' . $reporttype . '&download=true&format=pdf&admin=true';
-		  	redirect("$CFG->wwwroot".'/blocks/configurable_reports/viewreport.php'. $params);
+		  		redirect("$CFG->wwwroot".'/blocks/configurable_reports/viewreport.php'. $params);
 			}
-      print_grade_page_head($courseid, 'report', 'acta');
-      groups_print_course_menu($course, $gpr->get_return_url('index.php?id='.$courseid, array('userid'=>0)));
-      print_footer($course);
-
+      		print_grade_page_head($courseid, 'report', 'acta');      		
+      		groups_print_course_menu($course, $gpr->get_return_url('index.php?id='.$courseid, array('userid'=>0)));
+      		
+      		echo $OUTPUT->footer();
+      		
 		}else{//tutor del curso
 		  $params='?id='.$reportid . '&filter_courses=' . $courseid . $groups. '&report_name=' . $reporttype . '&download=true&format=pdf';
 		  redirect("$CFG->wwwroot".'/blocks/configurable_reports/viewreport.php'. $params);
 		}
 
 } else { //Students can not see act
-    error("Acción no permitida.", $CFG->wwwroot.'/course/view.php?id='.$courseid);
+    print_error('noaction', 'mgm', $CFG->wwwroot.'/course/view.php?id='.$courseid);
 }
-
-//print_footer($course);
-
-
-
-
-
-//print_footer($course);
-
-?>
+//echo $OUTPUT->footer();

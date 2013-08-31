@@ -38,7 +38,7 @@ class plugin_groups extends plugin_base{
 	}
 
 	function execute($finalelements, $data){
-		$filter_groups = optional_param('filter_groups', 0, PARAM_INT);
+		$filter_groups = optional_param('filter_groups', '', PARAM_TEXT);
 		if(!$filter_groups)
 			return $finalelements;
 
@@ -48,7 +48,7 @@ class plugin_groups extends plugin_base{
 		else{
 			if(preg_match("/%%FILTER_GROUPS:([^%]+)%%/i",$finalelements,
     $output)){
-				$replace = ' AND '.$output[1].' = '.$filter_groups;
+				$replace = ' AND '.$output[1].' IN '.$filter_groups;
 				return str_replace('%%FILTER_GROUPS:'.$output[1].'%%',$replace,$finalelements);
 			}
 		}
@@ -58,7 +58,7 @@ class plugin_groups extends plugin_base{
 	function print_filter(&$mform){
 		global $CFG, $DB;
 
-		$filter_groups = optional_param('filter_groups', 0, PARAM_INT);
+		$filter_groups = optional_param('filter_groups', '', PARAM_TEXT);
 		$filter_courses = optional_param('filter_courses', 0, PARAM_INT);
 
 		$reportclassname = 'report_'.$this->report->type;
@@ -85,12 +85,12 @@ class plugin_groups extends plugin_base{
 			$groups = $DB->get_records_select('groups','id in ('.(implode(',',$grouplist)).')');
 
 			foreach($groups as $c){
-				$groupoptions[$c->id] = format_string($c->name);
+				$groupoptions['('.$c->id.')'] = format_string($c->name);
 			}
 		}
 
 		$mform->addElement('select', 'filter_groups', get_string('groups', 'mgm'), $groupoptions);
-		$mform->setType('filter_groups', PARAM_INT);
+		$mform->setType('filter_groups', PARAM_TEXT);
 
 	}
 

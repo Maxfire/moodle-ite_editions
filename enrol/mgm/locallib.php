@@ -45,13 +45,6 @@ function mgm_enrol_get_user_preinscription_data($userline, $edition, $criteria, 
 	$userespecs .= '</select>';
 	$courses = '<select name="courses" readonly="">';
 	$values = explode(',', $userline -> value);
-// 	$realcourses = array();
-// 	for($i = 0; $i < count($values); $i++) {
-// 		if(mgm_check_already_enroled($edition -> id, $values[$i])) {
-// 			continue ;
-// 		}
-// 		$realcourses[] = $values[$i];
-// 	}
 
 	foreach($values as $courseid) {//Comprobar rendimiento y optimizar
  		$ncourse = $SESSION->mgm_courses_edition[$courseid];
@@ -69,14 +62,7 @@ function mgm_enrol_get_user_preinscription_data($userline, $edition, $criteria, 
 		$state='<input type="hidden" name="state[' . $userline -> userid . ']" value="2" />';
 	}
 	//Comprobar si el usuario ha certificado el curso (Amarillo) No necesario, se comprueba en el formulario de inscripcion
-// 	if ($courseenrolid){
-// 		$ch = mgm_check_cert_history($userline->userid, array($courseenrolid));
-// 		if (! $ch[0]){//El usuario ya tiene el curso certificado
-// 			$colors = $colors.'<span style="color: yellow;">(*)</span> ';
-// 			$check = '<input type="checkbox" name="users[' . $userline -> userid . ']" checked="false" />';
-// 			$state='<input type="hidden" name="state[' . $userline -> userid . ']" value="3" />';
-// 		}
-// 	}
+
 	//Comprobar comunidad autonoma (Naranja)
 	if(property_exists($criteria, 'excomunidades') ) {
 		$provincia = str_split($user->cc, 2);
@@ -172,8 +158,8 @@ function mgm_enrol_get_prioridad_user($user, $option_course){
 # n tiene que ser mayor o igual que 1
 function mgm_enrol_get_option_n($editionid, $n, $course_options=NULL, $courses_completes=NULL){
 	global $DB, $OUTPUT;
-	$m=memory_get_usage()/1024/1024;
-	echo $OUTPUT->notification("memoria antes: $m");
+	//  $m=memory_get_usage()/1024/1024;
+	//  echo $OUTPUT->notification("memoria antes: $m");
 	$courses = array();
 	if (! isset($courses_options)){
 		$courses_options = mgm_enrol_get_courses_options($editionid);
@@ -188,11 +174,13 @@ function mgm_enrol_get_option_n($editionid, $n, $course_options=NULL, $courses_c
     			WHERE ep.edicionid = ?)
     		ORDER BY ep.timemodified ASC";
 			
-	if($preinscripcion = $DB->get_recordset_sql($sql, array($editionid, $editionid))) {		
+	if($preinscripcion = $DB->get_recordset_sql($sql, array($editionid, $editionid))) {
+		#Obtiene los datos de los solicitantes por fecha de peticion de los cursos		
 		foreach ($preinscripcion as $data){						
 			$options = explode(",", $data->value);			
 			if (count($options) >= $n){
 				$courseid = $options[$n-1];
+				# Si el cursos ya tiene asignadas todas las plazas, continua con el siguiente usuario
 				if ( isset($courses_completes) && isset($courses_completes[$courseid]) ) {
 					continue;
 				}
@@ -220,7 +208,8 @@ function mgm_enrol_get_option_n($editionid, $n, $course_options=NULL, $courses_c
 				}				
 				$userline->user = $user;
 				
-				#Set array $courses with priorities
+				#Set array $courses with priorities				
+				#Gestion de prioridades
 				switch ($userline->prioridad){
 					case 0:  # Por orden alfabetico
 						$courses[$courseid][] = $userline;
@@ -238,33 +227,34 @@ function mgm_enrol_get_option_n($editionid, $n, $course_options=NULL, $courses_c
 			}			
 		}
 	}
-	$m=memory_get_usage()/1024/1024;
-	echo $OUTPUT->notification("memoria despues: $m");
-	
+	// $m=memory_get_usage()/1024/1024;
+	//  echo $OUTPUT->notification("memoria despues: $m");	
 	return $courses;
 }
 
 function mgm_enrol_set_preinscripcion_data($edition){
 	global $OUTPUT, $SESSION;
-	// Iterar por todas las opciones comenzando por la primera.
+	//Por rendimiento 
 	if ( isset($SESSION->mgm_enrol_m2)){
 		unset($SESSION->mgm_enrol_m2);
-	}
-	
-	$m=memory_get_usage()/1024/1024;
-	echo $OUTPUT->notification("memoria inicio main: $m");
+	}	
+	// $m=memory_get_usage()/1024/1024;
+	// echo $OUTPUT->notification("memoria inicio main: $m");
 	
 	mgm_set_courses_edition_cache($edition->id);  // por rendimiento  	
 	$option = 1;	
 	$finaldata = array();
 	$asigned_users = array(); # Usuarios ya asignados en algun curso actualmente
 	$asigned_courses = array();# Numero de usuarios asignados en cada curso actualme
-	$courses_completes = array();# Numero de usuarios asignados en cada curso actualme
-	$course_options = mgm_enrol_get_courses_options($edition->id);
+	$courses_completes = array();# Conjunto de cursos con tadas las plazas completadas
+	$course_options = mgm_enrol_get_courses_options($edition->id); #Opciones de cada curso
+	
+	// Iterar por todas las opciones comenzando por la primera.
 	while($option <= $edition->numberc){
 		#echo $OUTPUT->notification("Analizando Opción: $option");
-		#Obtener todos los solicitantes de la opcion n-esima ordenados por fecha (en un array de cursos)
- 		$courses = mgm_enrol_get_option_n($edition->id, $option, $course_options, $courses_completes);
+		
+		#Obtener todos los solicitantes de la opcion n-esima ordenados por prioridades y fecha (en un array de cursos)
+ 		$courses = mgm_enrol_get_option_n($edition->id, $option, $course_options, $courses_completes); 		
 		foreach ($courses as $courseid=>$course_data){
 			//echo $OUTPUT->notification("Curso: $courseid");			
 			if (! isset($finaldata[$courseid])){
@@ -273,12 +263,20 @@ function mgm_enrol_set_preinscripcion_data($edition){
 			if (!isset($asigned_courses[$courseid])){
 				$asigned_courses[$courseid]=0;
 			}
+			#Establecer el indice de cada a partir del que se insertaran los usuarios para la opcion N
+			if (isset($course_options[$courseid])){
+				$course_options[$courseid]->prioridad1_index = $asigned_courses[$courseid];
+				$course_options[$courseid]->prioridad2_index = $asigned_courses[$courseid];
+			}
+			
 			$criteria = mgm_get_edition_course_criteria($edition -> id, $courseid);
+			#Si el curso ya está completo continuar con el siguiente curso sin hacer nada en este 
 			if ( $criteria-> plazas!=0 && $asigned_courses[$courseid] >= $criteria-> plazas ){
 		#		echo $OUTPUT->notification("El curso $courseid ya tiene asignadas todas sus plazas");
-				unset($courses[$courseid]);				
+				unset($courses[$courseid]); // por rendimiento				
 				continue;
-			}			
+			}
+			#Iterar sobre todas las solicitudes del curso
 			foreach ($course_data as $userline){			
 // 				if ( $criteria-> plazas!=0 && $asigned_courses[$courseid] >= $criteria-> plazas ){
 // 					echo $OUTPUT->notification("El curso $courseid ya tiene asignadas todas sus plazas");
@@ -289,8 +287,7 @@ function mgm_enrol_set_preinscripcion_data($edition){
 		#			echo $OUTPUT->notification("Usuario $userline->userid ya esta admitido en otro curso");
 					continue;
 				}
-				#Aplicar prioridades a las opciones 1 y 2
-				
+								
 				#Obtener el listado de usuarios para la tabla del curso.
 				$data = mgm_enrol_get_user_preinscription_data($userline, $edition, $criteria, $courseid);				
 				
@@ -321,8 +318,10 @@ function mgm_enrol_set_preinscripcion_data($edition){
 		}	
 		$option++;
 	}
-	mgm_unset_courses_edition_cache();  //por rendimiento	
+	
+	mgm_unset_courses_edition_cache();  //por rendimiento
+		
 	$SESSION->mgm_enrol_m2 = $finaldata;
-	$m=memory_get_usage()/1024/1024;
-	echo $OUTPUT->notification("memoria final main: $m");
+// 	$m=memory_get_usage()/1024/1024;
+// 	echo $OUTPUT->notification("memoria final main: $m");
 }

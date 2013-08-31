@@ -1299,7 +1299,7 @@ function mgm_enrol_edition_course($editionid, $courseid) {
         	die();
         } 
         if (! $enrol_mgm_instance = $DB->get_record('enrol', array('courseid'=>$courseid, 'enrol'=>'mgm'))) {
-        	print_error('nocourseconfigure', 'mgm', '', $a=$course->shortname);
+        	print_error('nocourseconfiguremgm', 'mgm', '', $a=$course->shortname);
         	die();
         }
         $roleid = $enrol_mgm_instance->roleid;

@@ -307,6 +307,8 @@ $string['Report031']='Centros';
 $string['Report031_summary']='Listado de centros';
 $string['Report032']='Descartes en preinscripciones';
 $string['Report032_summary']='Listado de descartes en el proceso de matriculación';
+$string['Report033']='Solicitudes de Usuarios ME';
+$string['Report033_summary']='Listado de usuarios con "Prioridad ME" con sus solicitudes de cursos y concesiones.';
 $string['stateerror']='Error estableciendo descartes';
 $string['serror_1']='Fuera de cupo';
 $string['serror_2']='Centro privado';
@@ -381,4 +383,8 @@ $string['grerradduser'] = 'Error adding user {$a->user} to group {$a->group}';
 $string['usernotexist'] = 'User doesn\'t exists!';
 $string['nocontext'] = 'No context found';
 $string['outenrol'] = 'Salir de matriculación';
+$string['nocourseconfiguremgm'] = 'Curso no configurado mediante matriculacion MGM';
+$string['noreport'] = "Informe incorrecto.";
+$string['noaction'] = "Invalid Action!";
+
 

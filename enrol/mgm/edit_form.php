@@ -63,6 +63,7 @@ class enrol_mgm_edit_form extends moodleform {
         $mform->disabledIf('expirythreshold', 'expirynotify', 'eq', 0);
 
         $mform->addElement('hidden', 'courseid');
+        $mform->addElement('hidden', 'id');
 
         $this->add_action_buttons(true, ($instance->id ? null : get_string('addinstance', 'enrol')));
 
