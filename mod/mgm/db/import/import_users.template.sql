@@ -3,11 +3,11 @@ ALTER TABLE `mgm24`.`mdl_course` AUTO_INCREMENT = 1000;
 ALTER TABLE `mgm24`.`mdl_edicion` AUTO_INCREMENT = 1000;
 
 -- mdl_user
-DELETE FROM `mgm24`.`mdl_user` where id>2;
+DELETE FROM `mgm24`.`mdl_user` where id>2 and id != 77910;
 ALTER TABLE `mgm24`.`mdl_user` AUTO_INCREMENT = 110000;
 INSERT INTO `mgm24`.`mdl_user` (id, auth, confirmed, policyagreed, deleted, mnethostid, username, password, idnumber, firstname, lastname, email, emailstop, icq, skype, yahoo, aim, msn, phone1, phone2, institution, department, address, city, country, lang, theme, timezone, firstaccess, lastaccess, lastlogin, currentlogin, lastip, secret, picture, url, description, mailformat, maildigest, maildisplay, htmleditor, autosubscribe, trackforums, timemodified, trustbitmask, imagealt)
-SELECT id, auth, confirmed, policyagreed, deleted, mnethostid, username, password, idnumber, firstname, lastname, email, emailstop, icq, skype, yahoo, aim, msn, phone1, phone2, institution, department, address, city, country, lang, theme, timezone, firstaccess, lastaccess, lastlogin, currentlogin, lastip, secret, picture, url, description, mailformat, maildigest, maildisplay, htmleditor, autosubscribe, trackforums, timemodified, trustbitmask, imagealt 
-from `mgm19`.`mdl_user` where id>2 limit 5000000;
+SELECT id, auth, confirmed, policyagreed, deleted, 1, username, password, idnumber, firstname, lastname, email, emailstop, icq, skype, yahoo, aim, msn, phone1, phone2, institution, department, address, city, country, lang, theme, timezone, firstaccess, lastaccess, lastlogin, currentlogin, lastip, secret, picture, url, description, mailformat, maildigest, maildisplay, htmleditor, autosubscribe, trackforums, timemodified, trustbitmask, imagealt 
+from `mgm19`.`mdl_user` where id>2 and id != 77910 limit 5000000;
 
 -- user_info_category
 DELETE FROM `mgm24`.`mdl_user_info_category` WHERE id >= 1;
@@ -23,7 +23,7 @@ SELECT
 FROM `mgm19`.`mdl_user_info_category` limit 5000000;
 
 -- user_info_data
-DELETE FROM `mgm24`.`mdl_user_info_data` WHERE userid > 2;
+DELETE FROM `mgm24`.`mdl_user_info_data` WHERE userid > 2 and userid != 77910;
 ALTER TABLE `mgm24`.`mdl_user_info_data` AUTO_INCREMENT = 2000000;
 INSERT INTO `mgm24`.`mdl_user_info_data`
 (`id`,
@@ -37,11 +37,11 @@ SELECT
 `mdl_user_info_data`.`userid`,
 `mdl_user_info_data`.`fieldid`,
 `mdl_user_info_data`.`data`
-FROM `mgm19`.`mdl_user_info_data` WHERE userid > 2 limit 5000000;
+FROM `mgm19`.`mdl_user_info_data` WHERE userid > 2 and userid != 77910 limit 5000000;
 
 
 -- user_info_field
-DELETE FROM `mgm24`.`mdl_user_info_field` WHERE id >= 1;
+DELETE FROM `mgm24`.`mdl_user_info_field` WHERE id >= 1 ;
 ALTER TABLE `mgm24`.`mdl_user_info_field` AUTO_INCREMENT = 1000;
 INSERT INTO `mgm24`.`mdl_user_info_field` 
 (`id`,
@@ -86,7 +86,7 @@ SELECT
 FROM `mgm19`.`mdl_user_info_field` limit 5000000;
 
 -- user_preferences
-DELETE FROM `mgm24`.`mdl_user_preferences` WHERE userid > 2;
+DELETE FROM `mgm24`.`mdl_user_preferences` WHERE userid > 2 and userid != 77910;
 ALTER TABLE `mgm24`.`mdl_user_preferences` AUTO_INCREMENT = 110000;
 INSERT INTO `mgm24`.`mdl_user_preferences`
 (`id`,
@@ -98,11 +98,11 @@ SELECT
 `mdl_user_preferences`.`userid`,
 `mdl_user_preferences`.`name`,
 `mdl_user_preferences`.`value`
-FROM `mgm19`.`mdl_user_preferences` WHERE userid > 2 limit 5000000;
+FROM `mgm19`.`mdl_user_preferences` WHERE userid > 2 and userid != 77910 limit 5000000;
 
 
 -- mdl_edicion_user
-DELETE FROM `mgm24`.`mdl_edicion_user` WHERE userid > 2;
+DELETE FROM `mgm24`.`mdl_edicion_user` WHERE userid > 2 and userid != 77910;
 ALTER TABLE `mgm24`.`mdl_edicion_user` AUTO_INCREMENT = 110000;
 INSERT INTO `mgm24`.`mdl_edicion_user`
 (`id`,
@@ -136,7 +136,7 @@ SELECT
 `mdl_edicion_user`.`sexo`,
 `mdl_edicion_user`.`codpais`,
 `mdl_edicion_user`.`codprovincia`
-FROM `mgm19`.`mdl_edicion_user` WHERE userid > 2 limit 5000000;
+FROM `mgm19`.`mdl_edicion_user` WHERE userid > 2 and userid != 77910 limit 5000000;
 
 
 -- mdl_edicion_cert_history
