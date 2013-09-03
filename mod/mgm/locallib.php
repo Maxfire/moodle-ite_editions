@@ -3226,7 +3226,7 @@ function mgm_get_course_participants($course, $real = false) {
 
     $adminroles = array();
     if($roles = get_roles_used_in_context($context, true)) {
-        $canviewroles = get_roles_with_capability('moodle/course:view', CAP_ALLOW, $context);
+        $canviewroles = get_roles_with_capability('moodle/course:viewparticipants', CAP_ALLOW, $context);
         $doanythingroles = get_roles_with_capability('moodle/site:doanything', CAP_ALLOW, $sitecontext);
 
         if($context -> id == $frontpagectx -> id) {
@@ -4205,11 +4205,12 @@ class Usuario {
     var $apto;
     var $tipoparticipante;
     var $show=array('norol'=>1, 'nodni'=>1, 'usuario'=>1);
+    
     function format_text($str){
     	  if ($str){
     	   return '"'.str_replace('"','',$str).'"';;
     	  }
-    	  return $str;
+    	  return null;
     }
 
     function set_dbdata($userid){
@@ -4233,6 +4234,12 @@ class Usuario {
       			$data->tipoid='P';
       		}
     	}
+    	$fields = array('codniveleducativo', 'codcuerpodocente', 'codprovincia', 'codpostal', 'codpais', 'sexo', 'cc');
+    	foreach ($fields as $f){
+    		if (! isset($data->$f)){
+    			$data->$f = null;
+    		}
+    	}
     	$this -> dbdata=$data;
     }
 
@@ -4245,14 +4252,15 @@ class Usuario {
     	}
         $this -> data = $data;
         $this -> curso = $curso;
-        $this -> apto=$this->curso->aprobado($this);
-        $this -> tipoparticipante=$this -> getTipo();
+        $this -> apto = $this->curso->aprobado($this);
+        $this -> info = new stdClass();
         $this -> info -> nombre = $data -> username;
         $this -> info -> id = $data -> userid;
         $this -> info -> curso = $this -> curso -> data -> fullname;
         $this -> info -> sesskey = $_SESSION['USER'] -> sesskey;
+        $this -> tipoparticipante=$this -> getTipo();
         //$this -> dbdata = get_record('edicion_user', 'userid', $data -> userid);
-				$this->set_dbdata($data -> userid);
+		$this->set_dbdata($data -> userid);
         //Datos para participantes.csv
         $this -> edata['anoacademico'] = $this->format_text($this -> curso -> edicion -> getAnoAcademico());
         #Obligatorio
@@ -4317,8 +4325,8 @@ class Usuario {
             #Obligatorio
             $this -> edatap['codcuerpodocente'] = null;
             #Obligatorio
-        } else {
-            $this -> edatap['codniveleducativo'] =$this->format_text( $this -> dbdata -> codniveleducativo);
+        } else {        	
+            $this -> edatap['codniveleducativo'] = $this->format_text( $this -> dbdata -> codniveleducativo);
             #Obligatorio
             $this -> edatap['codcuerpodocente'] = $this->format_text($this -> dbdata -> codcuerpodocente);
             #Obligatorio

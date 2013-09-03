@@ -386,5 +386,10 @@ $string['outenrol'] = 'Salir de matriculación';
 $string['nocourseconfiguremgm'] = 'Curso no configurado mediante matriculacion MGM';
 $string['noreport'] = "Informe incorrecto.";
 $string['noaction'] = "Invalid Action!";
-
+$string['mgm:addinstance'] = 'MGM';
+$string['mgm:viewedicion'] = 'Ver ediciones';
+$string['mgm:createedicion'] = 'Crear ediciones';
+$string['mgm:editedicion'] = 'Modificar ediciones';
+$string['mgm:assigncriteria'] = 'Editar cursos (Criterios)';
+$string['mgm:aprobe'] = 'Aprobar solicitudes';
 

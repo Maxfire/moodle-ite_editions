@@ -43,7 +43,7 @@ $PAGE->set_pagelayout('admin');
 
 $strtitle = get_string('exportdata','mgm');
 $tempdir = $CFG->dataroot."/temp/";
-$filename = optional_param('filename', '', PARAM_ALPHANUM);
+$filename = optional_param('filename', '', PARAM_TEXT);
 $generated = optional_param('generated', 0, PARAM_INT);
 
 $mform = new export_data("$CFG->wwwroot".'/mod/mgm/export.php');
@@ -57,7 +57,7 @@ else if ($generated) {
 	if (! $edicion = $DB->get_record('edicion', array('id'=> $ed))){
 		print_error('Edicion no valida',"$CFG->wwwroot".'/mod/mgm/import.php');
 	}else{
-		admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
+		//admin_externalpage_setup('edicionesmgmt', mgm_update_edition_button());
 		echo $OUTPUT->header();
 	  	echo $OUTPUT->heading($strtitle);
 	  	echo $OUTPUT->box_start('boxaligncenter');  	
