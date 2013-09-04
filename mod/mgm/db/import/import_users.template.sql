@@ -163,3 +163,34 @@ SELECT
 `mdl_edicion_cert_history`.`tipodocumento`,
 `mdl_edicion_cert_history`.`numdocumento`
 FROM `mgm19`.`mdl_edicion_cert_history` limit 5000000;
+
+-- mdl_edicion_centro
+DELETE FROM `mgm24`.`mdl_edicion_centro` WHERE id >= 1;
+ALTER TABLE `mgm24`.`mdl_edicion_centro` AUTO_INCREMENT = 50000;
+INSERT INTO `mgm24`.`mdl_edicion_centro`
+(`id`,
+`pais`,
+`localidad`,
+`dgenerica`,
+`despecifica`,
+`codigo`,
+`naturaleza`,
+`tipo`,
+`direccion`,
+`cp`,
+`provincia`,
+`telefono`)
+SELECT
+`mdl_edicion_centro`.`id`,
+`mdl_edicion_centro`.`pais`,
+`mdl_edicion_centro`.`localidad`,
+`mdl_edicion_centro`.`dgenerica`,
+`mdl_edicion_centro`.`despecifica`,
+`mdl_edicion_centro`.`codigo`,
+`mdl_edicion_centro`.`naturaleza`,
+`mdl_edicion_centro`.`tipo`,
+`mdl_edicion_centro`.`direccion`,
+`mdl_edicion_centro`.`cp`,
+`mdl_edicion_centro`.`provincia`,
+`mdl_edicion_centro`.`telefono`
+FROM `mgm19`.`mdl_edicion_centro` limit 5000000;
