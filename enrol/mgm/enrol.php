@@ -193,10 +193,10 @@ if ($data=$eform->get_data() ) {
 		mgm_set_userdata2($USER->id, $mgmuser, true);
 		$ch=mgm_check_cert_history($USER->id, $courses);
 		if ($ch[0]){//Ningun curso ya certificado
-			mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses);			
-			echo $OUTPUT->confirm(get_string('preinscrito', 'mgm'),
-				new moodle_url('/enrol/mgm/enrol.php', array('id'=>$id)), 
-				new moodle_url($CFG->wwwroot.'/index.php'));
+			mgm_preinscribe_user_in_edition($edition->id, $USER->id, $courses);
+			$continue = new single_button(new moodle_url('/enrol/mgm/enrol.php', array('id'=>$id)), get_string('yes'), 'post');
+			$cancel = new single_button(new moodle_url($CFG->wwwroot.'/index.php'), get_string('no'), 'get');
+			echo $OUTPUT->confirm(get_string('preinscrito', 'mgm'), $continue, $cancel);
 			die();
 		}else{//alguno de los cursos esta certificado para el dni del usuario
 			print_error('coursecertfied', 'mgm', "?id=$id",  $course->fullname);

@@ -2257,12 +2257,17 @@ function mgm_check_user_cc($code, &$ret) {
  * @param string $ret
  * @return string
  */
-function mgm_check_user_dni($userid, $dni, &$ret) {
+function mgm_check_user_dni($userid, $dni, &$ret, $tipoid=false) {
     global $CFG, $DB;
     $sql = "SELECT * FROM {edicion_user}
-    		WHERE dni=:dni  AND userid!=:userid ";    
+    		WHERE dni=:dni  AND userid!=:userid ";
+    $params=array('dni'=>$dni, 'userid'=>$userid);   
+    if ($tipoid){
+    	$sql += ' AND tipoid = :tipoid';
+    	$params['tipoid'] = tipoid;
+    }
     				
-    if($odni = $DB->get_record_sql($sql, array('dni'=>$dni, 'userid'=>$userid))) {
+    if($odni = $DB->get_record_sql($sql, $params)) {
         $ret = MGM_DATA_DNI_ERROR;
         return '';
     }
