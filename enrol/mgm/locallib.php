@@ -91,9 +91,9 @@ function mgm_enrol_get_courses_options($editionid){
 	
 	$types = sprintf('%d, %d, %d', MGM_CRITERIA_OPCION1, MGM_CRITERIA_OPCION2, MGM_CRITERIA_ESPECIALIDAD);
 	$sql = "SELECT id, course, type, value FROM {edicion_criterios} 
-			WHERE edicion = 10 and type IN ($types) 
+			WHERE edicion = ? and type IN ($types) 
 			ORDER BY course, type";
-	if ( $records = $DB->get_records_sql($sql) ){
+	if ( $records = $DB->get_records_sql($sql, array($editionid)) ){
 		foreach ($records as $record){
 			if (! isset($course_options[$record->course])){
 				$course = new stdClass();
