@@ -2263,18 +2263,22 @@ function mgm_check_user_dni($userid, $dni, &$ret, $tipoid=false) {
     		WHERE dni=:dni  AND userid!=:userid ";
     $params=array('dni'=>$dni, 'userid'=>$userid);   
     if ($tipoid){
-    	$sql += ' AND tipoid = :tipoid';
-    	$params['tipoid'] = tipoid;
+    	$sql .= ' AND tipoid=:tipoid';
+    	$params['tipoid'] = $tipoid;
     }
     				
     if($odni = $DB->get_record_sql($sql, $params)) {
         $ret = MGM_DATA_DNI_ERROR;
         return '';
     }
-    if(!mgm_validate_cif($dni)) {
-        $ret = MGM_DATA_DNI_INVALID;
-        return '';
+    //validate nif 
+    if ($tipoid == false || $tipoid == 'N'){
+    	if(!mgm_validate_cif($dni)) {
+    		$ret = MGM_DATA_DNI_INVALID;
+    		return '';
+    	}    	
     }
+    
     return $dni;    
 }
 

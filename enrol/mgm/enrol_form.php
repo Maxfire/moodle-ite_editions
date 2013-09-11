@@ -163,14 +163,14 @@ class enrol_mgm_form extends moodleform {
 		// validate cc
 		$ret = MGM_DATA_NO_ERROR;
 		$newdata = $data;
-		$newdata->cc = mgm_check_user_cc ( $data->cc, $ret, $data->tipoid );
+		$newdata->cc = mgm_check_user_cc ( $data->cc, $ret );
 		if ($ret == MGM_DATA_CC_ERROR) {
 			$errors ['cc'] = get_string ( 'cc_no_error', 'mgm' );
 			return $errors;
 		}
 		// validate dni/passporte/tarjeta de residencia
 		//if ($data->tipoid == 'N') {
-			$newdata->dni = mgm_check_user_dni ( $USER->id, $data->dni, $ret );
+			$newdata->dni = mgm_check_user_dni ( $USER->id, $data->dni, $ret, $data->tipoid );
 			if ($ret == MGM_DATA_DNI_ERROR) {
 				$errors ['dni'] = get_string ( 'dnimulti', 'mgm' );
 				return $errors;

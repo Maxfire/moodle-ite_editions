@@ -144,7 +144,7 @@ class mod_mgm_user_form extends moodleform {
     		}
     		// validate dni/passporte/tarjeta de residencia
     		//if($data -> tipoid == 'N') {
-        	$newdata -> dni = mgm_check_user_dni($USER->id, $data -> dni, $ret);
+        	$newdata -> dni = mgm_check_user_dni($USER->id, $data -> dni, $ret, $data->tipoid);
         	
         	if ($ret==MGM_DATA_DNI_ERROR){
     		 		 $errors['dni']=get_string('dnimulti', 'mgm');
