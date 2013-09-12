@@ -63,8 +63,9 @@ if ($edition->state == 'matriculacion') {
 $sql = "SELECT * FROM {edicion_inscripcion}
             	WHERE edicionid=:edition AND value=:value";
 $arg = array('edition'=>$edition->id, 'value'=> $course->id );
-// TODO: Descomentar  linea y comentar la siguiente en entorno de producion//if ($inscripcion = $DB->get_records_sql($sql, $arg) || time() > $edition->fin) {
-if ($inscripcion = $DB->get_records_sql($sql, $arg)) {
+
+if ($inscripcion = $DB->get_records_sql($sql, $arg) || time() > $edition->fin) {
+//if ($inscripcion = $DB->get_records_sql($sql, $arg)) {
 	print_error('fueradeperiodo', 'mgm');
 }
 
