@@ -99,6 +99,9 @@ $criteria = mgm_get_edition_course_criteria($edicionid, $courseid);
 if (!isset($criteria->depends)) {
     $criteria->depends = 0;
 }
+if (!isset($criteria->modegroup)) {
+	$criteria->modegroup = '1';
+}
 
 $criteria->courseid = $courseid;
 $criteria->edicionid = $edicionid;

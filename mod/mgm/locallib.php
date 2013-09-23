@@ -55,6 +55,8 @@ define('MGM_CRITERIA_ECUADOR', 11);
 define('MGM_CRITERIA_DURATION', 12);
 define('MGM_CRITERIA_PREVLAB', 13);
 define('MGM_CRITERIA_TRAMOS', 14);
+define('MGM_CRITERIA_MODEGROUP', 15);  #ESPECIALIDADES, CODIGO CENTRO
+
 
 define('MGM_ITE_ESPECIALIDADES', 1);
 define('MGM_ITE_CENTROS', 2);
@@ -604,7 +606,7 @@ function mgm_translate_especialidad($id) {
 //     $sql = "SELECT value FROM  {edicion_ite}
 //     		WHERE type = ?";
 //     $especialidades = explode("\n",  $DB->get_record_sql($sql, array(MGM_ITE_ESPECIALIDADES)) -> value);
-    return ($id !== false && $id != '') ? $MGM_ITE_ESPECS[$id] : '';
+    return ($id !== false && $id !== '') ? $MGM_ITE_ESPECS[$id] : '';
 }
 
 // function mgm_translate_especialidad($id) {
@@ -697,6 +699,9 @@ function mgm_get_edition_course_criteria($editionid, $courseid) {
 
         if($c->type == MGM_CRITERIA_TRAMOS) {
             $criteria->tramo = explode(',', $c->value);
+        }
+        if($c->type == MGM_CRITERIA_MODEGROUP) {
+        	$criteria->modegroup = $c->value;
         }
     }
     return $criteria;
@@ -796,6 +801,17 @@ function mgm_set_edition_course_criteria($data) {
         $criteria -> id = $criteriaid -> id;
         $DB->update_record('edicion_criterios', $criteria);
         unset($criteria -> id);
+    }
+    
+    // Modegroup
+    $criteria -> type = MGM_CRITERIA_MODEGROUP;
+    $criteria -> value = $data -> modegroup;
+    if(!$criteriaid = mgm_edition_course_criteria_data_exists($criteria)) {
+    	$DB->insert_record('edicion_criterios', $criteria);
+    } else {
+    	$criteria -> id = $criteriaid -> id;
+    	$DB->update_record('edicion_criterios', $criteria);
+    	unset($criteria -> id);
     }
 
     // Dependencies
@@ -1370,7 +1386,7 @@ function addslashes_recursive($var) {
 //TODO: check trigger_error function
 function mgm_create_enrolment_groups($editionid, $courseid) {
     global $CFG, $DB;
-
+    require_once($CFG->dirroot."/enrol/mgm/locallib.php");
     if(!$inscripcion = mgm_check_already_enroled($editionid, $courseid)) {
         trigger_error('Error, there is no inscription for the edition and course ids given');
         return false;
@@ -1380,73 +1396,83 @@ function mgm_create_enrolment_groups($editionid, $courseid) {
         trigger_error('Error, there is no criteria for the edition and course ids given');
         return false;
     }
-
+	if (! isset($criteria->modegroup)){
+		$criteria->modegroup = '1';
+	}
     $max = round($criteria->plazas / $criteria->numgroups);
+	if ($criteria->modegroup == '1'){  # group by especialidades
+		$finalgroups = group_by_especialidades( $editionid, $courseid, $max);
+	}elseif ($criteria->modegroup == '3'){ # group by especialidades, and order by cc max
+		$finalgroups = group_by_especialidades( $editionid, $courseid, $max, true);	
+	}else{ # group by cc
+		// Split data in groups by CC
+		$groups = array();
+		$ncount = 0;
+		$mcount = array();
+		foreach($inscripcion as $row) {
+			if(!array_key_exists($ncount, $groups)) {
+				$groups[$ncount] = array();
+			}
+			$user = $DB->get_record('user', array('id'=> $row->id));
+			if(!$user->ite_data = $DB->get_record('edicion_user', array('userid'=> $row->id))) {
+				if(count($groups[$ncount]) < $max) {
+					$groups[$ncount][] = $user;
+				} else {
+					$ncount++;
+					$groups[$ncount][] = $user;
+				}
+			} else {
+				if(!$user->ite_data->cc) {
+					if(count($groups[$ncount] < $max)) {
+						$groups[$ncount][] = $user;
+					} else {
+						$ncount++;
+						$groups[$ncount][] = $user;
+					}
+				} else {
+					if(array_key_exists($user->ite_data->cc, $mcount)) {
+						if(count($groups[$mcount[$user->ite_data->cc]]) < $max) {
+							$groups[$mcount[$user->ite_data->cc]][] = $user;
+						} else {
+							$mcount[$user->ite_data->cc]++;
+							$groups[$mcount[$user->ite_data->cc]][] = $user;
+						}
+					} else {
+						$mcount[$user->ite_data->cc] = $user->ite_data -> cc + rand(rand(1, 10000), rand(10000, 100000));
+						$groups[$mcount[$user->ite_data->cc]][] = $user;
+					}
+				}
+			}
+		}
+		
+		$finalgroups = array();
+		for($i = 0; $i < $criteria->numgroups; $i++) {
+			$finalgroups[$i] = new stdClass();
+			$finalgroups[$i]->users = array();
+			$finalgroups[$i]->description = 'Group by cc'; 
+			$x = 1;
+			foreach($groups as $group) {
+				foreach($group as $gr) {
+					if(($x <= ($i + 1) * $max) && ($x > ($i * $max))) {
+						$finalgroups[$i]->users[] = $gr;
+					}
+					$x++;
+				}
+			}
+		}
+	}
 
-    // Split data in groups by CC
-    $groups = array();
-    $ncount = 0;
-    $mcount = array();
-    foreach($inscripcion as $row) {
-        if(!array_key_exists($ncount, $groups)) {
-            $groups[$ncount] = array();
-        }
-        $user = $DB->get_record('user', array('id'=> $row->id));
-        if(!$user->ite_data = $DB->get_record('edicion_user', array('userid'=> $row->id))) {
-            if(count($groups[$ncount]) < $max) {
-                $groups[$ncount][] = $user;
-            } else {
-                $ncount++;
-                $groups[$ncount][] = $user;
-            }
-        } else {
-            if(!$user->ite_data->cc) {
-                if(count($groups[$ncount] < $max)) {
-                    $groups[$ncount][] = $user;
-                } else {
-                    $ncount++;
-                    $groups[$ncount][] = $user;
-                }
-            } else {
-                if(array_key_exists($user->ite_data->cc, $mcount)) {
-                    if(count($groups[$mcount[$user->ite_data->cc]]) < $max) {
-                        $groups[$mcount[$user->ite_data->cc]][] = $user;
-                    } else {
-                        $mcount[$user->ite_data->cc]++;
-                        $groups[$mcount[$user->ite_data->cc]][] = $user;
-                    }
-                } else {
-                    $mcount[$user->ite_data->cc] = $user->ite_data -> cc + rand(rand(1, 10000), rand(10000, 100000));
-                    $groups[$mcount[$user->ite_data->cc]][] = $user;
-                }
-            }
-        }
-    }
-
-    $finalgroups = array();
-    for($i = 0; $i < $criteria->numgroups; $i++) {
-        $finalgroups[$i] = array();
-        $x = 1;
-        foreach($groups as $group) {
-            foreach($group as $gr) {
-                if(($x <= ($i + 1) * $max) && ($x > ($i * $max))) {
-                    $finalgroups[$i][] = $gr;
-                }
-                $x++;
-            }
-        }
-    }
 
     $x = 0;
     foreach($finalgroups as $fg) {
         $group = new object();
         $group->courseid = $courseid;
         $group->name = groups_parse_name('Grupo @', $x);
-
+        $group->description = $fg->description;
         if(!$gid = groups_create_group(addslashes_recursive($group))) {
             print_error('grerrcreate', 'mgm', '', $a = $group->name);
         }
-        foreach($fg as $user) {
+        foreach($fg->users as $user) {
             if(!groups_add_member($gid, $user->id)) {
             	$a = new stdClass();
             	$a->user = $user->username;
@@ -1456,6 +1482,7 @@ function mgm_create_enrolment_groups($editionid, $courseid) {
         }
         $x++;
     }
+
     return true;
 }
 

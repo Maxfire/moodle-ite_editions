@@ -33,6 +33,198 @@ require_once($CFG -> dirroot . '/mod/mgm/locallib.php');
 // 	global $SESSION;
 // 	if (!isset($SESSION))
 // }
+
+function get_next_group(&$groups, $max=0){
+	$gmax_index = -1;
+	$ret = false;	
+	if (count($groups) === 0){
+		return false;
+	}
+	while ($max > 0){
+		$i = 0;
+		foreach($groups as $group){
+			if($group->count == $max ){
+					$group->proccess = true;
+					return $i;
+			}
+			$i++;
+		}
+		$max --;
+	}		
+	if($max == 0){
+		#inicializa un grupo  no procesado		
+		$gmax_index = 0;
+		$i = 0;
+		foreach($groups as $group){			
+			if ($gmax_index != -1 && $group->count >= $groups[$gmax_index]->count ){
+				$gmax_index = $i;
+			}
+			$i++;
+		}
+	}
+	
+	if ($max == 0 && $gmax_index != -1){
+		return $gmax_index;
+	}
+	return $ret;	
+};
+
+function get_max_frec_espcialidad($uesps, $frec_espcecs){	
+	$i=0;
+	$index = false;
+	while ($index === false && $i < count($uesps)){		
+		if (isset($frec_espcecs[$uesps[$i]])){
+			$index = $uesps[$i];
+		}
+		$i++;		
+	}
+	if ($index !== false){
+		foreach ($uesps as $esp){
+			if ( isset($frec_espcecs[$esp])){
+				if ($frec_espcecs[$esp] > $frec_espcecs[$index]){
+					$index = $esp;
+				}
+			}
+		}		
+	}
+	return $index;	
+}
+
+function get_especialidades_frec($users){
+	$especs = array ();
+	foreach ($users as $user){
+		$uesps = explode("\n", $user->especialidades);
+		if (isset($user->especialidades) && count($uesps)>0){			
+			foreach ($uesps as $esp){
+				if ($esp !== ''){
+					if ( ! isset($especs[$esp])){
+						$especs[$esp] = 0;							
+					}
+					$especs[$esp]++;					
+				}				
+			}
+		}
+	}
+	return $especs;
+}
+
+function group_by_especialidades($editionid, $courseid, $max, $cc=false){
+	global $CFG, $DB;
+	require_once($CFG->dirroot."/mod/mgm/locallib.php");
+	if ($cc) {
+		$sql = "SELECT i.userid as id, eu.especialidades, u.username, eu.cc, c2.qty  FROM {edicion_inscripcion} i left join {edicion_user} eu on (i.userid=eu.userid)
+		left join {user} u on (eu.userid = u.id)
+		left join (SELECT eu.cc, count(i.id) qty  FROM {edicion_inscripcion} i left join {edicion_user} eu on (i.userid=eu.userid)
+		WHERE i.edicionid = ? AND value = $courseid group by eu.cc order by count(i.id) desc, cc desc) c2 on (eu.cc = c2.cc)
+		WHERE i.edicionid = ? AND value = $courseid order by c2.qty desc, eu.cc";
+		$params= array($editionid, $editionid);
+		
+	} else {
+		$sql = "SELECT i.userid as id, eu.especialidades, u.username, eu.cc  FROM {edicion_inscripcion} i left join {edicion_user} eu on (i.userid=eu.userid)
+		left join {user} u on (eu.userid = u.id)
+		WHERE i.edicionid = ? AND value = $courseid";
+		$params= array($editionid);
+	} 	
+	$especs = array();
+	$nusers = 0;
+	
+	if ($all_users = $DB->get_records_sql($sql, $params)){
+		$cnt = 0;
+		$frec_espcecs = get_especialidades_frec($all_users);
+		foreach ($all_users as $user){
+			$uesps = explode("\n", $user->especialidades);
+			if (isset($user->especialidades) && count($uesps)>0){
+				$index = get_max_frec_espcialidad($uesps, $frec_espcecs);
+				if ($index == ''){
+					$index = "s-$cnt";
+					$cnt++;	
+				}
+				if (! isset($especs[$index])){
+					$especs[$index] = array();
+				}
+								
+			}else{  // Ninguna especialidad para el usuario
+				$index = "s-$cnt";
+				$cnt++;								
+			}
+			$especs[$index][] = $user;			
+		}			
+	}
+	$finalgroups = array();
+	$groups = array();
+	foreach ($especs as $k => $v){
+		$val = new stdClass();
+		$val-> esp = $k;
+		$val-> count = count($v);
+		//$val-> proccess = false;		
+		$groups[]= $val;
+	}	
+	$key = 0;	
+	$index = get_next_group($groups, 0); #obtiene el grupo con mayor numero de usuarios
+	if ($index !== false){
+		$group_key = $groups[$index]->esp;
+		#ordenar por especialidad uniendo grupos que mejor se adapten.
+		$cnt = $max;  # remain users for complete the group
+		while ($group_key !== false){
+			foreach($especs[$group_key] as $gr) {
+				if (! isset($finalgroups[$key])){
+					$finalgroups[$key] = new stdClass();
+					$finalgroups[$key]->users = array();
+					$finalgroups[$key]->especialidades = array();
+					$finalgroups[$key]->description = 'Group by especialidades:';
+				}
+				if (! in_array($group_key, $finalgroups[$key]->especialidades)){
+					$finalgroups[$key]->especialidades[] = $group_key;
+				}				
+				$finalgroups[$key]->users[] = $gr;				
+				$cnt--;
+				if (count($finalgroups[$key]->users)==$max){
+					$key++;
+					$cnt = $max;
+				}
+			}
+			array_splice($groups, $index, 1);
+			if ($cnt == $max){  // para obtener el grupo de mayor numero de usuarios 
+				$cnt = 0;
+			}
+			$index = get_next_group($groups, $cnt);
+			if ($index === false){
+				$group_key = false;			
+			}
+			else{
+				$group_key = $groups[$index]->esp;
+			}
+			if ($cnt == 0){
+				$cnt = $max;
+			}
+		}
+	}
+	foreach ($finalgroups as $fg){
+		$uesps = $fg->especialidades;
+		$i = 1;
+		foreach ($uesps as $uesp){			
+			$val = get_max_frec_espcialidad($uesps, $frec_espcecs);
+			$index = array_keys($uesps, $val);			
+			if ($index){
+				array_splice($uesps, $index[0], 1);
+				$fg -> description = $fg -> description . ' ' . mgm_translate_especialidad($val) . ',';
+			}
+			if ($i == 3){break;}
+			$i++;			
+		}
+		$fg -> description = rtrim($fg -> description , ',' );
+		if ( $i >= 3 ){
+			$fg -> description = $fg -> description . ' ...';
+		}else{
+			$fg -> description = $fg -> description . ' .';
+		}
+				 
+		
+	}	
+	return $finalgroups;
+}
+
+
 function mgm_enrol_get_user_preinscription_data($userline, $edition, $criteria, $courseenrolid=false) {
 	global $CFG, $DB, $SESSION;	
 	$site = get_site();

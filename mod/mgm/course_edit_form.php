@@ -156,6 +156,15 @@ class mgm_course_edit_form extends moodleform {
         $mform->addElement('text', 'numgroups', get_string('numgroups', 'mgm'));
         $mform->addRule('numgroups', get_string('required'), 'required', null);
         $mform->addRule('numgroups', get_string('numeric', 'mgm'), 'numeric');
+        
+        $modes = array('1'=> get_string('especialidades', 'mgm'),
+        			   '2'=> get_string('cc', 'mgm'),
+        			   '3'=> get_string('ccespecialidades', 'mgm')
+        				);
+        $mform->addElement('select', 'modegroup', get_string('modegroup', 'mgm'), $modes);
+        $mform->addRule('modegroup', get_string('required'), 'required', null);
+        $mform->setDefault('modegroup', (isset($this->_customdata->modegroup)) ? $this->_customdata->modegroup : '1');
+        
 
         $choices = array(
             'ninguna'		 => get_string('sinprioridad', 'mgm'),

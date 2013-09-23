@@ -402,4 +402,7 @@ $string['mgm:createedicion'] = 'Crear ediciones';
 $string['mgm:editedicion'] = 'Modificar ediciones';
 $string['mgm:assigncriteria'] = 'Editar cursos (Criterios)';
 $string['mgm:aprobe'] = 'Aprobar solicitudes';
+$string['modegroup'] = 'Modo de Agrupación';
+$string['ccespecialidades'] = 'Especialidades y código de centro';
+
 
