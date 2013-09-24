@@ -44,11 +44,11 @@ if ($confirm and confirm_sesskey()) {
 			$SESSION->joinusers->setDiffVals($keys2set);
 			echo $OUTPUT->header();
 			echo $OUTPUT->heading('Acciones a realizar:');
-			echo $OUTPUT->heading("1.- Se eliminará el usuario origen (" . fullname($SESSION->joinusers->user_orig, true)." ,".$SESSION->joinusers->user_orig->id." )",'left', 4);
-			echo $OUTPUT->heading("2.- Se estableceran los siguientes datos en el usuario destino (". fullname($SESSION->joinusers->user_dest, true) ." ," .$SESSION->joinusers->user_dest->id." )", 'left', 4);
+			echo $OUTPUT->heading("1.- Se eliminará el usuario origen (" . fullname($SESSION->joinusers->user_orig, true)." ,".$SESSION->joinusers->user_orig->id." )", 4, 'left');
+			echo $OUTPUT->heading("2.- Se estableceran los siguientes datos en el usuario destino (". fullname($SESSION->joinusers->user_dest, true) ." ," .$SESSION->joinusers->user_dest->id." )", 4, 'left');
 			echo html_writer::table($SESSION->joinusers->getSaveTable());		  	
 			if ($cert_orig = mgm_get_cert_history($SESSION->joinusers->user_orig->id)){
-				echo $OUTPUT->heading("3.- EL usuario destino certificará los siguientes cursos: \n", 'left', 4);		  		
+				echo $OUTPUT->heading("3.- EL usuario destino certificará los siguientes cursos: \n", 4, 'left');		  		
 		  		echo html_writer::table($SESSION->joinusers->getCertOrigTable());		  		
 			}
 			echo '<br />';
