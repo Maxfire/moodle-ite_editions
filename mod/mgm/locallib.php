@@ -1330,21 +1330,19 @@ function mgm_enrol_edition_course($editionid, $courseid) {
         
         $today = time();
         $today = make_timestamp(date('Y', $today), date('m', $today), date('d', $today), 0, 0, 0);
-        if ($course->startdate > 0) {
-        	$timestart = $course->startdate;
-        }
-        else{
-        	$timestart = $today;
-        }
+//         if ($course->startdate > 0) { Fecha de alta de matriculacion
+//         	$timestart = $course->startdate;
+//         }
+//         else{
+//         	$timestart = $today;
+//         }
+        $timestart = $today;
         $timeend = 0;
         foreach($data as $row) {
         	$adduserid = $row->userid;
         	$enrol_mgm->enrol_user($enrol_mgm_instance, $adduserid, $roleid, $timestart, $timeend);
         	add_to_log($course->id, 'course', 'enrol', '../enrol/users.php?id='.$course->id, $course->id); //there should be userid somewhere!
        	}
-//        if(!mgm_enrol_into_course($course, $users, $enrol_mgm_instance)) {
-//             print_error('couldnotassignrole');
-//         }
     }
 }
 /**
@@ -2203,8 +2201,11 @@ function mgm_get_user_complete($userid) {
 function mgm_update_user_complete($user) {
 	global $DB;
     if( $DB->get_record('user', array('id'=> $user->id))) {
-    	$DB->update_record('user', $user);//user base data save
-			profile_save_data($user);// profile data save
+    	$keys = array_keys(get_object_vars($user));
+    	if (count($keys) > 1 ){ //tiene que tener establecido el id mas otros campos a actualiar
+    		$DB->update_record('user', $user);//user base data save
+    	}    	
+		profile_save_data($user);// profile data save
     	if ($userext = $DB->get_record('edicion_user', array('userid'=> $user->id))) {// edicion_user data save
       		$user -> userid = $user->id;
         	$user -> id = $userext->id;
@@ -4712,7 +4713,7 @@ class JoinUsers{
 			if ($cert_orig = mgm_get_cert_history($this->user_orig->id)){
 				foreach  ($cert_orig as $cert){
 					$cert->userid=$this->user_dest->id;
-					$DB->update_record($cert);
+					$DB->update_record('edicion_cert_history', $cert);
 				}
 			}
 			return true;
@@ -4822,7 +4823,8 @@ class JoinUsers{
 			return $table;
 		}
 
-		function getCertOrigTable(){			
+		function getCertOrigTable(){
+			global $DB;			
 			if ($cert_orig=mgm_get_cert_history($this->user_orig->id)){
 				$table = new html_table();
 				$table->head=array(
@@ -4834,7 +4836,7 @@ class JoinUsers{
 				$table->data=array();
 				$c=1;
 				foreach($cert_orig as $cert){
-					$course=get_record('course', 'id', $cert->courseid);
+					$course=$DB->get_record('course', array('id'=> $cert->courseid));
 					  $table->data[] = array(
 				  	$c,
 				  	$course->fullname,
