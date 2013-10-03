@@ -2200,11 +2200,15 @@ function mgm_get_user_complete($userid) {
  */
 function mgm_update_user_complete($user) {
 	global $DB;
-    if( $DB->get_record('user', array('id'=> $user->id))) {
-    	$keys = array_keys(get_object_vars($user));
-    	if (count($keys) > 1 ){ //tiene que tener establecido el id mas otros campos a actualiar
-    		$DB->update_record('user', $user);//user base data save
-    	}    	
+    if( $DB->get_record('user', array('id'=> $user->id))) {    	
+    	if (! isset($user->confirmed)){#Aseguramos al menos un campo a actualizar en la tabla user.
+    		 if ($ouser = $DB->get_record('user', array('id'=>$user->id))){
+    		 	$user->confirmed = $ouser->confirmed; 	
+    		 }else{
+    		 	$user->confirmed = 1;
+    		 }
+    	}	
+    	$DB->update_record('user', $user);//user base data save    	    
 		profile_save_data($user);// profile data save
     	if ($userext = $DB->get_record('edicion_user', array('userid'=> $user->id))) {// edicion_user data save
       		$user -> userid = $user->id;
