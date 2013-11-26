@@ -394,4 +394,6 @@ $string['mgm:assigncriteria'] = 'Editar cursos (Criterios)';
 $string['mgm:aprobe'] = 'Aprobar solicitudes';
 $string['modegroup'] = 'Modo de Agrupación';
 $string['ccespecialidades'] = 'Especialidades y código de centro';
+$string['acta_admin_msg']='Documento generado por Administración INTEF';
+$string['acta_admin_sig']="El Jefe del Servicio de Formación en Red del Profesorado.\nInstituto Nacional de Tecnologías Educativas. INTEF. Ministerio de Educación,Cultura y Deporte.";
 

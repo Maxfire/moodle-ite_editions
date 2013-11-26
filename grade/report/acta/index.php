@@ -120,7 +120,7 @@ if (has_capability('moodle/grade:viewall', $context)) { //Teachers will see all 
 		if ($groups == ''){//admin
 			if ($groupid){
 				$groups="&filter_groups=($groupid)";
-				$params='?id='.$reportid . '&filter_courses=' . $courseid . $groups. '&report_name=' . $reporttype . '&download=true&format=pdf&admin=true';
+				$params='?id='.$reportid . '&filter_courses=' . $courseid . $groups. '&report_name=' . $reporttype . '&download=true&format=pdf&admin=1';
 		  		redirect("$CFG->wwwroot".'/blocks/configurable_reports/viewreport.php'. $params);
 			}
       		print_grade_page_head($courseid, 'report', 'acta');      		

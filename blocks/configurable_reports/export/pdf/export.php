@@ -23,7 +23,7 @@
   */
 
 function export_report($report, $filtercourseid=false, $reportname=false, $admin=false, $filtergroupid){
-	global $CFG, $DB;
+  global $CFG, $DB;
   require_once($CFG->dirroot.'/mod/mgm/oppdflib.class.php');
   require_once($CFG->dirroot.'/mod/mgm/reports/acta.class.php');
   require_once($CFG->dirroot."/mod/mgm/locallib.php");
@@ -76,8 +76,8 @@ function export_report($report, $filtercourseid=false, $reportname=false, $admin
 				$roleid=$roles['tutor'];
 				$sql="SELECT ra.userid FROM {role_assignments} ra left join {groups_members} gm on (ra.userid=gm.userid)
 				where contextid IN (SELECT id FROM {context} m where contextlevel=50 and instanceid = ?
-				and groupid = ? and roleid = ?";
-				if ($tutorid = get_record_sql($sql, array($filtercourseid, $groupid,$roleid))){
+				and groupid = ? and roleid = ?)";
+				if ($tutorid = $DB->get_record_sql($sql, array($filtercourseid, $groupid, $roleid))){
 					$t = $DB->get_record('user', array('id'=> $tutorid->userid));
 					$tutor = $t->lastname . ', ' . $t->firstname;
 				}else{
